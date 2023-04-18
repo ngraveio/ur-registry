@@ -1,4 +1,4 @@
-<h1 align="center">Monorepo frontend boilerplate</h1>
+<h1 align="center">Blockchain Commons UR Registry</h1>
 
 <p align="center">
   <a href="http://commitizen.github.io/cz-cli/">
@@ -8,6 +8,57 @@
 	  <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Conventional Commits" />
   </a>
 </p>
+
+
+This repository is an implementation of [the BC-UR Registry specification](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md) and an extension to [Keystone UR Registry](https://github.com/KeystoneHQ/ur-registry)
+
+It adds support for following ur types:
+
+- crypto-coin-identity
+- crypto-detailed-account
+- crypto-coin
+- crypto-metadata
+- crypto-portfolio
+
+
+
+## Installing
+
+To install, run:
+
+```bash
+yarn add @keystonehq/bc-ur-registry
+```
+
+To set up the project for development or creating your own builds, run:
+
+```bash
+yarn install
+yarn run build
+
+# This creates a single file web-version:
+yarn run build:purescript
+```
+
+## Usage Samples:
+
+#### [CryptoOutput]Decode from cbor hex
+
+```js
+import { CryptoOutput } from '@keystonehq/bc-ur-registry';
+// decode hex from UR: "ur:crypto-output/taadmutaadeyoyaxhdclaoswaalbmwfpwekijndyfefzjtmdrtketphhktmngrlkwsfnospypsasrhhhjonnvwtsqzwljy"
+// by other BC-UR encoding or decoding library
+const hex =
+  'd90193d90132a103582102c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5';
+const cryptoOutput = CryptoOutput.fromCBOR(Buffer.from(hex, 'hex'));
+// You can know which class[CryptoOutput/CryptoHDKey/CryptoECKey/...] to use by reading ur, e.g.
+// "ur:crypto-output/taadmutaadeyoyaxhdclaoswaalbmwfpwekijndyfefzjtmdrtketphhktmngrlkwsfnospypsasrhhhjonnvwtsqzwljy"
+```
+
+#### [CryptoOutput]Construct a p2pkh ecKey
+
+
+
 
 ## Getting started
 

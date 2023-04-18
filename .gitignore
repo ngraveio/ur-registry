@@ -1,2 +1,54 @@
+# Build folder output
+build
+dist
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# nyc test coverage
+.nyc_output
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+build/Release
+dist/Release
+
+# Dependency directories
 node_modules
+
+# Editor
+.idea
+.vscode
+*.code-workspace
+
+# NPM
+.npm
+.npmrc
+
+# Yarn
+.yarnclean
+yarn-error.log
+.yarnrc.yml
+
+# Environment variables
+.env
+
+# Tmp files
+tmp
+
+tsconfig.tsbuildinfo
+
+
+#junit
+**/*junit.xml
+
+#CI Changes
+build_path
+cache
+
+# Mac
 .DS_Store
