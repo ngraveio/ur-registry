@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src/*"],
+  "compilerOptions": {
+    "sourceMap": true,
+    "composite": true,    
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "sourceRoot": "",
+  },
+  "references": [
+    {
+      "path": "../hex-string"
+    },
+  ],
+}
