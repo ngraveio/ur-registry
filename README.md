@@ -17,7 +17,7 @@ It adds support for following ur types:
 - crypto-coin-identity
 - crypto-detailed-account
 - crypto-coin
-- crypto-metadata
+- crypto-sync-metadata
 - crypto-portfolio
 
 

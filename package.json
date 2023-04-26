@@ -1,13 +1,12 @@
 {
-  "name": "monorepo-boilerplate",
+  "name": "root",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/emunhoz/monorepo-boilerplate.git",
   "author": "emunhoz <edermunhozsantos@gmail.com>",
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "ur-packages/**/*"
+    "ur-packages/**"
   ],
   "scripts": {
     "start": "lerna run --parallel start",
@@ -23,15 +22,16 @@
     "build": "lerna run build"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^12.1.4",
     "@changesets/cli": "^2.26.0",
+    "@commitlint/config-conventional": "^12.1.4",
     "commitizen": "^4.2.2",
     "commitlint-config-monorepo": "^2.0.2",
     "cz-conventional-changelog": "^3.3.0",
     "git-commit-msg": "^0.3.0",
     "git-cz": "^4.9.0",
     "husky": "^6.0.0",
-    "lerna": "^4.0.0",
+    "lerna": "^6.1.0",
+    "nx": "15.9.2",
     "prettier": "^2.7.1",
     "typescript": "^4.6.3"
   },
