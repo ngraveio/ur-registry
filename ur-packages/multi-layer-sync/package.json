@@ -22,8 +22,7 @@
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.5.4",
     "@ngrave/bc-ur-registry-crypto-coin-identity": "^0.1.0",
-    "@ngrave/bc-ur-registry-hex-string": "^0.1.0",
-    "uuid": "^9.0.0"
+    "@ngrave/bc-ur-registry-hex-string": "^0.1.0"
   },
   "devDependencies": {
     "@types/uuid": "^9.0.0",
