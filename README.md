@@ -1,4 +1,4 @@
-<h1 align="center">Blockchain Commons UR Registry</h1>
+<h1 align="center">Ngrave UR Registry</h1>
 
 <p align="center">
   <a href="http://commitizen.github.io/cz-cli/">
@@ -9,103 +9,20 @@
   </a>
 </p>
 
+## Getting started
+
+This is a monorepo repository using [yarn workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/), [Commitzen](http://commitizen.github.io/cz-cli/) and [Conventional Commits](https://conventionalcommits.org) to maintain and manage bc ur packages.
 
 This repository is an implementation of [the BC-UR Registry specification](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md) and an extension to [Keystone UR Registry](https://github.com/KeystoneHQ/ur-registry)
 
-It adds support for following ur types:
-
-- crypto-coin-identity
-- crypto-detailed-account
-- crypto-coin
-- crypto-sync-metadata
-- crypto-portfolio
-
-
-
-## Installing
-
-To install, run:
-
-```bash
-yarn add @keystonehq/bc-ur-registry
-```
-
-To set up the project for development or creating your own builds, run:
-
-```bash
-yarn install
-yarn run build
-
-# This creates a single file web-version:
-yarn run build:purescript
-```
-
-## Usage Samples:
-
-#### [CryptoOutput]Decode from cbor hex
-
-```js
-import { CryptoOutput } from '@keystonehq/bc-ur-registry';
-// decode hex from UR: "ur:crypto-output/taadmutaadeyoyaxhdclaoswaalbmwfpwekijndyfefzjtmdrtketphhktmngrlkwsfnospypsasrhhhjonnvwtsqzwljy"
-// by other BC-UR encoding or decoding library
-const hex =
-  'd90193d90132a103582102c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5';
-const cryptoOutput = CryptoOutput.fromCBOR(Buffer.from(hex, 'hex'));
-// You can know which class[CryptoOutput/CryptoHDKey/CryptoECKey/...] to use by reading ur, e.g.
-// "ur:crypto-output/taadmutaadeyoyaxhdclaoswaalbmwfpwekijndyfefzjtmdrtketphhktmngrlkwsfnospypsasrhhhjonnvwtsqzwljy"
-```
-
-#### [CryptoOutput]Construct a p2pkh ecKey
-
-
-
-
-## Getting started
-
-This is a monorepo repository using [yarn workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/), [Commitzen](http://commitizen.github.io/cz-cli/) and [Conventional Commits](https://conventionalcommits.org) to maintain and manage component versions and for documentation, we use [Storybook](https://storybook.js.org/).
-
-## 💥 Features
-
-- ⚡️ Vite 2.0 - (React 18)
-- 📖 Storybook 6
-- 📦 Yarn Workspaces
-- ✨ Host Multiple CRA Apps, Vite apps, Component Libraries & Storybooks in one monorepo
-- 🔥 Hot Reload all Apps, Components & Storybooks
-- 👨‍🔬 Test all workspaces with Eslint & Jest using one command
-
-## 🌐 Samples
-
-#### Spotifood
-Code: https://github.com/emunhoz/spotifood
-
-#### Find movies
-Code: https://github.com/emunhoz/find-movies
 
 ## 🌐 Links
 
-Storybook live demo:
-- ➡️ https://monorepo-boilerplate-storybook.vercel.app/?path=/docs/
+Blockchain Commons Research
+- ➡️ https://github.com/BlockchainCommons/Research
 
-![Storybook](docs/images/ui-components.png)
-
-Vite App live demo:
-- ➡️ https://monorepo-boilerplate-web.vercel.app/
-
-Backend server:
-- ➡️ https://monorepo-boilerplate-server.vercel.app/api/
-
-## ⚠️ Requirements
-
-- Node > v18
-- NPM > v8
-
-_In order to use semantic release with github actions, you need to add a new secrets in your github repository. This is needed in order for Semantic Release to be able to publish a new release for the Github repository._
-
-_[Create a token for Github](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line). You need to give the token repo scope permissions._
-
-_Check out this file: https://github.com/emunhoz/monorepo-boilerplate/blob/main/.github/workflows/release.yml#L32_
-
-_You need to change this value with you new secrets: `GH_MONOREPO_TOKEN`_
+Research Paper on Multi Layer Sync Protocol:
+- ➡️ https://github.com/ngraveio/Research
 
 ## 🚀 Quick start
 
@@ -117,26 +34,19 @@ Install all dependecies with:
   yarn
 ```
 
-Run the front end application [`@monorepo-boilerplate/web`](./packages/web) and back end server application [`@monorepo-boilerplate/server`](./packages/server) :
+to build
 
 ```bash
-  yarn start
+  yarn lerna run build 
 ```
-
-Storybook [`@monorepo-boilerplate/ui-components`](./packages/ui-components) :
-
-```bash
-  yarn storybook
-```
-
 ## 🗂 Monorepo structure
 
 | Package                                               | Description                                                                            |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| [`@monorepo-boilerplate/design-tokens`](./packages/design-tokens) | Design tokens (colors, typography, attributes...)                                      |
-| [`@common/**`](./packages/commons)                    | Common functions, images, lints (eslint, stylelint, prettier) and other generics setup |
-| [`@monorepo-boilerplate/ui-components`](./packages/ui-components) | React library components with [stories](https://storybook.js.org/)                     |
-| [`@monorepo-boilerplate/web`](./packages/web)                    | Front end application create with vite app                                     |
+| [`ur-packages/**`](./ur-packages)                     | Implementations of Blockchain Commons UR packages                                      |
+| [`@ngrave/crypto-coin-identity`](./ur-packages/crypto-coin-identity) | Implementation of `coin-identity` type that can represent a coin        |
+| [`@ngrave/multi-layer-sync`](./ur-packages/multi-layer-sync) | Implementations of following types: **crypto-detailed-account**, **crypto-coin**, **crypto-sync-metadata**, **crypto-portfolio**     |
+| [`@ngrave/hex-string`](./ur-packages/hex-string) | Implementation of `hex-string` type that encodes and decodes hex string        |
 
 ## 🚨 Code standard
 
@@ -150,10 +60,5 @@ Storybook [`@monorepo-boilerplate/ui-components`](./packages/ui-components) :
 | Command                 | Description                                                                                                                                                                               |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `yarn`                  | Install all dependencies                                                                                                                                                                  |
-| `yarn start`            | Run frontend/backend server                                                                                                                                                                          |
+| `yarn build`            | Build all packages                                                                                                                                                                        |
 | `yarn test:ci`          | Run all tests                                                                                                                                                                             |
-| `yarn storybook`        | Run storybook doc components                                                                                                                                                              |
-| `yarn watch:tokens`     | Hot reload design-tokens package                                                                                                                                                               |
-| `yarn watch:components` | Hot reload ui-components package                                                                                                                                                               |
-| `yarn build-app`        | Build of front app([`@monorepo-boilerplate/web`](./packages/web)) and generate a directory with all assets in the following path: `packages/web/build`                                                |
-| `yarn build-storybook`  | Build of storybook with components([`@monorepo-boilerplate/ui-components`](./packages/ui-components)) and generate a directory with all assets in the following path: `packages/ui-components/storybook-static` |
