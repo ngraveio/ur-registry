@@ -1,4 +1,4 @@
-<h1 align="center">Ngrave UR Registry</h1>
+<h1 align="center">NGRAVE UR Registry</h1>
 
 <p align="center">
   <a href="http://commitizen.github.io/cz-cli/">
@@ -26,7 +26,7 @@ Research Paper on Multi Layer Sync Protocol:
 
 ## 🚀 Quick start
 
-In the root folder run following commands _(all the below commands need to run on root folder)_:
+In the root folder run the following commands _(all the below commands need to run on root folder)_:
 
 Install all dependecies with:
 
