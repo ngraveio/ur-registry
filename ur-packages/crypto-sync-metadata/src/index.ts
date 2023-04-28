@@ -9,3 +9,6 @@ patchTags(
 );
 
 export { CryptoSyncMetadata } from "./CryptoSyncMetadata";
+export { CryptoSyncCoin } from "./CryptoSyncCoin";
+export { CryptoPortfolio } from "./CryptoPortfolio";
+export { CryptoDetailedAccount } from "./CryptoDetailedAccount";
