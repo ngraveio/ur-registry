@@ -6,5 +6,12 @@
     "outDir": "./dist",
     "sourceRoot": "",
   },
-  "references": [],
+  "references": [
+    {
+      "path": "../hex-string"
+    },
+    {
+      "path": "../crypto-coin-identity"
+    },
+  ],
 }
