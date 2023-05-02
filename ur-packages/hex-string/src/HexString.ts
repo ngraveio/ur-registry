@@ -45,8 +45,8 @@ export class HexString extends RegistryItem {
     }
   }
 
-  public getData = () => this.data;
-  public getStringData = () => this.data.toString("hex");
+  public getData = () => this.data.toString("hex");
+  public toHex = this.getData;
 
   public toDataItem = () => {
     return new DataItem(this.data, this.getRegistryType().getTag());
