@@ -75,7 +75,7 @@ Add additional information to a specific hdkey. It contains the following inform
 2. BIP44 coin type as defined in [[SLIP44]](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
 3. Subtype to define additional information to identify the coin (e.g. the chain ID for an EVM chain).
 
-The URI format is as follows: bc-coin://{subtype2.subtype1.subtype0}.{curve}/type
+The URI format is as follows: bc-coin://{subtype2.subtype1.subtype0}.{curve}/{type}
 
 Below the coinIdentity of Polygon (MATIC) as an example: "bc-coin://137.secp256k1/60"
 ```js
