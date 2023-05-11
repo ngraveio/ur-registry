@@ -39,13 +39,24 @@ export class HexString extends RegistryItem {
       if (data.length % 2 !== 0) {
         data = "0" + data;
       }
+
+      // Check if string is a valid hex strin
+      const hexRegex = /^[0-9a-fA-F]+$/; // Regular expression to match only hexadecimal characters
+      if (!hexRegex.test(data)) { 
+        throw new Error("Invalid data type for HexString, data must be valid hex string or buffer")
+      }
+
       this.data = Buffer.from(data, "hex");
-    } else {
+    } else if (data instanceof Buffer) {
       this.data = data;
+    }
+    else {
+      throw new Error("Invalid data type for HexString, data must be valid hex string or buffer")
     }
   }
 
-  public getData = () => this.data.toString("hex");
+  public getData = () => this.data.toString("hex"); // Todo: will we add 0x to start? not here
+  public getBuffer = () => this.data;
   public toHex = this.getData;
 
   public toDataItem = () => {
@@ -54,7 +65,7 @@ export class HexString extends RegistryItem {
 
   public static fromDataItem = (dataItem: DataItem) => {
     const data = dataItem.getData();
-
+    
     return new HexString(data);
   };
 
