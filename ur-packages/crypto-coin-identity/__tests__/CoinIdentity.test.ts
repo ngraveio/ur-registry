@@ -108,3 +108,49 @@ describe('CoinIdentity', () => {
     expect(coinIdentityRead.getSubType()).toStrictEqual(subType)
   })
 })
+
+describe('toURL', () => {
+  it('should convert coinIdentity to the url representation for required fields', () => {
+    const curve = EllipticCurve.secp256k1
+    const type = 60
+
+    const expectedResult = `bc-coin://${Object.values(EllipticCurve)[curve - 1]}/${type}`
+
+    const coinIdentity = new CryptoCoinIdentity(curve, type)
+    const url = coinIdentity.toURL()
+    expect(url).toBe(expectedResult)
+  })
+  it('should convert coinIdentity to the url representation for all fields', () => {
+    const curve = EllipticCurve.secp256k1
+    const type = 60
+    const chainId = '137'
+    const subTypes = [chainId]
+
+    const expectedResult = `bc-coin://${chainId}.${"secp256k1"}/${type}`
+
+    const coinIdentity = new CryptoCoinIdentity(curve, type, subTypes)
+    const url = coinIdentity.toURL()
+    expect(url).toBe(expectedResult)
+  })
+  it('creates coinIdentity from a url with subtypes', () => {
+    const uri = "bc-coin://blabla.137.secp256k1/60"
+    const coinID = CryptoCoinIdentity.fromUrl(uri);
+    expect(coinID.getCurve()).toBe("secp256k1");
+    expect(coinID.getType()).toBe(60);
+    expect(coinID.getSubType()).toStrictEqual(["blabla","137"]);
+  })
+  it('creates coinIdentity from a url with multiple subtypes', () => {
+    const uri = "bc-coin://137.secp256k1/60"
+    const coinID = CryptoCoinIdentity.fromUrl(uri);
+    expect(coinID.getCurve()).toBe("secp256k1");
+    expect(coinID.getType()).toBe(60);
+    expect(coinID.getSubType()).toStrictEqual(["137"]);
+  })
+  it('creates coinIdentity from a url without subtypes', () => {
+    const uri = "bc-coin://secp256k1/60"
+    const coinID = CryptoCoinIdentity.fromUrl(uri);
+    expect(coinID.getCurve()).toBe("secp256k1");
+    expect(coinID.getType()).toBe(60);
+    expect(coinID.getSubType()).toBe(undefined);
+  })
+})

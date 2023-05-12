@@ -119,6 +119,43 @@ console.log(ur)
     const cryptoOutput = detailedAccount.getAccount() as CryptoOutput;
 ```
 
+### [CryptoSyncMetadata] Construct the crypto sync metadata.
+
+```js
+// Create sync id
+const sync_id = Buffer.from('babe0000babe00112233445566778899', 'hex')
+
+// Create metadata
+const metadata = new CryptoSyncMetadata({ sync_id: sync_id, device: 'my-device', language_code: 'en', fw_version: '1.0.0' })
+
+const cbor = metadata.toCBOR().toString('hex')
+console.log(cbor)
+// a40150babe0000babe001122334455667788990262656e0365312e302e3004696d792d646576696365
+
+const ur = metadata.toUREncoder(1000).nextPart()
+console.log(ur)
+// ur:crypto-sync-metadata/oxadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoidihjtaxihehdmdydmdyaainjnkkdpieihkoiniaihfrzmytvl
+```
+
+### [CryptoSyncMetadata] Decode crypto sync metadata.
+
+```js
+// read ur
+const ur = metadata.toUREncoder(1000).nextPart()
+
+// decoded ur
+const ur = URRegistryDecoder.decode(urData)
+
+// get the class from the cbor data
+const cryptoSyncMetadata = CryptoSyncMetadata.fromCBOR(ur.cbor)
+
+// read its properties
+cryptoSyncMetadata.getSyncId() // babe0000babe00112233445566778899
+cryptoSyncMetadata.getLanguageCode() // en
+cryptoSyncMetadata.getDevice() // my-device
+cryptoSyncMetadata.getFirmwareVersion() // 1.0.0
+```
+
 ## [CryptoSyncCoin] create CryptoSyncCoin with 2 detailed account with tokens
 
 ```js
