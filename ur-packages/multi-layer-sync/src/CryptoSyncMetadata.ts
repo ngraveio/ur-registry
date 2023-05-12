@@ -38,6 +38,15 @@ enum Keys {
   device = 4,
 }
 
+interface ICryptoSyncMetadata {
+  sync_id?: Buffer; // Size 16
+  language_code?: keyof typeof languages; // ISO 639-1 language codes
+  fw_version?: string;
+  device?: string;
+  //[key: string]: any;
+}
+
+
 export class CryptoSyncMetadata extends RegistryItem {
   private sync_id?: Buffer; // Size 16
   private language_code?: keyof typeof languages; // ISO 639-1 language codes
@@ -45,33 +54,56 @@ export class CryptoSyncMetadata extends RegistryItem {
   private device?: string;
   // Any any
 
+  //private metadata: ICryptoSyncMetadata;
+
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_SYNC_METADATA;
 
-  constructor(
-    sync_id?: Buffer,
-    language_code?: keyof typeof languages,
-    fw_version?: string,
-    device?: string,
-  ) {
+  constructor(private metadata: ICryptoSyncMetadata = {}) {
     super();
-    this.sync_id = sync_id;
-    this.language_code = language_code;
-    this.fw_version = fw_version;
-    this.device = device;
+
+    // If language code is incorrect, throw error
+    if (metadata.language_code && !languages[metadata.language_code]) {
+      throw new Error("Invalid language code");
+    }
+
+    // sync id buffer size must be maximum 16 otherwise throw error
+    if (metadata.sync_id && metadata.sync_id.length > 16) {
+      throw new Error("Sync id buffer size must be maximum 16");
+    }
+
+    // TODO: make firmware version valid SemVer
+
   }
 
-  public getSyncId = () => this.sync_id;
-  public getLanguageCode = () => this.language_code;
-  public getFirmwareVersion = () => this.fw_version;
-  public getDevice = () => this.device;
+  public getSyncId = () => {
+    // should pad the left of the buffer with 0 if smaller than 16
+    if (this.metadata.sync_id) {
+      return Buffer.concat([
+        Buffer.alloc(16 - this.metadata.sync_id.length),
+        this.metadata.sync_id,
+      ]);
+    }
+  }
+
+  public getLanguageCode = () => this.metadata.language_code;
+  public getFirmwareVersion = () => this.metadata.fw_version;
+  public getDevice = () => this.metadata.device;
 
   public toDataItem = () => {
     const map: DataItemMap = {};
 
-    map[Keys.sync_id] = this.sync_id;
-    map[Keys.language] = this.language_code;
-    map[Keys.fw_version] = this.fw_version;
-    map[Keys.device] = this.device;
+    let padRemovedSyncId = this.metadata.sync_id;
+    // Remove starting zeros from sync id buffer
+    while (padRemovedSyncId && padRemovedSyncId[0] === 0) {
+      padRemovedSyncId = padRemovedSyncId.slice(1);
+    }
+
+    map[Keys.sync_id] = padRemovedSyncId;
+    map[Keys.language] = this.metadata.language_code;
+    map[Keys.fw_version] = this.metadata.fw_version;
+    map[Keys.device] = this.metadata.device;
+
+    // Todo add any by incrementing the map key
 
     return new DataItem(map);
   };
@@ -85,7 +117,7 @@ export class CryptoSyncMetadata extends RegistryItem {
     const device = map[Keys.device];
     // TODO: Could be anything as json. import anything
 
-    return new CryptoSyncMetadata(sync_id, language_code, fw_version, device);
+    return new CryptoSyncMetadata({sync_id, language_code, fw_version, device});
   }
 
   public static fromCBOR = (_cborPayload: Buffer) => {
