@@ -109,7 +109,7 @@ export class CryptoSyncCoin extends RegistryItem {
   public getAccounts = () => this.accounts;
   public getCryptoAccount = () => (this.accounts instanceof CryptoAccount ? this.accounts : undefined);
   public getCryptoMultiAccounts = () => (this.accounts instanceof CryptoMultiAccounts ? this.accounts : undefined);
-  public getDetailedAccounts = () => (this.accounts instanceof Array ? this.accounts : undefined);
+  public getDetailedAccounts = (): CryptoDetailedAccount[] | undefined => (this.accounts instanceof Array ? this.accounts : undefined);
   public getMasterFingerprint = () => this.masterFingerprint;
 
   public toDataItem = () => {
@@ -147,9 +147,10 @@ export class CryptoSyncCoin extends RegistryItem {
 
     const coin_id = CryptoCoinIdentity.fromDataItem(map[Keys.coin_id]);
 
-    const masterFingerprint = Buffer.alloc(4);
+    let masterFingerprint = undefined;
     const _masterFingerprint = map[Keys.masterFingerprint];
     if (_masterFingerprint) {
+      masterFingerprint = Buffer.alloc(4);
       masterFingerprint.writeUInt32BE(_masterFingerprint, 0);
     }
 
