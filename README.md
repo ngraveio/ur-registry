@@ -1,4 +1,4 @@
-<h1 align="center">Ngrave UR Registry</h1>
+<h1 align="center">NGRAVE UR Registry</h1>
 
 <p align="center">
   <a href="http://commitizen.github.io/cz-cli/">
@@ -15,18 +15,19 @@ This is a monorepo repository using [yarn workspaces](https://classic.yarnpkg.co
 
 This repository is an implementation of [the BC-UR Registry specification](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md) and an extension to [Keystone UR Registry](https://github.com/KeystoneHQ/ur-registry)
 
-
 ## 🌐 Links
 
 Blockchain Commons Research
+
 - ➡️ https://github.com/BlockchainCommons/Research
 
 Research Paper on Multi Layer Sync Protocol:
+
 - ➡️ https://github.com/ngraveio/Research
 
 ## 🚀 Quick start
 
-In the root folder run following commands _(all the below commands need to run on root folder)_:
+In the root folder run the following commands _(all the below commands need to run on root folder)_:
 
 Install all dependecies with:
 
@@ -37,16 +38,17 @@ Install all dependecies with:
 to build
 
 ```bash
-  yarn lerna run build 
+  yarn lerna run build
 ```
+
 ## 🗂 Monorepo structure
 
-| Package                                               | Description                                                                            |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| [`ur-packages/**`](./ur-packages)                     | Implementations of Blockchain Commons UR packages                                      |
-| [`@ngrave/crypto-coin-identity`](./ur-packages/crypto-coin-identity) | Implementation of `coin-identity` type that can represent a coin        |
-| [`@ngrave/multi-layer-sync`](./ur-packages/multi-layer-sync) | Implementations of following types: **crypto-detailed-account**, **crypto-coin**, **crypto-sync-metadata**, **crypto-portfolio**     |
-| [`@ngrave/hex-string`](./ur-packages/hex-string) | Implementation of `hex-string` type that encodes and decodes hex string        |
+| Package                                                              | Description                                                                                                                      |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| [`ur-packages/**`](./ur-packages)                                    | Implementations of Blockchain Commons UR packages                                                                                |
+| [`@ngrave/crypto-coin-identity`](./ur-packages/crypto-coin-identity) | Implementation of `coin-identity` type that can represent a coin                                                                 |
+| [`@ngrave/multi-layer-sync`](./ur-packages/multi-layer-sync)         | Implementations of following types: **crypto-detailed-account**, **crypto-coin**, **crypto-sync-metadata**, **crypto-portfolio** |
+| [`@ngrave/hex-string`](./ur-packages/hex-string)                     | Implementation of `hex-string` type that encodes and decodes hex string                                                          |
 
 ## 🚨 Code standard
 
@@ -57,8 +59,9 @@ to build
 
 ## ⌨️ Commands
 
-| Command                 | Description                                                                                                                                                                               |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `yarn`                  | Install all dependencies                                                                                                                                                                  |
-| `yarn build`            | Build all packages                                                                                                                                                                        |
-| `yarn test:ci`          | Run all tests                                                                                                                                                                             |
+| Command        | Description              |
+| -------------- | ------------------------ |
+| `yarn`         | Install all dependencies |
+| `yarn build`   | Build all packages       |
+| `yarn test:ci` | Run all tests            |
+

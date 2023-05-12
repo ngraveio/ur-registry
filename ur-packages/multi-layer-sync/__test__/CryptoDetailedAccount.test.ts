@@ -85,7 +85,6 @@ describe('Crypto Detailed Account', () => {
 
     const cryptoOutput = new CryptoOutput(scriptExpressions, hdkey);
 
-
     ////
     const cryptoOutputHex =
     'd90193d9012fa503582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0045820637807030d55d01f9a0cb3a7839515d796bd07706386a6eddf06cc29a65a0e2906d90130a20186182cf500f500f5021ad34db33f07d90130a1018401f480f4081a78412e3a';
