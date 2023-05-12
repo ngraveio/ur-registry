@@ -118,6 +118,8 @@ export class CryptoDetailedAccount extends RegistryItem {
   }
 
   public getAccount = () => this.account;
+  public getCryptoHDKey = () => { return this.account instanceof CryptoHDKey ? this.account : undefined; };
+  public getCryptoOutput = () => { return this.account instanceof CryptoOutput ? this.account : undefined; };
   public getTokenIds = () => {
     if (!this.tokenIds) return undefined;
 
