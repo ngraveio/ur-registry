@@ -2,7 +2,7 @@ import { URRegistryDecoder } from "@keystonehq/bc-ur-registry";
 import { CryptoSyncMetadata } from "../src"
 
 describe("CryptoSyncMetadata", () => {
-
+    
     it("should encode/decode only with empty values", () => {
         // New metadata
         const metadata = new CryptoSyncMetadata();
