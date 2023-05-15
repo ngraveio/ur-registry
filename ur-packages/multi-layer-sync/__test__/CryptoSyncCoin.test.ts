@@ -44,7 +44,7 @@ describe('Crypto Sync Coin with DetailedAccount', () => {
   });
 
 
-  it('should generate / decode CryptoSyncCoin with 1 detailed account', () => {
+  it('should generate / decode CryptoSyncCoin with 1 detailed account with HDKEY', () => {
     // Create a coin identity
     const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
 
@@ -101,6 +101,66 @@ describe('Crypto Sync Coin with DetailedAccount', () => {
     expect(decodedCryptoSyncCoin.getCryptoAccount()).toEqual(cryptoSyncCoin.getCryptoAccount());
     expect(decodedCryptoSyncCoin.getCryptoMultiAccounts()).toEqual(cryptoSyncCoin.getCryptoMultiAccounts());
   });
+
+  it('should generate / decode CryptoSyncCoin with 1 detailed account with CryptoOutput with HDKey', () => {
+    // Create a coin identity
+    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+
+    // Create a HDKey
+    const originKeypath = new CryptoKeypath(
+      [
+        new PathComponent({ index: 60, hardened: true }),
+        new PathComponent({ index: 0, hardened: true }),
+        new PathComponent({ index: 0, hardened: true }),
+        new PathComponent({ index: 0, hardened: false }),
+        new PathComponent({ index: 1, hardened: false }),      
+      ],
+      Buffer.from('d34db33f', 'hex'),
+    );
+    const cryptoHDKey = new CryptoHDKey({
+      isMaster: false,
+      key: Buffer.from(
+        '02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0',
+        'hex',
+      ),
+      origin: originKeypath,
+      parentFingerprint: Buffer.from('78412e3a', 'hex'),
+    });
+
+    const cryptoOutput = new CryptoOutput([ScriptExpressions.PUBLIC_KEY_HASH], cryptoHDKey);
+    const detailedAccount = new CryptoDetailedAccount(cryptoOutput);
+
+    // Create sync coin
+    const cryptoSyncCoin = new CryptoSyncCoin(coinIdentity, [detailedAccount]);
+
+    // Test values
+    expect(cryptoSyncCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
+    expect(cryptoSyncCoin.getDetailedAccounts()?.[0].getCryptoOutput()?.getHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
+
+    // Expect other fields to be same undefined
+    expect(cryptoSyncCoin.getMasterFingerprint()).toBeUndefined();
+    expect(cryptoSyncCoin.getCryptoAccount()).toBeUndefined();
+    expect(cryptoSyncCoin.getCryptoMultiAccounts()).toBeUndefined(); 
+
+    // Encode to CBOR
+    const cbor = cryptoSyncCoin.toCBOR().toString('hex'); // a201d90579a3010802183c03f70281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a
+    const ur = cryptoSyncCoin.toUREncoder(1000).nextPart(); // ur:crypto-sync-coin/oeadtaahkkotadayaocsfnaxylaolytaahknoyadtaaddlotaxhdclaotdqdinaeesjzmolfzsbbidlpiyhddlcximhltirfsptlvsmohscsamsgzoaxadwtamtaaddyoeadlecsfnykaeykaeykaewkadwkaocytegtqdfhaycyksfpdmftfxrekesp
+
+    // console.log(cbor, ur);
+
+    // Now decode the CBOR
+    const decodedCryptoSyncCoin = CryptoSyncCoin.fromCBOR(Buffer.from(cbor, 'hex'));
+
+    // Test values
+    expect(decodedCryptoSyncCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
+    expect(decodedCryptoSyncCoin.getDetailedAccounts()?.[0].getCryptoOutput()?.getHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
+
+    // Expect other fields to be same undefined
+    expect(decodedCryptoSyncCoin.getMasterFingerprint()).toEqual(cryptoSyncCoin.getMasterFingerprint());
+    expect(decodedCryptoSyncCoin.getCryptoAccount()).toEqual(cryptoSyncCoin.getCryptoAccount());
+    expect(decodedCryptoSyncCoin.getCryptoMultiAccounts()).toEqual(cryptoSyncCoin.getCryptoMultiAccounts());    
+
+  });  
 
   it('should generate CryptoSyncCoin with 2 detailed account', () => {
     // Create a coin identity
