@@ -5,7 +5,7 @@ import {
     DataItemMap,
   } from "@keystonehq/bc-ur-registry";
 import { ExtendedRegistryTypes } from "./RegistryType";
-import { CryptoSyncCoin } from "./CryptoSyncCoin"
+import { CryptoPortfolioCoin } from "./CryptoPortfolioCoin"
 import { CryptoSyncMetadata } from "./CryptoSyncMetadata";
 
 const { RegistryTypes, decodeToDataItem } = extend;
@@ -31,13 +31,13 @@ enum Keys {
 }
 
 export class CryptoPortfolio extends RegistryItem {
-  private coins: CryptoSyncCoin[];
+  private coins: CryptoPortfolioCoin[];
   private metadata?: CryptoSyncMetadata;
 
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_PORTFOLIO;
 
   constructor(
-    coins: CryptoSyncCoin[],
+    coins: CryptoPortfolioCoin[],
     metadata?: CryptoSyncMetadata
   ) {
     super();
@@ -46,9 +46,9 @@ export class CryptoPortfolio extends RegistryItem {
       throw new Error("metadata must be of type CryptoSyncMetadata");
     }
 
-    // Check if coins is array if so check if every element is instance of CryptoSyncCoin
-    if (!Array.isArray(coins) || !coins.every((coin) => coin instanceof CryptoSyncCoin)) {
-      throw new Error("coins must be of type CryptoSyncCoin[]");
+    // Check if coins is array if so check if every element is instance of CryptoPortfolioCoin
+    if (!Array.isArray(coins) || !coins.every((coin) => coin instanceof CryptoPortfolioCoin)) {
+      throw new Error("coins must be of type CryptoPortfolioCoin[]");
     }
 
     this.coins = coins;
@@ -84,7 +84,7 @@ export class CryptoPortfolio extends RegistryItem {
 
     // Get coins
     const coins = map[Keys.coins] as DataItem[];
-    const coinsParsed = coins.map((coin) => CryptoSyncCoin.fromDataItem(coin));
+    const coinsParsed = coins.map((coin) => CryptoPortfolioCoin.fromDataItem(coin));
 
     // Get master_fingerprint
 

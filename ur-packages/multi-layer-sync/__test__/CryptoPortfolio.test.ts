@@ -1,6 +1,6 @@
 import { CryptoHDKey, CryptoOutput, URRegistryDecoder, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
 
-import { CryptoDetailedAccount, CryptoSyncCoin, CryptoPortfolio, CryptoSyncMetadata} from '../src';
+import { CryptoDetailedAccount, CryptoPortfolioCoin, CryptoPortfolio, CryptoSyncMetadata} from '../src';
 import { HexString } from '@ngrave/bc-ur-registry-hex-string';
 import { CryptoCoinIdentity, EllipticCurve } from '@ngrave/bc-ur-registry-crypto-coin-identity';
 import { ScriptExpression } from '@keystonehq/bc-ur-registry/dist/ScriptExpression';
@@ -66,10 +66,10 @@ describe('Crypto Portfolio', () => {
 
     // Sync Coin CBOR with 2 accounts
     const syncCoinCbor = 'a201d90579a3010802183c03f70281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a';
-    const cryptoSyncCoin = CryptoSyncCoin.fromCBOR(Buffer.from(syncCoinCbor, 'hex'));
+    const cryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(syncCoinCbor, 'hex'));
 
     // Create a CryptoPortfolio
-    const cryptoPortfolio = new CryptoPortfolio([cryptoSyncCoin]);
+    const cryptoPortfolio = new CryptoPortfolio([cryptoPortfolioCoin]);
 
     // Expect coin array to be 1
     expect(cryptoPortfolio.getCoins().length).toEqual(1);
@@ -127,10 +127,10 @@ describe('Crypto Portfolio', () => {
     const detailedAccountETH = new CryptoDetailedAccount(cryptoHDKeyEth, tokenIdsETH);
 
     // Add it to coin
-    const cryptoSyncCoinETH = new CryptoSyncCoin(coinIdentityEth, [detailedAccountETH]);
+    const CryptoPortfolioCoinETH = new CryptoPortfolioCoin(coinIdentityEth, [detailedAccountETH]);
 
     // console.log('detailedETH', detailedAccountETH.toCBOR().toString('hex')); //a201d9012fa203582102c00551a9b96c332410adaaed426dd0171311b8f5b6ebada246a6be8c24cac1c506d90130a1018a182cf5183cf500f500f400f40282d9010754dac17f958d2ee523a2206206994597c13d831ec7d901075495ad61b0a150d79219dcf64e1e6cc01f0b64c4ce
-    // console.log('syncCoinETH', cryptoSyncCoinETH.toCBOR().toString('hex')); //  a201d90579a3010802183c03f70281d9057aa201d9012fa203582102c00551a9b96c332410adaaed426dd0171311b8f5b6ebada246a6be8c24cac1c506d90130a1018a182cf5183cf500f500f400f40282d9010754dac17f958d2ee523a2206206994597c13d831ec7d901075495ad61b0a150d79219dcf64e1e6cc01f0b64c4ce
+    // console.log('syncCoinETH', CryptoPortfolioCoinETH.toCBOR().toString('hex')); //  a201d90579a3010802183c03f70281d9057aa201d9012fa203582102c00551a9b96c332410adaaed426dd0171311b8f5b6ebada246a6be8c24cac1c506d90130a1018a182cf5183cf500f500f400f40282d9010754dac17f958d2ee523a2206206994597c13d831ec7d901075495ad61b0a150d79219dcf64e1e6cc01f0b64c4ce
 
     /////// Solana
 
@@ -161,13 +161,13 @@ describe('Crypto Portfolio', () => {
     const detailedAccount = new CryptoDetailedAccount(cryptoHDKey, solanaTokens);
 
     // Create sync coin with ethereum XPUB and solana tokens
-    const cryptoSyncCoin = new CryptoSyncCoin(coinIdentitySol, [detailedAccount]);
+    const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentitySol, [detailedAccount]);
 
     // console.log('detailed Sol', detailedAccount.toCBOR().toString('hex')); // a201d9012fa203582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a10186182cf51901f5f500f50282782c3769354b4b735832776569546b7279376a41345a7753755847687335654a42456a5938765678523470665278782c45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a77795444743176
-    // console.log('syncCoin Sol', cryptoSyncCoin.toCBOR().toString('hex')); // a201d90579a30108021901f503f70281d9057aa201d9012fa203582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a10186182cf51901f5f500f50282782c3769354b4b735832776569546b7279376a41345a7753755847687335654a42456a5938765678523470665278782c45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a77795444743176
+    // console.log('syncCoin Sol', CryptoPortfolioCoin.toCBOR().toString('hex')); // a201d90579a30108021901f503f70281d9057aa201d9012fa203582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a10186182cf51901f5f500f50282782c3769354b4b735832776569546b7279376a41345a7753755847687335654a42456a5938765678523470665278782c45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a77795444743176
 
     // Create a CryptoPortfolio
-    const cryptoPortfolio = new CryptoPortfolio([cryptoSyncCoinETH, cryptoSyncCoin]);
+    const cryptoPortfolio = new CryptoPortfolio([CryptoPortfolioCoinETH, cryptoPortfolioCoin]);
 
     // console.log('portfolio', cryptoPortfolio.toCBOR().toString('hex')); // a10182d9057ca201d90579a3010802183c03f70281d9057aa201d9012fa203582102c00551a9b96c332410adaaed426dd0171311b8f5b6ebada246a6be8c24cac1c506d90130a1018a182cf5183cf500f500f400f40282d9010754dac17f958d2ee523a2206206994597c13d831ec7d901075495ad61b0a150d79219dcf64e1e6cc01f0b64c4ced9057ca201d90579a30108021901f503f70281d9057aa201d9012fa203582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a10186182cf51901f5f500f50282782c3769354b4b735832776569546b7279376a41345a7753755847687335654a42456a5938765678523470665278782c45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a77795444743176
 
@@ -291,10 +291,10 @@ describe('Crypto Portfolio', () => {
 
 
     // Create the coins
-    const cryptoCoinEth = new CryptoSyncCoin(coinIdEth, [accountEth]);
-    const cryptoCoinSol = new CryptoSyncCoin(coinIdSol, [accountSol]);
-    const cryptoCoinMatic = new CryptoSyncCoin(coinIdMatic, [accountMatic]);
-    const cryptoCoinBtc = new CryptoSyncCoin(coinIdBtc, [accountBtc]);
+    const cryptoCoinEth = new CryptoPortfolioCoin(coinIdEth, [accountEth]);
+    const cryptoCoinSol = new CryptoPortfolioCoin(coinIdSol, [accountSol]);
+    const cryptoCoinMatic = new CryptoPortfolioCoin(coinIdMatic, [accountMatic]);
+    const cryptoCoinBtc = new CryptoPortfolioCoin(coinIdBtc, [accountBtc]);
 
     // Metadata
     const metadata = new CryptoSyncMetadata({
