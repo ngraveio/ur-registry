@@ -6,7 +6,7 @@ import {
   } from "@keystonehq/bc-ur-registry";
 import { ExtendedRegistryTypes } from "./RegistryType";
 import { CryptoPortfolioCoin } from "./CryptoPortfolioCoin"
-import { CryptoSyncMetadata } from "./CryptoSyncMetadata";
+import { CryptoPortfolioMetadata } from "./CryptoPortfolioMetadata";
 
 const { RegistryTypes, decodeToDataItem } = extend;
 
@@ -17,7 +17,7 @@ const { RegistryTypes, decodeToDataItem } = extend;
  * sync = {
  * 		coins: [+ #6.1402(crypto-portfolio-coin)]           ; Multiple coins with their respective accounts and coin identities
  * 		? master-fingerprint: uint32,             ; Master fingerprint (fingerprint for the master public key as per BIP32 derived on secp256k1 curve)
- * 		? metadata: #6.1403(crypto-sync-metadata) ; Optional wallet metadata
+ * 		? metadata: #6.1403(crypto-portfolio-metadata) ; Optional wallet metadata
  * }
  * 
  * coins = 1
@@ -32,18 +32,18 @@ enum Keys {
 
 export class CryptoPortfolio extends RegistryItem {
   private coins: CryptoPortfolioCoin[];
-  private metadata?: CryptoSyncMetadata;
+  private metadata?: CryptoPortfolioMetadata;
 
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_PORTFOLIO;
 
   constructor(
     coins: CryptoPortfolioCoin[],
-    metadata?: CryptoSyncMetadata
+    metadata?: CryptoPortfolioMetadata
   ) {
     super();
     // Test metadata
-    if (metadata && !(metadata instanceof CryptoSyncMetadata)) {
-      throw new Error("metadata must be of type CryptoSyncMetadata");
+    if (metadata && !(metadata instanceof CryptoPortfolioMetadata)) {
+      throw new Error("metadata must be of type CryptoPortfolioMetadata");
     }
 
     // Check if coins is array if so check if every element is instance of CryptoPortfolioCoin
@@ -80,7 +80,7 @@ export class CryptoPortfolio extends RegistryItem {
 
   public static fromDataItem = (dataItem: DataItem) => {
     const map = dataItem.getData();
-    let metadata: CryptoSyncMetadata | undefined = undefined;
+    let metadata: CryptoPortfolioMetadata | undefined = undefined;
 
     // Get coins
     const coins = map[Keys.coins] as DataItem[];
@@ -89,7 +89,7 @@ export class CryptoPortfolio extends RegistryItem {
     // Get master_fingerprint
 
     // Get metadata
-    if(map[Keys.metadata]) metadata = CryptoSyncMetadata.fromDataItem(map[Keys.metadata] as DataItem);
+    if(map[Keys.metadata]) metadata = CryptoPortfolioMetadata.fromDataItem(map[Keys.metadata] as DataItem);
 
     return new CryptoPortfolio(coinsParsed, metadata);
   }

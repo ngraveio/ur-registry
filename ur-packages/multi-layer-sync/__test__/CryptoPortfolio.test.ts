@@ -1,6 +1,6 @@
 import { CryptoHDKey, CryptoOutput, URRegistryDecoder, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
 
-import { CryptoDetailedAccount, CryptoPortfolioCoin, CryptoPortfolio, CryptoSyncMetadata} from '../src';
+import { CryptoDetailedAccount, CryptoPortfolioCoin, CryptoPortfolio, CryptoPortfolioMetadata} from '../src';
 import { HexString } from '@ngrave/bc-ur-registry-hex-string';
 import { CryptoCoinIdentity, EllipticCurve } from '@ngrave/bc-ur-registry-crypto-coin-identity';
 import { ScriptExpression } from '@keystonehq/bc-ur-registry/dist/ScriptExpression';
@@ -31,7 +31,7 @@ describe('Crypto Portfolio', () => {
 
   it('should generate / decode CryptoPortfolio with empty coin array and MetaData', () => {
     // Metadata
-    const metadata = new CryptoSyncMetadata({
+    const metadata = new CryptoPortfolioMetadata({
       sync_id: Buffer.from('123456781234567802D9044FA3011A71', 'hex'),
       language_code: 'en',
       fw_version: '1.2.1-1.rc',
@@ -297,7 +297,7 @@ describe('Crypto Portfolio', () => {
     const cryptoCoinBtc = new CryptoPortfolioCoin(coinIdBtc, [accountBtc]);
 
     // Metadata
-    const metadata = new CryptoSyncMetadata({
+    const metadata = new CryptoPortfolioMetadata({
       sync_id: Buffer.from('123456781234567802D9044FA3011A71', 'hex'),
       language_code: 'en',
       fw_version: '1.2.1-1.rc',
