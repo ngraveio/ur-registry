@@ -3,7 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-        "@ngrave/*": [
+        "@ngraveio/*": [
+            "*",
             "ur-packages/*/src",
         ]
     }

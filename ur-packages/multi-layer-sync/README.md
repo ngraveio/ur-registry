@@ -18,11 +18,11 @@ This repository is an extension of [bc-ur-registry](https://github.com/KeystoneH
 To install, run:
 
 ```bash
-yarn add @ngrave/bc-ur-multi-layer-sync
+yarn add @ngraveio/bc-ur-multi-layer-sync
 ```
 
 ```bash
-npm install --save @ngrave/bc-ur-multi-layer-sync
+npm install --save @ngraveio/bc-ur-multi-layer-sync
 ```
 
 ## Examples:

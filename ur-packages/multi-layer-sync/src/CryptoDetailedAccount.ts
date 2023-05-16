@@ -1,6 +1,6 @@
 import { extend, DataItem, RegistryItem, DataItemMap, CryptoHDKey, CryptoOutput } from '@keystonehq/bc-ur-registry';
 import { ExtendedRegistryTypes } from './RegistryType';
-import { HexString } from '@ngrave/bc-ur-registry-hex-string';
+import { HexString } from '@ngraveio/bc-ur-registry-hex-string';
 
 const { RegistryTypes, decodeToDataItem } = extend;
 

@@ -50,7 +50,7 @@ enum Keys {
   masterFingerprint = 3,
 }
 
-export class CryptoPortfolioCoin extends RegistryItem {
+export class CryptoSyncCoin extends RegistryItem {
   private coin_id: CryptoCoinIdentity;
   private accounts: accounts_exp;
   private masterFingerprint?: Buffer; // masterFingerprint.readUInt32BE(0);
@@ -67,7 +67,7 @@ export class CryptoPortfolioCoin extends RegistryItem {
     // TODO: add checks for edwards coins thats paths must be all hardened
 
     // Be sure that accounts is correct type
-    CryptoPortfolioCoin.checkInputs(accounts, master_fingerprint);
+    CryptoSyncCoin.checkInputs(accounts, master_fingerprint);
 
     this.coin_id = coin_id;
     this.accounts = accounts;
@@ -177,11 +177,11 @@ export class CryptoPortfolioCoin extends RegistryItem {
       }
     }
 
-    return new CryptoPortfolioCoin(coin_id, accountsParsed, masterFingerprint);
+    return new CryptoSyncCoin(coin_id, accountsParsed, masterFingerprint);
   };
 
   public static fromCBOR = (_cborPayload: Buffer) => {
     const dataItem = decodeToDataItem(_cborPayload);
-    return CryptoPortfolioCoin.fromDataItem(dataItem);
+    return CryptoSyncCoin.fromDataItem(dataItem);
   };
 }

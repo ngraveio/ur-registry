@@ -2,11 +2,11 @@
   "name": "root",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "emunhoz <edermunhozsantos@gmail.com>",
+  "author": "Irfan Bilaloglu, Pieter Uyttersprot <irfanbilaloglu@gmail.com, pieter.u@hotmail.com>",
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "ur-packages/**"
+    "ur-packages/*"
   ],
   "scripts": {
     "start": "lerna run --parallel start",
