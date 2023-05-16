@@ -1,0 +1,18 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 0.2.0 (2023-05-16)
+
+
+### Bug Fixes
+
+* :ambulance: fix monorepo tsc builds and references ([958de67](https://github.com/ngraveio/ur-registry/commit/958de6779f932820bf37a2781b54ed02cc4d4387))
+* **coinIdentitiy:** export EllipticCurve ([d1f5390](https://github.com/ngraveio/ur-registry/commit/d1f53904dc2d465865699167c941c56d2559a8c0))
+* **coinIdentity:** remove console logs ([58b0c1a](https://github.com/ngraveio/ur-registry/commit/58b0c1ad2de0771b5037e3caba296aa50c8360c1))
+
+
+### Features
+
+* **coinId:** add initial support for crypto coin identity ([2a67a79](https://github.com/ngraveio/ur-registry/commit/2a67a79371509f2d7202ea97a54e4648b93870b6))
