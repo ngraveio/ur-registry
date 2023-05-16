@@ -114,9 +114,7 @@ export class CryptoCoinIdentity extends RegistryItem {
 
   public static fromUrl = (url: string) => {
     const parts = url.split('://')[1].split('/')
-    console.log('parts', parts)
     const subtypeParts = parts[0].split('.')
-    console.log('subtypeParts', subtypeParts)
     if (subtypeParts.length > 1) {
       const curve = subtypeParts[subtypeParts.length -1]
       const type = +parts[1]

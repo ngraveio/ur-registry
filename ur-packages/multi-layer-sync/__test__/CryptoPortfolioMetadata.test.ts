@@ -1,11 +1,11 @@
 import { URRegistryDecoder } from "@keystonehq/bc-ur-registry";
-import { CryptoSyncMetadata } from "../src"
+import { CryptoPortfolioMetadata } from "../src"
 
-describe("CryptoSyncMetadata", () => {
+describe("CryptoPortfolioMetadata", () => {
     
     it("should encode/decode only with empty values", () => {
         // New metadata
-        const metadata = new CryptoSyncMetadata();
+        const metadata = new CryptoPortfolioMetadata();
 
         expect(metadata.getSyncId()).toBe(undefined);
         expect(metadata.getLanguageCode()).toBe(undefined);
@@ -13,11 +13,11 @@ describe("CryptoSyncMetadata", () => {
         expect(metadata.getFirmwareVersion()).toBe(undefined);
 
         //console.log(metadata.toCBOR().toString("hex")); // a401f702f703f704f7
-        //console.log(metadata.toUREncoder(1000).nextPart()); // ur:crypto-sync-metadata/oxadylaoylaxylaaylhnihlnse
+        //console.log(metadata.toUREncoder(1000).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoylaxylaaylhnihlnse
 
         const urData = metadata.toUREncoder(1000).nextPart();
         const ur = URRegistryDecoder.decode(urData);
-        const metadataRead = CryptoSyncMetadata.fromCBOR(ur.cbor);
+        const metadataRead = CryptoPortfolioMetadata.fromCBOR(ur.cbor);
 
         expect(metadataRead.getSyncId()).toBe(undefined);
         expect(metadataRead.getLanguageCode()).toBe(undefined);
@@ -31,7 +31,7 @@ describe("CryptoSyncMetadata", () => {
         const sync_id = Buffer.from("babe0000babe00112233445566778899", "hex");
 
         // New metadata
-        const metadata = new CryptoSyncMetadata({"sync_id": sync_id, "device": "my-device", "language_code": "en", "fw_version": "1.0.0"});
+        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id, "device": "my-device", "language_code": "en", "fw_version": "1.0.0"});
 
         expect(metadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
         expect(metadata.getLanguageCode()).toBe("en");
@@ -41,7 +41,7 @@ describe("CryptoSyncMetadata", () => {
 
         const urData = metadata.toUREncoder(1000).nextPart();
         const ur = URRegistryDecoder.decode(urData);
-        const metadataRead = CryptoSyncMetadata.fromCBOR(ur.cbor);
+        const metadataRead = CryptoPortfolioMetadata.fromCBOR(ur.cbor);
 
         expect(metadataRead.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
         expect(metadataRead.getLanguageCode()).toBe("en");
@@ -51,13 +51,13 @@ describe("CryptoSyncMetadata", () => {
 
 });
 
-describe("CryptoSyncMetadata sync_id", () => {
+describe("CryptoPortfolioMetadata sync_id", () => {
     it("should encode / decode with 16 byte lenght sync id", () => {
         // Sync id
         const sync_id = Buffer.from("babe0000babe00112233445566778899", "hex");
 
         // New metadata
-        const metadata = new CryptoSyncMetadata({"sync_id": sync_id});
+        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id});
 
         expect(metadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
 
@@ -66,7 +66,7 @@ describe("CryptoSyncMetadata sync_id", () => {
 
         const urData = metadata.toUREncoder(100).nextPart();
         const ur = URRegistryDecoder.decode(urData);
-        const metadata2 = CryptoSyncMetadata.fromCBOR(ur.cbor);
+        const metadata2 = CryptoPortfolioMetadata.fromCBOR(ur.cbor);
 
         expect(metadata2.getSyncId()?.toString('hex')).toBe(metadata.getSyncId()?.toString('hex'));
     });
@@ -76,12 +76,12 @@ describe("CryptoSyncMetadata sync_id", () => {
         const sync_id = Buffer.from("babe", "hex");
 
         // New metadata
-        const metadata = new CryptoSyncMetadata({"sync_id": sync_id});
+        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id});
 
         expect(metadata.getSyncId()?.toString('hex')).toBe("0000000000000000000000000000babe");
 
         // console.log(metadata.toCBOR().toString("hex")); // a40150babe0000babe0011223344556677889902f703f704f7
-        // console.log(metadata.toUREncoder(100).nextPart()); // ur:crypto-sync-metadata/oxadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoylaxylaaylwzeyyafw
+        // console.log(metadata.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoylaxylaaylwzeyyafw
     });
 
     it("should remove starting zeros when encoding", () => {
@@ -89,25 +89,25 @@ describe("CryptoSyncMetadata sync_id", () => {
         const sync_id = Buffer.from("0000000000000000000000000000babe", "hex");
 
         // New metadata
-        const metadata = new CryptoSyncMetadata({"sync_id": sync_id});
+        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id});
         // console.log(metadata.toCBOR().toString("hex")); // a40142babe02f703f704f7
-        // console.log(metadata.toUREncoder(100).nextPart()); // ur:crypto-sync-metadata/oxadfwrdrnaoylaxylaaylgdpllsgt
+        // console.log(metadata.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadfwrdrnaoylaxylaaylgdpllsgt
 
         expect(metadata.toCBOR().toString('hex')).toEqual("a40142babe02f703f704f7");
-        expect(metadata.toUREncoder(100).nextPart()).toEqual("ur:crypto-sync-metadata/oxadfwrdrnaoylaxylaaylgdpllsgt");
+        expect(metadata.toUREncoder(100).nextPart()).toEqual("ur:crypto-portfolio-metadata/oxadfwrdrnaoylaxylaaylgdpllsgt");
     });
 
 });
 
 
-describe("CryptoSyncMetadata language codes", () => {
+describe("CryptoPortfolioMetadata language codes", () => {
 
     it("should encode with correct language codes", () => {
         
-        const metadata_en = new CryptoSyncMetadata({"language_code": "en"});
-        const metadata_tr = new CryptoSyncMetadata({"language_code": "tr"});
-        const metadata_fr = new CryptoSyncMetadata({"language_code": "fr"});
-        const metadata_nl = new CryptoSyncMetadata({"language_code": "nl"});
+        const metadata_en = new CryptoPortfolioMetadata({"language_code": "en"});
+        const metadata_tr = new CryptoPortfolioMetadata({"language_code": "tr"});
+        const metadata_fr = new CryptoPortfolioMetadata({"language_code": "fr"});
+        const metadata_nl = new CryptoPortfolioMetadata({"language_code": "nl"});
 
         expect(metadata_en.getLanguageCode()).toBe("en"); 
         expect(metadata_tr.getLanguageCode()).toBe("tr"); 
@@ -145,55 +145,55 @@ describe("CryptoSyncMetadata language codes", () => {
 
         // console.log("UR");
 
-        // console.log(metadata_en.toUREncoder(100).nextPart()); // ur:crypto-sync-metadata/oxadylaoidihjtaxylaaylwzsgtpfh
-        // console.log(metadata_tr.toUREncoder(100).nextPart()); // ur:crypto-sync-metadata/oxadylaoidjyjpaxylaaylnegdjklf
-        // console.log(metadata_fr.toUREncoder(100).nextPart()); // ur:crypto-sync-metadata/oxadylaoidiyjpaxylaaylttgltibg
-        // console.log(metadata_nl.toUREncoder(100).nextPart()); // ur:crypto-sync-metadata/oxadylaoidjtjzaxylaaylvosnkgns
+        // console.log(metadata_en.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidihjtaxylaaylwzsgtpfh
+        // console.log(metadata_tr.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidjyjpaxylaaylnegdjklf
+        // console.log(metadata_fr.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidiyjpaxylaaylttgltibg
+        // console.log(metadata_nl.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidjtjzaxylaaylvosnkgns
 
-        expect(metadata_en.toUREncoder(100).nextPart()).toBe("ur:crypto-sync-metadata/oxadylaoidihjtaxylaaylwzsgtpfh");
-        expect(metadata_tr.toUREncoder(100).nextPart()).toBe("ur:crypto-sync-metadata/oxadylaoidjyjpaxylaaylnegdjklf");
-        expect(metadata_fr.toUREncoder(100).nextPart()).toBe("ur:crypto-sync-metadata/oxadylaoidiyjpaxylaaylttgltibg");
-        expect(metadata_nl.toUREncoder(100).nextPart()).toBe("ur:crypto-sync-metadata/oxadylaoidjtjzaxylaaylvosnkgns");
+        expect(metadata_en.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidihjtaxylaaylwzsgtpfh");
+        expect(metadata_tr.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidjyjpaxylaaylnegdjklf");
+        expect(metadata_fr.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidiyjpaxylaaylttgltibg");
+        expect(metadata_nl.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidjtjzaxylaaylvosnkgns");
     });
     
 
     it("should decode CBOR with correct language codes", () => {
-        expect(CryptoSyncMetadata.fromCBOR(Buffer.from("a401f70262656e03f704f7", "hex")).getLanguageCode()).toBe("en");
-        expect(CryptoSyncMetadata.fromCBOR(Buffer.from("a401f70262747203f704f7", "hex")).getLanguageCode()).toBe("tr");
-        expect(CryptoSyncMetadata.fromCBOR(Buffer.from("a401f70262667203f704f7", "hex")).getLanguageCode()).toBe("fr");
-        expect(CryptoSyncMetadata.fromCBOR(Buffer.from("a401f702626e6c03f704f7", "hex")).getLanguageCode()).toBe("nl");
+        expect(CryptoPortfolioMetadata.fromCBOR(Buffer.from("a401f70262656e03f704f7", "hex")).getLanguageCode()).toBe("en");
+        expect(CryptoPortfolioMetadata.fromCBOR(Buffer.from("a401f70262747203f704f7", "hex")).getLanguageCode()).toBe("tr");
+        expect(CryptoPortfolioMetadata.fromCBOR(Buffer.from("a401f70262667203f704f7", "hex")).getLanguageCode()).toBe("fr");
+        expect(CryptoPortfolioMetadata.fromCBOR(Buffer.from("a401f702626e6c03f704f7", "hex")).getLanguageCode()).toBe("nl");
     });
 
     it("should decode UR with correct language codes", () => {
 
-        const decodedEn = URRegistryDecoder.decode("ur:crypto-sync-metadata/oxadylaoidihjtaxylaaylwzsgtpfh");
-        expect(CryptoSyncMetadata.fromCBOR(decodedEn.cbor).getLanguageCode()).toBe("en");
+        const decodedEn = URRegistryDecoder.decode("ur:crypto-portfolio-metadata/oxadylaoidihjtaxylaaylwzsgtpfh");
+        expect(CryptoPortfolioMetadata.fromCBOR(decodedEn.cbor).getLanguageCode()).toBe("en");
 
-        const decodedTr = URRegistryDecoder.decode("ur:crypto-sync-metadata/oxadylaoidjyjpaxylaaylnegdjklf");
-        expect(CryptoSyncMetadata.fromCBOR(decodedTr.cbor).getLanguageCode()).toBe("tr");
+        const decodedTr = URRegistryDecoder.decode("ur:crypto-portfolio-metadata/oxadylaoidjyjpaxylaaylnegdjklf");
+        expect(CryptoPortfolioMetadata.fromCBOR(decodedTr.cbor).getLanguageCode()).toBe("tr");
 
-        const decodedFr = URRegistryDecoder.decode("ur:crypto-sync-metadata/oxadylaoidiyjpaxylaaylttgltibg");
-        expect(CryptoSyncMetadata.fromCBOR(decodedFr.cbor).getLanguageCode()).toBe("fr");
+        const decodedFr = URRegistryDecoder.decode("ur:crypto-portfolio-metadata/oxadylaoidiyjpaxylaaylttgltibg");
+        expect(CryptoPortfolioMetadata.fromCBOR(decodedFr.cbor).getLanguageCode()).toBe("fr");
 
-        const decodedNl = URRegistryDecoder.decode("ur:crypto-sync-metadata/oxadylaoidjtjzaxylaaylvosnkgns");
-        expect(CryptoSyncMetadata.fromCBOR(decodedNl.cbor).getLanguageCode()).toBe("nl");
+        const decodedNl = URRegistryDecoder.decode("ur:crypto-portfolio-metadata/oxadylaoidjtjzaxylaaylvosnkgns");
+        expect(CryptoPortfolioMetadata.fromCBOR(decodedNl.cbor).getLanguageCode()).toBe("nl");
 
     });
 
     it("should throw error encoding with incorrect language codes", () => {
         expect(() => {
             //@ts-ignore
-            const metadata = new CryptoSyncMetadata({"language_code": "xx"});
+            const metadata = new CryptoPortfolioMetadata({"language_code": "xx"});
         }).toThrowError("Invalid language code");
         expect(() => {
             //@ts-ignore
-            const metadata = new CryptoSyncMetadata({"language_code": "xyx"});
+            const metadata = new CryptoPortfolioMetadata({"language_code": "xyx"});
         }).toThrowError("Invalid language code");
     });
     
     it("should throw error decoding CBOR with incorrect language codes", () => {
         expect(() => {
-            CryptoSyncMetadata.fromCBOR(Buffer.from("a401f7026378797a03f704f7", "hex"));
+            CryptoPortfolioMetadata.fromCBOR(Buffer.from("a401f7026378797a03f704f7", "hex"));
         }).toThrowError("Invalid language code");
     });
      

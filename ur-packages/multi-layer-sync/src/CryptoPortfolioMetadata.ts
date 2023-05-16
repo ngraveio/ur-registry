@@ -38,7 +38,7 @@ enum Keys {
   device = 4,
 }
 
-interface ICryptoSyncMetadata {
+interface ICryptoPortfolioMetadata {
   sync_id?: Buffer; // Size 16
   language_code?: keyof typeof languages; // ISO 639-1 language codes
   fw_version?: string;
@@ -47,18 +47,18 @@ interface ICryptoSyncMetadata {
 }
 
 
-export class CryptoSyncMetadata extends RegistryItem {
+export class CryptoPortfolioMetadata extends RegistryItem {
   private sync_id?: Buffer; // Size 16
   private language_code?: keyof typeof languages; // ISO 639-1 language codes
   private fw_version?: string;
   private device?: string;
   // Any any
 
-  //private metadata: ICryptoSyncMetadata;
+  //private metadata: ICryptoPortfolioMetadata;
 
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_SYNC_METADATA;
 
-  constructor(private metadata: ICryptoSyncMetadata = {}) {
+  constructor(private metadata: ICryptoPortfolioMetadata = {}) {
     super();
 
     // If language code is incorrect, throw error
@@ -117,12 +117,12 @@ export class CryptoSyncMetadata extends RegistryItem {
     const device = map[Keys.device];
     // TODO: Could be anything as json. import anything
 
-    return new CryptoSyncMetadata({sync_id, language_code, fw_version, device});
+    return new CryptoPortfolioMetadata({sync_id, language_code, fw_version, device});
   }
 
   public static fromCBOR = (_cborPayload: Buffer) => {
     const dataItem = decodeToDataItem(_cborPayload);
-    return CryptoSyncMetadata.fromDataItem(dataItem);
+    return CryptoPortfolioMetadata.fromDataItem(dataItem);
   };
 }
   

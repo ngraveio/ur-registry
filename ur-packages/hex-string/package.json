@@ -1,7 +1,7 @@
 {
-  "name": "@ngrave/bc-ur-registry-hex-string",
+  "name": "@ngraveio/bc-ur-registry-hex-string",
   "version": "0.1.0",
-  "description": "bc-ur-registry extension for sync metadata",
+  "description": "Provides BC UR type for hex string.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {

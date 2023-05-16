@@ -1,7 +1,7 @@
 {
-  "name": "@ngrave/bc-ur-registry-crypto-coin-identity",
+  "name": "@ngraveio/bc-ur-registry-crypto-coin-identity",
   "version": "0.1.0",
-  "description": "bc-ur-registry extension for sync metadata",
+  "description": "Provides BC UR type that uniquely identifies a crypto coin.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
