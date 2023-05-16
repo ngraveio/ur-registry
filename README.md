@@ -47,7 +47,7 @@ to build
 | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | [`ur-packages/**`](./ur-packages)                                    | Implementations of Blockchain Commons UR packages                                                                                |
 | [`@ngrave/crypto-coin-identity`](./ur-packages/crypto-coin-identity) | Implementation of `coin-identity` type that can represent a coin                                                                 |
-| [`@ngrave/multi-layer-sync`](./ur-packages/multi-layer-sync)         | Implementations of following types: **crypto-detailed-account**, **crypto-coin**, **crypto-sync-metadata**, **crypto-portfolio** |
+| [`@ngrave/multi-layer-sync`](./ur-packages/multi-layer-sync)         | Implementations of following types: **crypto-detailed-account**, **crypto-portfolio-coin**, **crypto-sync-metadata**, **crypto-portfolio** |
 | [`@ngrave/hex-string`](./ur-packages/hex-string)                     | Implementation of `hex-string` type that encodes and decodes hex string                                                          |
 
 ## 🚨 Code standard

@@ -15,7 +15,7 @@ const { RegistryTypes, decodeToDataItem } = extend;
  * ; Top level multi coin sync payload
  * ; All master-fingerprint fields must match within the included UR types
  * sync = {
- * 		coins: [+ #6.1402(crypto-coin)]           ; Multiple coins with their respective accounts and coin identities
+ * 		coins: [+ #6.1402(crypto-portfolio-coin)]           ; Multiple coins with their respective accounts and coin identities
  * 		? master-fingerprint: uint32,             ; Master fingerprint (fingerprint for the master public key as per BIP32 derived on secp256k1 curve)
  * 		? metadata: #6.1403(crypto-sync-metadata) ; Optional wallet metadata
  * }
