@@ -64,6 +64,8 @@ export class CryptoSyncCoin extends RegistryItem {
       throw new Error('CoinId is not type of CryptoCoinIdentity');
     }
 
+    // TODO: add checks for edwards coins thats paths must be all hardened
+
     // Be sure that accounts is correct type
     CryptoSyncCoin.checkInputs(accounts, master_fingerprint);
 

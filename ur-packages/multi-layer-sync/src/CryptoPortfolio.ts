@@ -21,38 +21,41 @@ const { RegistryTypes, decodeToDataItem } = extend;
  * }
  * 
  * coins = 1
- * master-fingerprint = 2
- * metadata = 3
+ * metadata = 2
  * 
  */
 
-
 enum Keys {
   coins = 1,
-  master_fingerprint = 2,
-  metadata = 3,
+  metadata = 2,
 }
 
 export class CryptoPortfolio extends RegistryItem {
   private coins: CryptoSyncCoin[];
-  private master_fingerprint?: number; // masterFingerprint.readUInt32BE(0);
   private metadata?: CryptoSyncMetadata;
 
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_PORTFOLIO;
 
   constructor(
     coins: CryptoSyncCoin[],
-    master_fingerprint?: number,
     metadata?: CryptoSyncMetadata
   ) {
     super();
+    // Test metadata
+    if (metadata && !(metadata instanceof CryptoSyncMetadata)) {
+      throw new Error("metadata must be of type CryptoSyncMetadata");
+    }
+
+    // Check if coins is array if so check if every element is instance of CryptoSyncCoin
+    if (!Array.isArray(coins) || !coins.every((coin) => coin instanceof CryptoSyncCoin)) {
+      throw new Error("coins must be of type CryptoSyncCoin[]");
+    }
+
     this.coins = coins;
-    this.master_fingerprint = master_fingerprint;
     this.metadata = metadata;
   }
   
   public getCoins = () => this.coins;
-  public getMasterFingerprint = () => this.master_fingerprint;
   public getMetadata = () => this.metadata;
 
 
@@ -60,16 +63,16 @@ export class CryptoPortfolio extends RegistryItem {
     const map: DataItemMap = {};
 
     // Add coins
-    map[Keys.coins] = this.coins.map((coin) => coin.toDataItem());
+    map[Keys.coins] = this.coins.map((coin) => {
+       const dataItem = coin.toDataItem()
+       dataItem.setTag(ExtendedRegistryTypes.CRYPTO_SYNC_COIN.getTag());
+      return dataItem;
+    });
   
-    // If master_fingerprint is set add it to map
-    if (this.master_fingerprint) {
-      map[Keys.master_fingerprint] = this.master_fingerprint;
-    }
-
     // If metadata is set add it to map
     if (this.metadata) {
       map[Keys.metadata] = this.metadata.toDataItem();
+      map[Keys.metadata].setTag(ExtendedRegistryTypes.CRYPTO_SYNC_METADATA.getTag());
     }
 
     return new DataItem(map);
@@ -77,7 +80,6 @@ export class CryptoPortfolio extends RegistryItem {
 
   public static fromDataItem = (dataItem: DataItem) => {
     const map = dataItem.getData();
-    let master_fingerprint: number | undefined = undefined;
     let metadata: CryptoSyncMetadata | undefined = undefined;
 
     // Get coins
@@ -85,12 +87,11 @@ export class CryptoPortfolio extends RegistryItem {
     const coinsParsed = coins.map((coin) => CryptoSyncCoin.fromDataItem(coin));
 
     // Get master_fingerprint
-    if(map[Keys.master_fingerprint]) master_fingerprint =  map[Keys.master_fingerprint] as number;
 
     // Get metadata
     if(map[Keys.metadata]) metadata = CryptoSyncMetadata.fromDataItem(map[Keys.metadata] as DataItem);
 
-    return new CryptoPortfolio(coinsParsed, master_fingerprint, metadata);
+    return new CryptoPortfolio(coinsParsed, metadata);
   }
 
   public static fromCBOR = (_cborPayload: Buffer) => {
