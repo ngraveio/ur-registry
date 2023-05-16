@@ -27,6 +27,8 @@ npm install --save @ngrave/bc-ur-multi-layer-sync
 
 ## Examples:
 
+## CryptoDetailedAccount
+
 ### [CryptoDetailedAccount] Construct a crypto detailed account with hdkey.
 
 ```js
@@ -152,4 +154,59 @@ cryptoSyncMetadata.getSyncId() // babe0000babe00112233445566778899
 cryptoSyncMetadata.getLanguageCode() // en
 cryptoSyncMetadata.getDevice() // my-device
 cryptoSyncMetadata.getFirmwareVersion() // 1.0.0
+```
+
+## [CryptoSyncCoin] create CryptoSyncCoin with 2 detailed account with tokens
+
+```js
+// Create a coin identity
+const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60)
+
+const cryptoHDKey = new CryptoHDKey({
+  isMaster: false,
+  key: Buffer.from('02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0', 'hex'),
+  origin: new CryptoKeypath([
+    new PathComponent({ index: 60, hardened: true }),
+    new PathComponent({ index: 0, hardened: true }),
+    new PathComponent({ index: 0, hardened: true }),
+    new PathComponent({ index: 0, hardened: false }),
+    new PathComponent({ index: 0, hardened: false }),
+  ]),
+  parentFingerprint: Buffer.from('78412e3a', 'hex'),
+})
+
+const tokenIds = ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0xB8c77482e45F1F44dE1745F52C74426C631bDD52']
+
+// add a cryptoHD key from a known hex
+const cryptoHDKey2 = CryptoHDKey.fromCBOR(
+  Buffer.from('a203582102eae4b876a8696134b868f88cc2f51f715f2dbedb7446b8e6edf3d4541c4eb67b06d90130a10188182cf51901f5f500f500f5', 'hex')
+)
+
+const tokenIds2 = ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']
+
+// Create a detailed account
+const detailedAccount = new CryptoDetailedAccount(cryptoHDKey, tokenIds)
+const detailedAccount2 = new CryptoDetailedAccount(cryptoHDKey2, tokenIds2)
+
+// Create a CryptoSyncCoin
+const cryptoSyncCoin = new CryptoSyncCoin(coinIdentity, [detailedAccount, detailedAccount2])
+
+const cbor = cryptoSyncCoin.toCBOR().toString('hex')
+console.log(cbor)
+// a201d90579a3010802183c03f70282d9057aa201d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a1018a183cf500f500f500f400f4081a78412e3a0282d9010754dac17f958d2ee523a2206206994597c13d831ec7d9010754b8c77482e45f1f44de1745f52c74426c631bdd52d9057aa201d9012fa203582102eae4b876a8696134b868f88cc2f51f715f2dbedb7446b8e6edf3d4541c4eb67b06d90130a10188182cf51901f5f500f500f50281782c45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a77795444743176
+const ur = cryptoSyncCoin.toUREncoder(1000).nextPart()
+console.log(ur)
+// ur:crypto-sync-coin/oeadtaahkkotadayaocsfnaxylaolftaahknoeadtaaddlotaxhdclaotdqdinaeesjzmolfzsbbidlpiyhddlcximhltirfsptlvsmohscsamsgzoaxadwtamtaaddyoyadlecsfnykaeykaeykaewkaewkaycyksfpdmftaolftaadatghtnselbmdlgdmvwcnoecxidamnlfemssefslscksttaadatghrostjylfvehectfyuechfeykdwjyfwjziacwutgmtaahknoeadtaaddloeaxhdclaowdverokopdinhseeroisyalksaykctjshedprnuyjyfgrovawewftyghceglrpkgamtaaddyoyadlocsdwykcfadykykaeykaeykaolyksdwfegdimfghgi
+```
+
+## [CryptoSyncCoin] create CryptoSyncCoin with 2 detailed account with tokens
+
+```js
+// cbor taken from the example above
+const cryptoSyncCoin = CryptoSyncCoin.fromCBOR(Buffer.from(cbor, 'hex'))
+
+// get the coin Id
+const coinID = cryptoSyncCoin.getCoinId()
+// get the accounts
+const accounts = cryptoSyncCoin.getAccounts()
 ```

@@ -8,4 +8,4 @@ patchTags(
     .map(rt => rt.getTag()) as number[]
 );
 
-export { CryptoCoinIdentity } from "./CoinIdentity";
+export { CryptoCoinIdentity, EllipticCurve } from "./CoinIdentity";
