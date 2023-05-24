@@ -8,4 +8,5 @@ patchTags(
     .map(rt => rt.getTag()) as number[]
 );
 
+export { CryptoSignRequest } from "./CryptoSignRequest";
 export { CryptoTxSignature } from "./CryptoTxSignature";
