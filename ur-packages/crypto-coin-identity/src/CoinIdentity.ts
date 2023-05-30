@@ -167,10 +167,13 @@ export class CryptoCoinIdentity extends RegistryItem {
    * @returns dictionary indicating which comparison methods are true | false.
    */
   static compareCoinIdsDict(coinUrl1: string, coinUrl2: string) {
-    const isEqual = coinUrl1 === coinUrl2
-    const isChild = coinUrl1.startsWith(coinUrl2 + '/')
-    const isParent = coinUrl2.startsWith(coinUrl1 + '/')
-    const isNotEqual = coinUrl1 !== coinUrl2
+    const url = coinUrl1.replace('bc-coin://', '')
+    const urlToCompare = coinUrl2.replace('bc-coin://', '')
+
+    const isEqual = url === urlToCompare
+    const isChild = url.includes(urlToCompare);
+    const isParent = urlToCompare.includes(url)
+    const isNotEqual = url !== urlToCompare
 
     return {
       [ComparisonMethod.ExactMatch]: isEqual,
