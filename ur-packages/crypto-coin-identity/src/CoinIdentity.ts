@@ -58,11 +58,11 @@ enum Keys {
 export class CryptoCoinIdentity extends RegistryItem {
   private curve: EllipticCurve // elliptic curve
   private type: number // values from [SLIP44] with high bit turned off,
-  private subtype?: sub_type_exp[]
+  private subtype: sub_type_exp[]
 
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_COIN_IDENTITY
 
-  constructor(curve: EllipticCurve, type: number, subtype?: sub_type_exp[]) {
+  constructor(curve: EllipticCurve, type: number, subtype: sub_type_exp[] = []) {
     super()
     this.curve = curve
     this.type = type
@@ -73,12 +73,79 @@ export class CryptoCoinIdentity extends RegistryItem {
   public getType = () => this.type
   public getSubType = () => this.subtype
 
+  public getParent = () => {
+    // If we dont have any subtypes, return null
+    if (!this.subtype.length) return null;
+
+    // Otherwise remove latests subtype and return a new CryptoCoinIdentity
+    const subtypes = this.subtype.slice(1, this.subtype.length)
+    return new CryptoCoinIdentity(this.curve, this.type, subtypes)
+  }
+
+
+  // Make an Iterator that returns all the parents of this CryptoCoinIdentity
+  getAllParents2(): Iterable<CryptoCoinIdentity> {
+    let currentParent = this.getParent();
+
+    const parentIterator = {
+      [Symbol.iterator](): Iterator<CryptoCoinIdentity> {
+        return {
+          next(): IteratorResult<CryptoCoinIdentity> {
+            if ( currentParent ) {
+              const returnParent = new CryptoCoinIdentity(currentParent.getCurve(), currentParent.getType(), currentParent.getSubType());
+              currentParent = currentParent.getParent();
+
+              return {
+                value: returnParent,
+                done: false,
+              }
+            }
+            return { value: undefined, done: true }
+          },
+        }
+      }
+    };
+
+    return parentIterator;
+  }
+
+  // Make an Iterator that returns all the parents of this CryptoCoinIdentity
+  getAllParents(): Iterable<CryptoCoinIdentity> {
+    let currentSubtypes = this.subtype;
+    const curve = this.curve;
+    const type = this.type;
+
+    const parentIterator = {
+      [Symbol.iterator](): Iterator<CryptoCoinIdentity> {
+        return {
+          next(): IteratorResult<CryptoCoinIdentity> {
+            if ( currentSubtypes.length > 0) {
+              currentSubtypes = currentSubtypes.slice(1, currentSubtypes.length)
+
+              return {
+                value: new CryptoCoinIdentity(curve, type, currentSubtypes),
+                done: false,
+              }
+            }
+            return { value: undefined, done: true }
+          },
+        }
+      }
+    };
+
+    return parentIterator;
+  }
+
   public toDataItem = () => {
     const map: DataItemMap = {}
 
     map[Keys.curve] = this.curve
     map[Keys.type] = this.type
-    map[Keys.subtype] = this.subtype
+    
+    // If subtype is empty do not add it to the map
+    if(this.subtype.length)
+      map[Keys.subtype] = this.subtype
+    
     return new DataItem(map)
   }
 
