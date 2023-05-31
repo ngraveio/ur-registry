@@ -1,15 +1,9 @@
-import {
-  extend,
-  DataItem,
-  RegistryItem,
-  DataItemMap,
-  CryptoKeypath,
-} from "@keystonehq/bc-ur-registry";
-import { CryptoCoinIdentity } from "@ngraveio/bc-ur-registry-crypto-coin-identity";
-import { ExtendedRegistryTypes } from "./RegistryType";
-import { signMetaMap } from "./metadatas";
-import { SignRequestMeta } from "./SignRequestMetadata";
-import { EthSignRequestMeta } from "./metadatas/Ethereum.metadata";
+import { extend, DataItem, RegistryItem, DataItemMap, CryptoKeypath } from '@keystonehq/bc-ur-registry';
+import { CryptoCoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
+import { ExtendedRegistryTypes } from './RegistryType';
+import { signMetaMap } from './metadatas';
+import { SignRequestMeta } from './SignRequestMetadata';
+import { EthSignRequestMeta } from './metadatas/Ethereum.metadata';
 
 const { RegistryTypes, decodeToDataItem } = extend;
 
@@ -20,7 +14,6 @@ const { RegistryTypes, decodeToDataItem } = extend;
 // master-fingerprint = 5
 // origin = 6
 // metadata = 7
-
 
 enum Keys {
   requestId = 1,
@@ -42,10 +35,8 @@ interface ICryptoSignRequestProps {
   metadata?: SignRequestMeta | object;
 }
 
-
 export class CryptoSignRequest extends RegistryItem {
-
-  private requestId: Buffer; // Size 16
+  private _requestId: Buffer; // Size 16
   private coinId: CryptoCoinIdentity;
   private derivationPath: CryptoKeypath;
   private signData: Buffer;
@@ -62,25 +53,11 @@ export class CryptoSignRequest extends RegistryItem {
     signData,
     masterFingerprint,
     origin,
-    metadata
+    metadata,
   }: ICryptoSignRequestProps) {
     super();
 
-    // Check Request Id
-    if(requestId) {
-      // Request id should not be longer than 16 bytes
-      if(requestId.length > 16) throw new Error("Request id should not be longer than 16 bytes");
-      // If request id is smaller than 16 bytes, pad with 0s
-      else if(requestId.length < 16) {
-        const padding = Buffer.alloc(16 - requestId.length);
-        this.requestId = Buffer.concat([requestId, padding]);
-      }
-      else this.requestId = requestId;
-    }
-    // If request id is not provided, generate a random one
-    else {
-      this.requestId = Buffer.from(require("crypto").randomBytes(16));
-    }
+    this.requestId = requestId;
 
     // Check inputs
     CryptoSignRequest.checkInputs({
@@ -90,7 +67,7 @@ export class CryptoSignRequest extends RegistryItem {
       signData,
       masterFingerprint,
       origin,
-      metadata
+      metadata,
     });
 
     // Set inputs
@@ -101,64 +78,91 @@ export class CryptoSignRequest extends RegistryItem {
     this.origin = origin;
 
     // Check metadata
-    if(metadata) {
+    if (metadata) {
       // Find metadata type
       const metaType = CryptoSignRequest.findMetadataType(coinId);
 
-      if(metadata instanceof EthSignRequestMeta) {
+      if (metadata instanceof EthSignRequestMeta) {
         console.log('metadata is EthSignRequestMeta');
       }
 
       // Check if we have an object or an instance of SignRequestMeta
-      if(metadata instanceof SignRequestMeta) {
+      if (metadata instanceof SignRequestMeta) {
         // Check if that is correct instance
-        if(!(metadata instanceof metaType)) {
+        if (!(metadata instanceof metaType)) {
           const currentType = (metadata as any).constructor.name;
-          throw new Error(`Provided Metadata is an instance of ${currentType}, it should be instance of ${metaType.name} for coin ${coinId.toURL()}`);
+          throw new Error(
+            `Provided Metadata is an instance of ${currentType}, it should be instance of ${
+              metaType.name
+            } for coin ${coinId.toURL()}`
+          );
         }
 
         this.metadata = metadata;
-      }
-      else {
+      } else {
         // Create an general instance of foundmetadata type
         this.metadata = new metaType(metadata);
       }
     }
-    
   }
 
+  private set requestId(requestId: Buffer|undefined) {
+    // Check Request Id
+    if (requestId) {
+      // Request id should not be longer than 16 bytes
+      if (requestId.length > 16) throw new Error('Request id should not be longer than 16 bytes');
+      // If request id is smaller than 16 bytes, pad with 0s
+      else if (requestId.length < 16) {
+        const padding = Buffer.alloc(16 - requestId.length);
+        this._requestId = Buffer.concat([requestId, padding]);
+      } else this._requestId = requestId;
+    }
+    // If request id is not provided, generate a random one
+    else {
+      this._requestId = Buffer.from(require('crypto').randomBytes(16));
+    }
+  }
+
+  /**
+   * A static method to check if provided inputs follow the rules
+   */
   static checkInputs = ({
+    requestId,
     coinId,
     derivationPath,
     signData,
     masterFingerprint,
     origin,
-    metadata
+    metadata,
   }: ICryptoSignRequestProps) => {
+    // If request id is provided check if it is not longer than 16 bytes
+    if (requestId) {
+      if (requestId.length > 16) throw new Error('Request id should not be longer than 16 bytes');
+    }
 
     // Make sure coin id is provided and is type of CryptoCoinIdentity
-    if(!coinId || !(coinId instanceof CryptoCoinIdentity)) throw new Error("Coin id is required and should be of type CryptoCoinIdentity");
+    if (!coinId || !(coinId instanceof CryptoCoinIdentity))
+      throw new Error('Coin id is required and should be of type CryptoCoinIdentity');
 
     // Make sure derivation path is provided and is type of CryptoHDKey and has origin and a valid path
-    if(!derivationPath || !(derivationPath instanceof CryptoKeypath) || !derivationPath.getPath())
-      throw new Error("Derivation path is required and should be of type CryptoKeypath");
+    if (!derivationPath || !(derivationPath instanceof CryptoKeypath) || !derivationPath.getPath())
+      throw new Error('Derivation path is required and should be of type CryptoKeypath');
 
     // Make sure sign data is provided and contains data
-    if(!signData || signData.length === 0) throw new Error("Sign data is required");
+    if (!signData || signData.length === 0) throw new Error('Sign data is required');
 
     // If master fingerprint is provided and make sure it is 4 bytes
-    if(masterFingerprint) {
+    if (masterFingerprint) {
       // Master fingerprint should not be longer than 4 bytes
-      if(masterFingerprint.length > 4) throw new Error("Master fingerprint should not be longer than 4 bytes");
+      if (masterFingerprint.length > 4) throw new Error('Master fingerprint should not be longer than 4 bytes');
     }
 
     // If origin is provided, make sure it is a string
-    if(origin && typeof origin !== "string") throw new Error("Origin should be a string");
-
+    if (origin && typeof origin !== 'string') throw new Error('Origin should be a string');
   };
 
   // Getters
-  public getRequestId = () => this.requestId;
+  public getRequestId = () => this._requestId;
   public getCoinId = () => this.coinId;
   public getDerivationPath = () => this.derivationPath;
   public getSignData = () => this.signData;
@@ -166,54 +170,70 @@ export class CryptoSignRequest extends RegistryItem {
   public getOrigin = () => this.origin;
   public getMetadata = () => this.metadata;
 
+  /**
+   * Converts CryptoSignRequest to an object with tag support
+   *
+   * @returns {DataItem} DataItem representation of CryptoSignRequest
+   */
   public toDataItem = () => {
     const map: DataItemMap = {};
 
-    map[Keys.requestId] = new DataItem(
-      this.requestId,
-      RegistryTypes.UUID.getTag()
-    );
+    // Create a new DataItem for request id with UUID tag
+    map[Keys.requestId] = new DataItem(this._requestId, RegistryTypes.UUID.getTag());
 
+    // Embed coinId with its tag
     const coinId = this.coinId.toDataItem();
     coinId.setTag(this.coinId.getRegistryType().getTag());
     map[Keys.coinId] = coinId;
 
+    // Embed derivation path with its tag
     const derivationPath = this.derivationPath.toDataItem();
     derivationPath.setTag(this.derivationPath.getRegistryType().getTag());
     map[Keys.derivationPath] = derivationPath;
 
+    // Add sign data
     map[Keys.signData] = this.signData;
+
+    // Add optional fields
     if (this.masterFingerprint) map[Keys.masterFingerprint] = this.masterFingerprint;
-    if (this.origin) map[Keys.origin] = this.origin
+    if (this.origin) map[Keys.origin] = this.origin;
+    // We have to use `getData()` for returning an object without a tag
     if (this.metadata) map[Keys.metadata] = this.metadata.getData();
 
-    return new DataItem(map);;
+    return new DataItem(map);
   };
 
-
+  /**
+   * Finds correspoinding metadata type for given coin id from global `signMetaMap` map
+   * If no metadata is found, it will return general `SignRequestMeta` type
+   * @param coinId
+   * @returns
+   */
   public static findMetadataType(coinId: CryptoCoinIdentity): typeof SignRequestMeta {
     // Try to find exact metadata from metadata list
-    if(signMetaMap.has(coinId.toURL())) {
-      //console.debug("Found exact metadata for coin id", coinId.toURL())
+    if (signMetaMap.has(coinId.toURL())) {
       return signMetaMap.get(coinId.toURL())!;
     }
 
     // Try to match with parent until we dont have any more parents
     let parentCoinId = coinId.getParent();
-    while(parentCoinId) {
-      if(signMetaMap.has(parentCoinId.toURL())) {
-        //console.debug("Found parent metadata for coin id", parentCoinId.toURL())
+    while (parentCoinId) {
+      if (signMetaMap.has(parentCoinId.toURL())) {
         return signMetaMap.get(parentCoinId.toURL())!;
       }
+      parentCoinId = parentCoinId.getParent();
     }
 
-    //console.debug('Fallback to general metadata')
     // Otherwise return general metadata
     return SignRequestMeta;
   }
 
-  
-
+  /**
+   * Creates CryptoSignRequest from DataItem
+   *
+   * @param dataItem object with keys and values of CryptoSignRequest
+   * @returns
+   */
   public static fromDataItem = (dataItem: DataItem) => {
     const map = dataItem.getData();
 
@@ -234,7 +254,7 @@ export class CryptoSignRequest extends RegistryItem {
       signData,
       masterFingerprint,
       origin,
-      metadata
+      metadata,
     };
 
     return new CryptoSignRequest(signRequestInput);

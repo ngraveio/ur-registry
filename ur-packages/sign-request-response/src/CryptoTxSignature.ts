@@ -22,7 +22,7 @@ interface ICryptoTxSignature {
 
 export class CryptoTxSignature extends RegistryItem {
 
-  private requestId?: Buffer; // Size 16
+  private _requestId?: Buffer; // Size 16
   private signature: Buffer;
   private origin?: string;  
 
@@ -30,6 +30,17 @@ export class CryptoTxSignature extends RegistryItem {
 
   constructor({ requestId, signature, origin }: ICryptoTxSignature) {
     super();
+
+    // Make sure signature is provided and contains data
+    if(!signature || signature.length === 0) throw new Error("Signature is required");
+    
+    this.requestId = requestId;
+    this.signature = signature;
+    this.origin = origin;
+  }
+
+  // Check request before setting
+  private set requestId(requestId: Buffer | undefined) {
     // Check requestId is 16 bytes
     if(requestId) {
       // Request id should not be longer than 16 bytes
@@ -41,26 +52,22 @@ export class CryptoTxSignature extends RegistryItem {
         requestId = Buffer.concat([requestId, padding]);
       }
     }
-
-    // Make sure signature is provided and contains data
-    if(!signature || signature.length === 0) throw new Error("Signature is required");
-    
-
-    this.requestId = requestId;
-    this.signature = signature;
-    this.origin = origin;
   }
 
-  public getRequestId = () => this.requestId;
+  public getRequestId = () => this._requestId;
   public getSignature = () => this.signature;
   public getOrigin = () => this.origin;
 
+  /**
+   * Convert CryptoTxSignature to DataItem representation
+   * @returns {DataItem} DataItem representation of CryptoTxSignature
+   */
   public toDataItem = () => {
     const map: DataItemMap = {};
 
-    if(this.requestId) {
+    if(this._requestId) {
       map[Keys.requestId] = new DataItem(
-        this.requestId,
+        this._requestId,
         RegistryTypes.UUID.getTag()
       );
     }
@@ -74,6 +81,11 @@ export class CryptoTxSignature extends RegistryItem {
     return new DataItem(map);
   };
 
+  /**
+   * Creates a CryptoTxSignature from a DataItem
+   * @param dataItem
+   * @returns 
+   */
   public static fromDataItem = (dataItem: DataItem) => {
     const map = dataItem.getData();
     const signature = map[Keys.signature];
