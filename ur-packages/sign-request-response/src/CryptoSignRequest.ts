@@ -36,7 +36,7 @@ interface ICryptoSignRequestProps {
 }
 
 export class CryptoSignRequest extends RegistryItem {
-  private _requestId: Buffer; // Size 16
+  private _requestId!: Buffer; // Size 16
   private coinId: CryptoCoinIdentity;
   private derivationPath: CryptoKeypath;
   private signData: Buffer;
