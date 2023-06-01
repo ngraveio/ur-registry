@@ -1,7 +1,7 @@
 import { CryptoCoinIdentity, EllipticCurve } from "@ngraveio/bc-ur-registry-crypto-coin-identity";
 import { SignRequestMeta } from '../SignRequestMetadata';
 
-enum EthDataType {
+export enum EthDataType {
     transaction = 1,        // legacy transaction rlp encoding of unsigned transaction data
     typedData = 2,          // EIP-712 typed signing data
     personalMessage = 3,    // for signing message usage, like EIP-191 personal_sign data
