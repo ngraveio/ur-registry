@@ -217,33 +217,6 @@ describe('parent', () => {
       i--;
     }
   
-  });
-
-  it('should return parent until subtypes are over with generator getAllParents2', () => {
-    const curve = EllipticCurve.secp256k1
-    const type = 60
-    const subType = ['blabla', 137]
-
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
-    let i = 2;
-    
-    // Total of 6 expect statements should be called
-    expect.assertions(6);
-    for (const parent of coinIdentity.getAllParents2()) {
-      console.log(parent.toURL());
-      expect(parent?.getCurve()).toBe(curve)
-      expect(parent?.getType()).toBe(type)
-      switch(i) {
-        case 2:
-          expect(parent?.getSubType()).toStrictEqual([137]);
-          break;
-        case 1:
-          expect(parent?.getSubType()).toStrictEqual([]);
-          break;
-      };
-      i--;
-    }
-  
   });  
 })
 

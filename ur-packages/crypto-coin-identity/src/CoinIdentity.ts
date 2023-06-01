@@ -73,27 +73,33 @@ export class CryptoCoinIdentity extends RegistryItem {
   public getType = () => this.type
   public getSubType = () => this.subtype
 
+  /**
+   * Get the parent CoinIdentity of the current CoinIdentity
+   * @returns {CryptoCoinIdentity} a new instance of CryptoCoinIdentity for the parent if it exists or null if it does not.
+   */
   public getParent = () => {
     // If we dont have any subtypes, return null
-    if (!this.subtype.length) return null;
+    if (!this.subtype.length) return null
 
-    // Otherwise remove latests subtype and return a new CryptoCoinIdentity
+    // Otherwise remove the last subtype and return a new CryptoCoinIdentity
     const subtypes = this.subtype.slice(1, this.subtype.length)
     return new CryptoCoinIdentity(this.curve, this.type, subtypes)
   }
 
-
-  // Make an Iterator that returns all the parents of this CryptoCoinIdentity
-  getAllParents2(): Iterable<CryptoCoinIdentity> {
-    let currentParent = this.getParent();
+  /**
+   * Create an Iterator that returns all the parents of this CryptoCoinIdentity
+   * @returns {Iterable<CryptoCoinIdentity>} An iterator for all the parent CoinIdentities of the current CoinIdentity
+   */
+  getAllParents(): Iterable<CryptoCoinIdentity> {
+    let currentParent = this.getParent()
 
     const parentIterator = {
       [Symbol.iterator](): Iterator<CryptoCoinIdentity> {
         return {
           next(): IteratorResult<CryptoCoinIdentity> {
-            if ( currentParent ) {
-              const returnParent = new CryptoCoinIdentity(currentParent.getCurve(), currentParent.getType(), currentParent.getSubType());
-              currentParent = currentParent.getParent();
+            if (currentParent) {
+              const returnParent = new CryptoCoinIdentity(currentParent.getCurve(), currentParent.getType(), currentParent.getSubType())
+              currentParent = currentParent.getParent()
 
               return {
                 value: returnParent,
@@ -103,52 +109,35 @@ export class CryptoCoinIdentity extends RegistryItem {
             return { value: undefined, done: true }
           },
         }
-      }
-    };
+      },
+    }
 
-    return parentIterator;
+    return parentIterator
   }
 
-  // Make an Iterator that returns all the parents of this CryptoCoinIdentity
-  getAllParents(): Iterable<CryptoCoinIdentity> {
-    let currentSubtypes = this.subtype;
-    const curve = this.curve;
-    const type = this.type;
-
-    const parentIterator = {
-      [Symbol.iterator](): Iterator<CryptoCoinIdentity> {
-        return {
-          next(): IteratorResult<CryptoCoinIdentity> {
-            if ( currentSubtypes.length > 0) {
-              currentSubtypes = currentSubtypes.slice(1, currentSubtypes.length)
-
-              return {
-                value: new CryptoCoinIdentity(curve, type, currentSubtypes),
-                done: false,
-              }
-            }
-            return { value: undefined, done: true }
-          },
-        }
-      }
-    };
-
-    return parentIterator;
-  }
-
+  /**
+   * Converts CryptoCoinIdentity to an object with tag support
+   *
+   * @returns {DataItem} DataItem representation of CryptoCoinIdentity
+   */
   public toDataItem = () => {
     const map: DataItemMap = {}
 
     map[Keys.curve] = this.curve
     map[Keys.type] = this.type
-    
+
     // If subtype is empty do not add it to the map
-    if(this.subtype.length)
-      map[Keys.subtype] = this.subtype
-    
+    if (this.subtype.length) map[Keys.subtype] = this.subtype
+
     return new DataItem(map)
   }
 
+  /**
+   * Creates CryptoCoinIdentity from DataItem
+   *
+   * @param dataItem object with keys and values of CryptoCoinIdentity
+   * @returns
+   */
   public static fromDataItem = (dataItem: DataItem) => {
     const map = dataItem.getData()
 
@@ -165,27 +154,32 @@ export class CryptoCoinIdentity extends RegistryItem {
   }
 
   /**
-   * subtypes should be in the correct order
-   * @returns
+   * Create a url from ths CryptoCoinIdentity. The subtypes should be in the correct order.
+   * @returns {string} url representation of the CryptoCoinIdentity
    */
   public toURL = (): string => {
     const curve = Object.values(EllipticCurve)[this.curve - 1]
     const type = this.type
     const subtype = this.subtype
-    const subtypes = subtype?.join('.');
+    const subtypes = subtype?.join('.')
     if (subtypes?.length) {
       return `bc-coin://${subtypes}.${curve}/${type}`
     }
     return `bc-coin://${curve}/${type}`
   }
 
+  /**
+   * Convert a url into a CryptoCoinIdentity
+   * @param url url representation of a CryptoCoinIdentity
+   * @returns {CryptoCoinIdentity} created from the passed url.
+   */
   public static fromUrl = (url: string) => {
     const parts = url.split('://')[1].split('/')
     const subtypeParts = parts[0].split('.')
     if (subtypeParts.length > 1) {
-      const curve = subtypeParts[subtypeParts.length -1]
+      const curve = subtypeParts[subtypeParts.length - 1]
       const type = +parts[1]
-      const subTypes = subtypeParts.slice(0,subtypeParts.length -1)
+      const subTypes = subtypeParts.slice(0, subtypeParts.length - 1)
       return new CryptoCoinIdentity(curve as any, type, subTypes)
     }
     const curve = parts[0]
