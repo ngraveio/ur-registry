@@ -40,7 +40,7 @@ describe('CryptoSignRequest checks', () => {
       signData: Buffer.from('abbacaca', 'hex'),
     });
 
-    expect(ethSignRequest.getRequestId().toString('hex')).toEqual('000000000000babe');
+    expect(ethSignRequest.getRequestId().toString('hex')).toEqual('0000000000000000000000000000babe');
   });
 
   it('Should throw error if request id is more than 16 bytes', () => {

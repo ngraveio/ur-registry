@@ -111,10 +111,10 @@ export class CryptoSignRequest extends RegistryItem {
     if (requestId) {
       // Request id should not be longer than 16 bytes
       if (requestId.length > 16) throw new Error('Request id should not be longer than 16 bytes');
-      // If request id is smaller than 16 bytes, pad with 0s
+      // If request id is smaller than 16 bytes, prepad with 0s
       else if (requestId.length < 16) {
         const padding = Buffer.alloc(16 - requestId.length);
-        this._requestId = Buffer.concat([requestId, padding]);
+        this._requestId = Buffer.concat([padding, requestId]);
       } else this._requestId = requestId;
     }
     // If request id is not provided, generate a random one
