@@ -43,7 +43,7 @@ export interface PolygonSignRequestProps extends EthSignRequestProps {
 }
 
 export class PolygonMeta extends EthSignRequestMeta {
-    static coinId: CryptoCoinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 137);
+    static coinId: CryptoCoinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60, [137]);
 
     constructor(data: PolygonSignRequestProps, tag?: number) {
         super(data, tag);
@@ -52,7 +52,7 @@ export class PolygonMeta extends EthSignRequestMeta {
     checkInputData(data: PolygonSignRequestProps) {
         super.checkInputData(data);
         // Make sure extraData is string
-        if (typeof data.extraData !== 'string') {
+        if (data?.extraData && typeof data.extraData !== 'string') {
             throw new Error('Invalid extraData');
         }
     }
