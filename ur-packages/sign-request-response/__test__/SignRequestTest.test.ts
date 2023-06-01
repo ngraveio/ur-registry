@@ -647,4 +647,61 @@ describe('Coin Tests', () => {
     expect(decodedTezSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
   });   
 
+  it('Should encode/decode a stellar transaction', () => {
+    const nativeTx = 'thisIsAMockTransaction';
+
+    const xrpSignRequest = new CryptoSignRequest({
+      coinId: new CryptoCoinIdentity(EllipticCurve.Ed25519, 148),
+      derivationPath: "m/44'/148'/0'",
+      signData: Buffer.from(nativeTx, 'hex'),
+    });
+
+    // Encode
+    const cbor = xrpSignRequest.toCBOR().toString('hex');
+
+    // Decode
+    const decodedXrpSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'));
+
+    // Check all fields
+    expect(decodedXrpSignRequest.getRequestId().toString('hex')).toEqual(xrpSignRequest.getRequestId().toString('hex'));
+    expect(decodedXrpSignRequest.getCoinId().toURL()).toEqual(xrpSignRequest.getCoinId().toURL());
+    expect(decodedXrpSignRequest.getDerivationPath().getPath()).toEqual(xrpSignRequest.getDerivationPath().getPath());
+    expect(decodedXrpSignRequest.getSignData().toString('hex')).toEqual(xrpSignRequest.getSignData().toString('hex'));
+    // Metadata and meta types
+    expect(decodedXrpSignRequest.getMetadata()?.getData()).toStrictEqual(xrpSignRequest.getMetadata()?.getData());
+    expect(decodedXrpSignRequest.getMetadata()?.constructor.name).toEqual(xrpSignRequest.getMetadata()?.constructor.name);
+    expect(decodedXrpSignRequest.getMetadata()?.getData()).toStrictEqual(xrpSignRequest.getMetadata()?.getData());
+
+    // Expect decoded cbor to be same
+    expect(decodedXrpSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
+  });
+
+  it('Should encode/decode a multiversX transaction', () => {
+    const nativeTx = 'f849808609184e72a00082271094000000000000000000000000000000000000000080a47f7465737432000000000000000000000000000000000000000000000000000000600057808080';
+
+    const egldSignRequest = new CryptoSignRequest({
+      coinId: new CryptoCoinIdentity(EllipticCurve.Ed25519, 508),
+      derivationPath: "m/44'/508'/0'/0'/0'",
+      signData: Buffer.from(nativeTx, 'hex'),
+    });
+
+    // Encode
+    const cbor = egldSignRequest.toCBOR().toString('hex');
+
+    // Decode
+    const decodedEgldSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'));
+
+    // Check all fields
+    expect(decodedEgldSignRequest.getRequestId().toString('hex')).toEqual(egldSignRequest.getRequestId().toString('hex'));
+    expect(decodedEgldSignRequest.getCoinId().toURL()).toEqual(egldSignRequest.getCoinId().toURL());
+    expect(decodedEgldSignRequest.getDerivationPath().getPath()).toEqual(egldSignRequest.getDerivationPath().getPath());
+    expect(decodedEgldSignRequest.getSignData().toString('hex')).toEqual(egldSignRequest.getSignData().toString('hex'));
+    // Metadata and meta types
+    expect(decodedEgldSignRequest.getMetadata()?.getData()).toStrictEqual(egldSignRequest.getMetadata()?.getData());
+    expect(decodedEgldSignRequest.getMetadata()?.constructor.name).toEqual(egldSignRequest.getMetadata()?.constructor.name);
+    expect(decodedEgldSignRequest.getMetadata()?.getData()).toStrictEqual(egldSignRequest.getMetadata()?.getData());
+
+    // Expect decoded cbor to be same
+    expect(decodedEgldSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
+  });
 });
