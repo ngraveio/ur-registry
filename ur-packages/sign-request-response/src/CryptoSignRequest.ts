@@ -1,4 +1,4 @@
-import { extend, DataItem, RegistryItem, DataItemMap, CryptoKeypath } from '@keystonehq/bc-ur-registry';
+import { extend, DataItem, RegistryItem, DataItemMap, CryptoKeypath, PathComponent } from '@keystonehq/bc-ur-registry';
 import { CryptoCoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
 import { ExtendedRegistryTypes } from './RegistryType';
 import { signMetaMap } from './metadatas';
@@ -28,7 +28,7 @@ enum Keys {
 interface ICryptoSignRequestProps {
   requestId?: Buffer; // Size 16
   coinId: CryptoCoinIdentity;
-  derivationPath: CryptoKeypath;
+  derivationPath: CryptoKeypath | string;
   signData: Buffer;
   masterFingerprint?: Buffer; // Size 4
   origin?: string;
@@ -38,7 +38,7 @@ interface ICryptoSignRequestProps {
 export class CryptoSignRequest extends RegistryItem {
   private _requestId!: Buffer; // Size 16
   private coinId: CryptoCoinIdentity;
-  private derivationPath: CryptoKeypath;
+  private _derivationPath!: CryptoKeypath;
   private signData: Buffer;
   private masterFingerprint?: Buffer; // Size 4
   private origin?: string;
@@ -106,7 +106,7 @@ export class CryptoSignRequest extends RegistryItem {
     }
   }
 
-  private set requestId(requestId: Buffer|undefined) {
+  private set requestId(requestId: Buffer | undefined) {
     // Check Request Id
     if (requestId) {
       // Request id should not be longer than 16 bytes
@@ -123,18 +123,51 @@ export class CryptoSignRequest extends RegistryItem {
     }
   }
 
+  private set derivationPath(derivationPath: CryptoKeypath | string) {
+    // If derivation path is CryptoKeypath check if it has origin and path
+    if (derivationPath instanceof CryptoKeypath) {
+      // If path is not provided, throw an error
+      if (!derivationPath.getPath()) throw new Error('Derivation path should have a valid path');
+      this._derivationPath = derivationPath;
+    }
+
+    // If derivation path is a string, first regex check if its valid BIP44 path then create a CryptoKeypath instance
+    else if (typeof derivationPath === 'string') {
+      // Check if derivation path is a valid BIP44 path
+      const bip44PathRegex: RegExp = /^(m\/)?(\d+'?\/)*\d+'?$/;
+      if (!bip44PathRegex.test(derivationPath)) throw new Error('Derivation path should be a valid BIP44 path');
+
+      // Create a CryptoKeypath instance
+      const paths = derivationPath.replace(/[m|M]\//, '').split('/');
+      const hdpathObject = new CryptoKeypath(
+        paths.map((path) => {
+          const index = parseInt(path.replace("'", ''));
+          let isHardened = false;
+          if (path.endsWith("'")) {
+            isHardened = true;
+          }
+          return new PathComponent({ index, hardened: isHardened });
+        })
+      );
+
+      this._derivationPath = hdpathObject;
+    } else {
+      throw new Error('Derivation path should be of type CryptoKeypath or string');
+    }
+  }
+
   /**
    * A static method to check if provided inputs follow the rules
    */
   static checkInputs = ({
     requestId,
     coinId,
-    derivationPath,
+    //derivationPath,
     signData,
     masterFingerprint,
     origin,
-    metadata,
-  }: ICryptoSignRequestProps) => {
+  }: //metadata,
+  ICryptoSignRequestProps) => {
     // If request id is provided check if it is not longer than 16 bytes
     if (requestId) {
       if (requestId.length > 16) throw new Error('Request id should not be longer than 16 bytes');
@@ -144,9 +177,9 @@ export class CryptoSignRequest extends RegistryItem {
     if (!coinId || !(coinId instanceof CryptoCoinIdentity))
       throw new Error('Coin id is required and should be of type CryptoCoinIdentity');
 
-    // Make sure derivation path is provided and is type of CryptoHDKey and has origin and a valid path
-    if (!derivationPath || !(derivationPath instanceof CryptoKeypath) || !derivationPath.getPath())
-      throw new Error('Derivation path is required and should be of type CryptoKeypath');
+    // // Make sure derivation path is provided and is type of CryptoHDKey and has origin and a valid path
+    // if (!derivationPath || !(derivationPath instanceof CryptoKeypath) || !derivationPath.getPath())
+    //   throw new Error('Derivation path is required and should be of type CryptoKeypath');
 
     // Make sure sign data is provided and contains data
     if (!signData || signData.length === 0) throw new Error('Sign data is required');
@@ -164,7 +197,7 @@ export class CryptoSignRequest extends RegistryItem {
   // Getters
   public getRequestId = () => this._requestId;
   public getCoinId = () => this.coinId;
-  public getDerivationPath = () => this.derivationPath;
+  public getDerivationPath = () => this._derivationPath;
   public getSignData = () => this.signData;
   public getMasterFingerprint = () => this.masterFingerprint;
   public getOrigin = () => this.origin;
@@ -187,8 +220,8 @@ export class CryptoSignRequest extends RegistryItem {
     map[Keys.coinId] = coinId;
 
     // Embed derivation path with its tag
-    const derivationPath = this.derivationPath.toDataItem();
-    derivationPath.setTag(this.derivationPath.getRegistryType().getTag());
+    const derivationPath = this._derivationPath.toDataItem();
+    derivationPath.setTag(this._derivationPath.getRegistryType().getTag());
     map[Keys.derivationPath] = derivationPath;
 
     // Add sign data

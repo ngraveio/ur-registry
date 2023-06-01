@@ -4,7 +4,7 @@ import {
   EllipticCurve,
   PathComponent,
 } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
-import { CryptoTxSignature, CryptoSignRequest } from '../src';
+import { CryptoSignRequest } from '../src';
 import { EthSignRequestMeta, IrfanSignRequestMeta, PolygonMeta } from '../src/metadatas/Ethereum.metadata';
 import { SignRequestMeta } from '../src/SignRequestMetadata';
 
@@ -66,14 +66,25 @@ describe('CryptoSignRequest checks', () => {
     }).toThrowError('Coin id is required and should be of type CryptoCoinIdentity');
   });
 
+  it('Should convert string derivation path into CryptoKeypath correctly', () => {
+    const ethSignRequest = new CryptoSignRequest({
+      coinId: ethCoinId,
+      derivationPath: "m/44'/60'/0'/0/0",
+      signData: Buffer.from('abbacaca', 'hex'),
+    });
+
+    expect(ethSignRequest.getDerivationPath()).toBeInstanceOf(CryptoKeypath);
+    expect(ethSignRequest.getDerivationPath().getPath()).toEqual("44'/60'/0'/0/0");
+  });
+
   it('Should throw an error if derivationPath typecheck fails', () => {
     expect(() => {
       new CryptoSignRequest({
         coinId: ethCoinId,
-        derivationPath: 'ethPath',
+        derivationPath: 15,
         signData: Buffer.from('abbacaca', 'hex'),
       } as any);
-    }).toThrowError('Derivation path is required and should be of type CryptoKeypath');
+    }).toThrowError('Derivation path should be of type CryptoKeypath or string');
   });
 
   it('Should throw an error if derivation path doesnt cointain a path component', () => {
@@ -83,8 +94,34 @@ describe('CryptoSignRequest checks', () => {
         derivationPath: new CryptoKeypath([]),
         signData: Buffer.from('abbacaca', 'hex'),
       });
-    }).toThrowError('Derivation path is required and should be of type CryptoKeypath');
+    }).toThrowError('Derivation path should have a valid path');
   })
+
+  it('Should throw error if derivation path is not valid BIP44 path string', () => {
+    expect(() => {
+      new CryptoSignRequest({
+        coinId: ethCoinId,
+        derivationPath: 'test',
+        signData: Buffer.from('abbacaca', 'hex'),
+      });
+    }).toThrowError('Derivation path should be a valid BIP44 path');
+
+    expect(() => {
+      new CryptoSignRequest({
+        coinId: ethCoinId,
+        derivationPath: '-15',
+        signData: Buffer.from('abbacaca', 'hex'),
+      });
+    }).toThrowError('Derivation path should be a valid BIP44 path');    
+
+    expect(() => {
+      new CryptoSignRequest({
+        coinId: ethCoinId,
+        derivationPath: 'm/naber/60/0/0',
+        signData: Buffer.from('abbacaca', 'hex'),
+      });
+    }).toThrowError('Derivation path should be a valid BIP44 path');    
+  });
 
   it('Should throw an error if signdata doesnt contain any data', () => {
     expect(() => {
