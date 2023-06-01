@@ -12,7 +12,7 @@ export interface SolSignRequestProps {
 }
 
 export class SolSignRequestMeta extends SignRequestMeta {
-    static coinId: CryptoCoinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 501);
+    static coinId: CryptoCoinIdentity = new CryptoCoinIdentity(EllipticCurve.Ed25519, 501);
 
     constructor(data: SolSignRequestProps, tag?: number) {
         super(data, tag);
