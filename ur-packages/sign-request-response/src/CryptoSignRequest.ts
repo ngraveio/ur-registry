@@ -3,7 +3,7 @@ import { CryptoCoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identit
 import { ExtendedRegistryTypes } from './RegistryType';
 import { signMetaMap } from './metadatas';
 import { SignRequestMeta } from './SignRequestMetadata';
-import { EthSignRequestMeta } from './metadatas/Ethereum.metadata';
+import { EthSignRequestMeta } from './metadatas/ethereum.metadata';
 
 const { RegistryTypes, decodeToDataItem } = extend;
 
