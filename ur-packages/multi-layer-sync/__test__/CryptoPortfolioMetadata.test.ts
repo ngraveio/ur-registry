@@ -31,7 +31,7 @@ describe("CryptoPortfolioMetadata", () => {
         const sync_id = Buffer.from("babe0000babe00112233445566778899", "hex");
 
         // New metadata
-        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id, "device": "my-device", "language_code": "en", "fw_version": "1.0.0"});
+        const metadata = new CryptoPortfolioMetadata({"syncId": sync_id, "device": "my-device", "languageCode": "en", "firmwareVersion": "1.0.0"});
 
         expect(metadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
         expect(metadata.getLanguageCode()).toBe("en");
@@ -57,7 +57,7 @@ describe("CryptoPortfolioMetadata sync_id", () => {
         const sync_id = Buffer.from("babe0000babe00112233445566778899", "hex");
 
         // New metadata
-        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id});
+        const metadata = new CryptoPortfolioMetadata({"syncId": sync_id});
 
         expect(metadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
 
@@ -76,7 +76,7 @@ describe("CryptoPortfolioMetadata sync_id", () => {
         const sync_id = Buffer.from("babe", "hex");
 
         // New metadata
-        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id});
+        const metadata = new CryptoPortfolioMetadata({"syncId": sync_id});
 
         expect(metadata.getSyncId()?.toString('hex')).toBe("0000000000000000000000000000babe");
 
@@ -89,7 +89,7 @@ describe("CryptoPortfolioMetadata sync_id", () => {
         const sync_id = Buffer.from("0000000000000000000000000000babe", "hex");
 
         // New metadata
-        const metadata = new CryptoPortfolioMetadata({"sync_id": sync_id});
+        const metadata = new CryptoPortfolioMetadata({"syncId": sync_id});
         // console.log(metadata.toCBOR().toString("hex")); // a40142babe02f703f704f7
         // console.log(metadata.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadfwrdrnaoylaxylaaylgdpllsgt
 
@@ -104,10 +104,10 @@ describe("CryptoPortfolioMetadata language codes", () => {
 
     it("should encode with correct language codes", () => {
         
-        const metadata_en = new CryptoPortfolioMetadata({"language_code": "en"});
-        const metadata_tr = new CryptoPortfolioMetadata({"language_code": "tr"});
-        const metadata_fr = new CryptoPortfolioMetadata({"language_code": "fr"});
-        const metadata_nl = new CryptoPortfolioMetadata({"language_code": "nl"});
+        const metadata_en = new CryptoPortfolioMetadata({"languageCode": "en"});
+        const metadata_tr = new CryptoPortfolioMetadata({"languageCode": "tr"});
+        const metadata_fr = new CryptoPortfolioMetadata({"languageCode": "fr"});
+        const metadata_nl = new CryptoPortfolioMetadata({"languageCode": "nl"});
 
         expect(metadata_en.getLanguageCode()).toBe("en"); 
         expect(metadata_tr.getLanguageCode()).toBe("tr"); 
@@ -183,11 +183,11 @@ describe("CryptoPortfolioMetadata language codes", () => {
     it("should throw error encoding with incorrect language codes", () => {
         expect(() => {
             //@ts-ignore
-            const metadata = new CryptoPortfolioMetadata({"language_code": "xx"});
+            const metadata = new CryptoPortfolioMetadata({"languageCode": "xx"});
         }).toThrowError("Invalid language code");
         expect(() => {
             //@ts-ignore
-            const metadata = new CryptoPortfolioMetadata({"language_code": "xyx"});
+            const metadata = new CryptoPortfolioMetadata({"languageCode": "xyx"});
         }).toThrowError("Invalid language code");
     });
     

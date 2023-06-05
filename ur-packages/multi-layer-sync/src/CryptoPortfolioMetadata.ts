@@ -32,16 +32,16 @@ const { RegistryTypes, decodeToDataItem } = extend;
  */
 
 enum Keys {
-  sync_id = 1,
+  syncId = 1,
   language = 2,
-  fw_version = 3,
+  firmwareVersion = 3,
   device = 4,
 }
 
 interface ICryptoPortfolioMetadata {
-  sync_id?: Buffer; // Size 16
-  language_code?: keyof typeof languages; // ISO 639-1 language codes
-  fw_version?: string;
+  syncId?: Buffer; // Size 16
+  languageCode?: keyof typeof languages; // ISO 639-1 language codes
+  firmwareVersion?: string;
   device?: string;
   //[key: string]: any;
 }
@@ -62,12 +62,12 @@ export class CryptoPortfolioMetadata extends RegistryItem {
     super();
 
     // If language code is incorrect, throw error
-    if (metadata.language_code && !languages[metadata.language_code]) {
+    if (metadata.languageCode && !languages[metadata.languageCode]) {
       throw new Error("Invalid language code");
     }
 
     // sync id buffer size must be maximum 16 otherwise throw error
-    if (metadata.sync_id && metadata.sync_id.length > 16) {
+    if (metadata.syncId && metadata.syncId.length > 16) {
       throw new Error("Sync id buffer size must be maximum 16");
     }
 
@@ -77,30 +77,30 @@ export class CryptoPortfolioMetadata extends RegistryItem {
 
   public getSyncId = () => {
     // should pad the left of the buffer with 0 if smaller than 16
-    if (this.metadata.sync_id) {
+    if (this.metadata.syncId) {
       return Buffer.concat([
-        Buffer.alloc(16 - this.metadata.sync_id.length),
-        this.metadata.sync_id,
+        Buffer.alloc(16 - this.metadata.syncId.length),
+        this.metadata.syncId,
       ]);
     }
   }
 
-  public getLanguageCode = () => this.metadata.language_code;
-  public getFirmwareVersion = () => this.metadata.fw_version;
+  public getLanguageCode = () => this.metadata.languageCode;
+  public getFirmwareVersion = () => this.metadata.firmwareVersion;
   public getDevice = () => this.metadata.device;
 
   public toDataItem = () => {
     const map: DataItemMap = {};
 
-    let padRemovedSyncId = this.metadata.sync_id;
+    let padRemovedSyncId = this.metadata.syncId;
     // Remove starting zeros from sync id buffer
     while (padRemovedSyncId && padRemovedSyncId[0] === 0) {
       padRemovedSyncId = padRemovedSyncId.slice(1);
     }
 
-    map[Keys.sync_id] = padRemovedSyncId;
-    map[Keys.language] = this.metadata.language_code;
-    map[Keys.fw_version] = this.metadata.fw_version;
+    map[Keys.syncId] = padRemovedSyncId;
+    map[Keys.language] = this.metadata.languageCode;
+    map[Keys.firmwareVersion] = this.metadata.firmwareVersion;
     map[Keys.device] = this.metadata.device;
 
     // Todo add any by incrementing the map key
@@ -111,13 +111,13 @@ export class CryptoPortfolioMetadata extends RegistryItem {
   public static fromDataItem = (dataItem: DataItem) => {
     const map = dataItem.getData();
 
-    const sync_id = map[Keys.sync_id];
-    const language_code = map[Keys.language];
-    const fw_version = map[Keys.fw_version];
+    const syncId = map[Keys.syncId];
+    const languageCode = map[Keys.language];
+    const firmwareVersion = map[Keys.firmwareVersion];
     const device = map[Keys.device];
     // TODO: Could be anything as json. import anything
 
-    return new CryptoPortfolioMetadata({sync_id, language_code, fw_version, device});
+    return new CryptoPortfolioMetadata({syncId, languageCode, firmwareVersion, device});
   }
 
   public static fromCBOR = (_cborPayload: Buffer) => {

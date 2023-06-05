@@ -56,7 +56,7 @@ describe('TxSignature', () => {
         const requestId = Buffer.from('babe', 'hex');
         const signature = Buffer.from('abdacaca', 'hex');
         const metadata = new CryptoPortfolioMetadata({
-            fw_version: "1.3.1",
+            firmwareVersion: "1.3.1",
             device: "Ngrave",
         })
 

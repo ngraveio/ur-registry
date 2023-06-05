@@ -32,9 +32,9 @@ describe('Crypto Portfolio', () => {
   it('should generate / decode CryptoPortfolio with empty coin array and MetaData', () => {
     // Metadata
     const metadata = new CryptoPortfolioMetadata({
-      sync_id: Buffer.from('123456781234567802D9044FA3011A71', 'hex'),
-      language_code: 'en',
-      fw_version: '1.2.1-1.rc',
+      syncId: Buffer.from('123456781234567802D9044FA3011A71', 'hex'),
+      languageCode: 'en',
+      firmwareVersion: '1.2.1-1.rc',
       device: 'NGRAVE ZERO',
     });
 
@@ -298,9 +298,9 @@ describe('Crypto Portfolio', () => {
 
     // Metadata
     const metadata = new CryptoPortfolioMetadata({
-      sync_id: Buffer.from('123456781234567802D9044FA3011A71', 'hex'),
-      language_code: 'en',
-      fw_version: '1.2.1-1.rc',
+      syncId: Buffer.from('123456781234567802D9044FA3011A71', 'hex'),
+      languageCode: 'en',
+      firmwareVersion: '1.2.1-1.rc',
       device: 'NGRAVE ZERO',
     });
 
