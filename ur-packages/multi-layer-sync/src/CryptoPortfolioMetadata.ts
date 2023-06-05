@@ -85,7 +85,11 @@ export class CryptoPortfolioMetadata extends RegistryItem {
 
   
   public getData = () => {
-    return {...this.metadata}
+    const clone = {...this.metadata}
+
+    // Remove undefined values
+    Object.keys(clone).forEach(key => clone[key] === undefined && delete clone[key]);
+    return clone;
   }
 
   public toDataItem = () => {
