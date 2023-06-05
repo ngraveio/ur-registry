@@ -99,10 +99,10 @@ export class CryptoPortfolioMetadata extends RegistryItem {
     }
 
     // Add all known types to the map with integer keys
-    map[Keys.syncId] = padRemovedSyncId;
-    map[Keys.language] = this.metadata.languageCode;
-    map[Keys.firmwareVersion] = this.metadata.firmwareVersion;
-    map[Keys.device] = this.metadata.device;
+    if(this.metadata.syncId) map[Keys.syncId] = padRemovedSyncId;
+    if(this.metadata.languageCode) map[Keys.language] = this.metadata.languageCode;
+    if(this.metadata.firmwareVersion ) map[Keys.firmwareVersion] = this.metadata.firmwareVersion;
+    if(this.metadata.device ) map[Keys.device] = this.metadata.device;
 
     // Add all unknown types to the map with string keys
     // Clone the metadata object and remove all known types
