@@ -43,17 +43,11 @@ interface ICryptoPortfolioMetadata {
   languageCode?: keyof typeof languages; // ISO 639-1 language codes
   firmwareVersion?: string;
   device?: string;
-  //[key: string]: any;
+  [key: string]: any;
 }
 
 
 export class CryptoPortfolioMetadata extends RegistryItem {
-  private sync_id?: Buffer; // Size 16
-  private language_code?: keyof typeof languages; // ISO 639-1 language codes
-  private fw_version?: string;
-  private device?: string;
-  // Any any
-
   //private metadata: ICryptoPortfolioMetadata;
 
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_SYNC_METADATA;
@@ -89,8 +83,14 @@ export class CryptoPortfolioMetadata extends RegistryItem {
   public getFirmwareVersion = () => this.metadata.firmwareVersion;
   public getDevice = () => this.metadata.device;
 
+  
+  public getData = () => {
+    return {...this.metadata}
+  }
+
   public toDataItem = () => {
-    const map: DataItemMap = {};
+    // Lets create an empty map
+    let map: DataItemMap = {};
 
     let padRemovedSyncId = this.metadata.syncId;
     // Remove starting zeros from sync id buffer
@@ -98,12 +98,22 @@ export class CryptoPortfolioMetadata extends RegistryItem {
       padRemovedSyncId = padRemovedSyncId.slice(1);
     }
 
+    // Add all known types to the map with integer keys
     map[Keys.syncId] = padRemovedSyncId;
     map[Keys.language] = this.metadata.languageCode;
     map[Keys.firmwareVersion] = this.metadata.firmwareVersion;
     map[Keys.device] = this.metadata.device;
 
-    // Todo add any by incrementing the map key
+    // Add all unknown types to the map with string keys
+    // Clone the metadata object and remove all known types
+    const unknownTypes = { ...this.metadata };
+    delete unknownTypes.syncId;
+    delete unknownTypes.languageCode;
+    delete unknownTypes.firmwareVersion;
+    delete unknownTypes.device;
+
+    // Add all unknown types to the map
+    map = { ...map, ...unknownTypes };
 
     return new DataItem(map);
   };
@@ -111,13 +121,17 @@ export class CryptoPortfolioMetadata extends RegistryItem {
   public static fromDataItem = (dataItem: DataItem) => {
     const map = dataItem.getData();
 
-    const syncId = map[Keys.syncId];
-    const languageCode = map[Keys.language];
-    const firmwareVersion = map[Keys.firmwareVersion];
-    const device = map[Keys.device];
-    // TODO: Could be anything as json. import anything
+    const syncId = map[Keys.syncId] || map['syncId'];
+    const languageCode = map[Keys.language] || map['language'];
+    const firmwareVersion = map[Keys.firmwareVersion] || map['firmwareVersion'];
+    const device = map[Keys.device] || map['device'];
 
-    return new CryptoPortfolioMetadata({syncId, languageCode, firmwareVersion, device});
+    // Remove all known types from the map
+    for(const key of Object.keys(Keys)) {
+      delete map[key];
+    }
+
+    return new CryptoPortfolioMetadata({...map, syncId, languageCode, firmwareVersion, device});
   }
 
   public static fromCBOR = (_cborPayload: Buffer) => {
