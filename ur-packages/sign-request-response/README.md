@@ -55,7 +55,7 @@ const decodedEgldSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex
 
 #### Solana (SOL)
 
-A Solana transaction is uniquely identified through the URI format bc-coin://ed25519/508, information shared in crypto-coin-identity UR type.
+A Solana transaction is uniquely identified through the URI format bc-coin://ed25519/501, information shared in crypto-coin-identity UR type.
 
 ```js
 // get the native transaction
@@ -120,7 +120,6 @@ const tezSignRequest = new CryptoSignRequest({
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new TezosSignRequestMeta({
     type: TezosDataType.dataTypeOperation,
-    keyType: TezosKeyType.ed25519,
   }),
 })
 
