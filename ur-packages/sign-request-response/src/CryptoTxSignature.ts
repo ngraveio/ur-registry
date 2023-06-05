@@ -5,30 +5,31 @@ import {
   DataItemMap
 } from "@keystonehq/bc-ur-registry";
 import { ExtendedRegistryTypes } from "./RegistryType";
+import { CryptoPortfolioMetadata } from "@ngraveio/bc-ur-multi-layer-sync"
 
 const { RegistryTypes, decodeToDataItem } = extend;
 
 enum Keys {
   requestId = 1,
   signature,
-  origin,
+  metadata,
 }
 
 interface ICryptoTxSignature {
   requestId?: Buffer; // Size 16
   signature: Buffer;
-  origin?: string;
+  metadata?: CryptoPortfolioMetadata;
 }
 
 export class CryptoTxSignature extends RegistryItem {
 
   private _requestId?: Buffer; // Size 16
   private signature: Buffer;
-  private origin?: string;  
+  private metadata?: CryptoPortfolioMetadata;  
 
   getRegistryType = () => ExtendedRegistryTypes.CRYPTO_SIGNATURE;
 
-  constructor({ requestId, signature, origin }: ICryptoTxSignature) {
+  constructor({ requestId, signature, metadata }: ICryptoTxSignature) {
     super();
 
     // Make sure signature is provided and contains data
@@ -36,7 +37,7 @@ export class CryptoTxSignature extends RegistryItem {
     
     this.requestId = requestId;
     this.signature = signature;
-    this.origin = origin;
+    this.metadata = metadata;
   }
 
   // Check request before setting
@@ -51,12 +52,14 @@ export class CryptoTxSignature extends RegistryItem {
         const padding = Buffer.alloc(16 - requestId.length);
         requestId = Buffer.concat([padding, requestId]);
       }
+
+      this._requestId = requestId;
     }
   }
 
   public getRequestId = () => this._requestId;
   public getSignature = () => this.signature;
-  public getOrigin = () => this.origin;
+  public getMetadata = () => this.metadata;
 
   /**
    * Convert CryptoTxSignature to DataItem representation
@@ -74,8 +77,9 @@ export class CryptoTxSignature extends RegistryItem {
 
     map[Keys.signature] = this.signature;
 
-    if (this.origin) {
-      map[Keys.origin] = this.origin;
+    if (this.metadata) {
+      map[Keys.metadata] = this.metadata.toDataItem();
+      map[Keys.metadata].setTag(this.metadata.getRegistryType().getTag());
     }
 
     return new DataItem(map);
@@ -90,9 +94,12 @@ export class CryptoTxSignature extends RegistryItem {
     const map = dataItem.getData();
     const signature = map[Keys.signature];
     const requestId = map[Keys.requestId].getData();
-    const origin = map[Keys.origin];
+    
+    let metadata = undefined;
+    if(map[Keys.metadata])
+      metadata = CryptoPortfolioMetadata.fromDataItem(map[Keys.metadata]);
 
-    return new CryptoTxSignature({signature, requestId, origin});
+    return new CryptoTxSignature({signature, requestId, metadata});
   };
 
   public static fromCBOR = (_cborPayload: Buffer) => {
