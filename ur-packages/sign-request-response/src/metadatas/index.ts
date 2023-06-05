@@ -1,6 +1,6 @@
 import { CryptoCoinIdentity, EllipticCurve } from "@ngraveio/bc-ur-registry-crypto-coin-identity";
 import { SignRequestMeta } from '../SignRequestMetadata';
-import { EthSignRequestMeta, PolygonMeta } from "./Ethereum.metadata";
+import { EthSignRequestMeta, PolygonMeta } from "./ethereum.metadata";
 import { SolSignRequestMeta } from "./solana.metadata";
 import { TezosSignRequestMeta } from "./tezos.metadata";
 
@@ -21,6 +21,6 @@ export function addMetadata(coinId: CryptoCoinIdentity | string, metadata: typeo
     else signMetaMap.set(coinId, metadata);
 }
 
-export * from './Ethereum.metadata'
+export * from './ethereum.metadata'
 export * from './solana.metadata'
 export * from './tezos.metadata'
