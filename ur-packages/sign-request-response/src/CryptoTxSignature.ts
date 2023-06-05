@@ -46,10 +46,10 @@ export class CryptoTxSignature extends RegistryItem {
       // Request id should not be longer than 16 bytes
       if(requestId.length > 16) throw new Error("Request id should not be longer than 16 bytes");
 
-      // If request id is smaller than 16 bytes, pad with 0s
+      // If request id is smaller than 16 bytes, prepad with 0s
       if(requestId.length < 16) {
         const padding = Buffer.alloc(16 - requestId.length);
-        requestId = Buffer.concat([requestId, padding]);
+        requestId = Buffer.concat([padding, requestId]);
       }
     }
   }
