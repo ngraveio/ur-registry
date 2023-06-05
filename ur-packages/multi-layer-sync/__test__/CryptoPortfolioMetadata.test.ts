@@ -198,3 +198,83 @@ describe("CryptoPortfolioMetadata language codes", () => {
     });
      
 });
+
+describe('CryptoPortfolioMetadata with extended values', () => {
+    it('Should encode and decode only with unknown key value pairs', () => {
+
+        const myData = {
+            "string": "hello world",
+            "number": 123,
+            "boolean": true,
+            "array": [1, 2, 3],
+            "object": {"a": 1, "b": 2},
+            "null": null,
+            "date": new Date("2021-01-01T00:00:00.000Z"),
+        }
+        // New metadata
+        const metadata = new CryptoPortfolioMetadata({...myData});
+
+        expect(metadata.getData()).toStrictEqual({...myData});
+
+        const cbor = metadata.toCBOR().toString("hex");
+        console.log(cbor);
+
+        // Decode metadata
+        const decodedMetadata = CryptoPortfolioMetadata.fromCBOR(Buffer.from(cbor, "hex"));
+        console.log(metadata.getData());
+
+        expect(decodedMetadata.getData()).toStrictEqual(metadata.getData());
+
+
+        // const urData = metadata.toUREncoder(1000).nextPart();
+        // const ur = URRegistryDecoder.decode(urData);
+        // const metadataRead = CryptoPortfolioMetadata.fromCBOR(ur.cbor);
+
+        // expect(metadataRead.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
+        // expect(metadataRead.getLanguageCode()).toBe("en");
+        // expect(metadataRead.getDevice()).toBe("my-device");
+        // expect(metadataRead.getFirmwareVersion()).toBe("1.0.0");   
+    });
+
+    it("Should encode and decode with known and extended values", () => {
+
+        const sync_id = Buffer.from("babe0000babe00112233445566778899", "hex");
+
+        const knownValues = {"syncId": sync_id, "device": "my-device", "languageCode": "en" as const, "firmwareVersion": "1.0.0"}
+
+        const myData = {
+            "string": "hello world",
+            "number": 123,
+            "boolean": true,
+            "array": [1, 2, 3],
+            "object": {"a": 1, "b": 2},
+            "null": null,
+            "date": new Date("2021-01-01T00:00:00.000Z"),
+        }
+
+
+        // New metadata
+        const metadata = new CryptoPortfolioMetadata({...knownValues, ...myData});
+
+        expect(metadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
+        expect(metadata.getLanguageCode()).toBe("en");
+        expect(metadata.getDevice()).toBe("my-device");
+        expect(metadata.getFirmwareVersion()).toBe("1.0.0");
+
+        expect(metadata.getData()).toStrictEqual({...knownValues, ...myData});
+
+
+        const urData = metadata.toUREncoder(1000).nextPart();
+        const ur = URRegistryDecoder.decode(urData);
+        console.log('all', ur.cbor.toString('hex'));
+        const decodedMetadata = CryptoPortfolioMetadata.fromCBOR(ur.cbor);
+
+        expect(decodedMetadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
+        expect(decodedMetadata.getLanguageCode()).toBe("en");
+        expect(decodedMetadata.getDevice()).toBe("my-device");
+        expect(decodedMetadata.getFirmwareVersion()).toBe("1.0.0");
+
+        expect(decodedMetadata.getData()).toStrictEqual(metadata.getData());
+    });
+
+});
