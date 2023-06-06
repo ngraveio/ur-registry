@@ -19,6 +19,22 @@
   },
   "author": "Irfan Bilaloglu<irfan.bilaloglu@ngrave.io>",
   "license": "MIT",
+  "homepage": "https://github.com/ngraveio/ur-registry",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ngraveio/ur-registry.git"
+  },
+  "keywords": [
+    "bc-ur",
+    "Blockchain Commons",
+    "cbor",
+    "crypto",
+    "coin",
+    "identity"
+  ],
+  "bugs": {
+    "url": "https://github.com/ngraveio/ur-registry/issues"
+  },
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.5.4",
     "uuid": "^9.0.0"
