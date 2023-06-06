@@ -90,11 +90,9 @@ describe("CryptoPortfolioMetadata sync_id", () => {
 
         // New metadata
         const metadata = new CryptoPortfolioMetadata({"syncId": sync_id});
-        // console.log(metadata.toCBOR().toString("hex")); // a40142babe02f703f704f7
-        // console.log(metadata.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadfwrdrnaoylaxylaaylgdpllsgt
 
-        expect(metadata.toCBOR().toString('hex')).toEqual("a40142babe02f703f704f7");
-        expect(metadata.toUREncoder(100).nextPart()).toEqual("ur:crypto-portfolio-metadata/oxadfwrdrnaoylaxylaaylgdpllsgt");
+        expect(metadata.toCBOR().toString('hex')).toEqual("a10142babe");
+        expect(metadata.toUREncoder(100).nextPart()).toEqual("ur:crypto-portfolio-metadata/oyadfwrdrnjpeeosga");
     });
 
 });
@@ -114,46 +112,27 @@ describe("CryptoPortfolioMetadata language codes", () => {
         expect(metadata_fr.getLanguageCode()).toBe("fr"); 
         expect(metadata_nl.getLanguageCode()).toBe("nl"); 
 
-        /** 
-         * Current encoding still fills other fields with undefined values do we need it?
-         * 
-         * eg: 
-         * {1: undefined, 2: "tr", 3: undefined, 4: undefined}
-         * ```
-         * A4         # map(4)
-         *    01      # unsigned(1)
-         *    F7      # primitive(23)
-         *    02      # unsigned(2)
-         *    62      # text(2)
-         *       7472 # "tr"
-         *    03      # unsigned(3)
-         *    F7      # primitive(23)
-         *    04      # unsigned(4)
-         *    F7      # primitive(23)
-         * ```
-         */
+        // console.log(metadata_en.toCBOR().toString("hex")); // a10262656e
+        // console.log(metadata_tr.toCBOR().toString("hex")); // a102627472
+        // console.log(metadata_fr.toCBOR().toString("hex")); // a102626672
+        // console.log(metadata_nl.toCBOR().toString("hex")); // a102626e6c
 
-        // console.log(metadata_en.toCBOR().toString("hex")); // a401f70262656e03f704f7
-        // console.log(metadata_tr.toCBOR().toString("hex")); // a401f70262747203f704f7
-        // console.log(metadata_fr.toCBOR().toString("hex")); // a401f70262667203f704f7
-        // console.log(metadata_nl.toCBOR().toString("hex")); // a401f702626e6c03f704f7
-
-        expect(metadata_en.toCBOR().toString("hex")).toBe("a401f70262656e03f704f7");
-        expect(metadata_tr.toCBOR().toString("hex")).toBe("a401f70262747203f704f7");
-        expect(metadata_fr.toCBOR().toString("hex")).toBe("a401f70262667203f704f7");
-        expect(metadata_nl.toCBOR().toString("hex")).toBe("a401f702626e6c03f704f7");
+        expect(metadata_en.toCBOR().toString("hex")).toBe("a10262656e");
+        expect(metadata_tr.toCBOR().toString("hex")).toBe("a102627472");
+        expect(metadata_fr.toCBOR().toString("hex")).toBe("a102626672");
+        expect(metadata_nl.toCBOR().toString("hex")).toBe("a102626e6c");
 
         // console.log("UR");
 
-        // console.log(metadata_en.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidihjtaxylaaylwzsgtpfh
-        // console.log(metadata_tr.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidjyjpaxylaaylnegdjklf
-        // console.log(metadata_fr.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidiyjpaxylaaylttgltibg
-        // console.log(metadata_nl.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oxadylaoidjtjzaxylaaylvosnkgns
+        // console.log(metadata_en.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oyaoidihjttprsfefx
+        // console.log(metadata_tr.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oyaoidjyjpneioftce
+        // console.log(metadata_fr.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oyaoidiyjpvdmugetk
+        // console.log(metadata_nl.toUREncoder(100).nextPart()); // ur:crypto-portfolio-metadata/oyaoidjtjztlfezcox
 
-        expect(metadata_en.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidihjtaxylaaylwzsgtpfh");
-        expect(metadata_tr.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidjyjpaxylaaylnegdjklf");
-        expect(metadata_fr.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidiyjpaxylaaylttgltibg");
-        expect(metadata_nl.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oxadylaoidjtjzaxylaaylvosnkgns");
+        expect(metadata_en.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oyaoidihjttprsfefx");
+        expect(metadata_tr.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oyaoidjyjpneioftce");
+        expect(metadata_fr.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oyaoidiyjpvdmugetk");
+        expect(metadata_nl.toUREncoder(100).nextPart()).toBe("ur:crypto-portfolio-metadata/oyaoidjtjztlfezcox");
     });
     
 
@@ -262,7 +241,7 @@ describe('CryptoPortfolioMetadata with extended values', () => {
         const cbor = metadata.toCBOR().toString('hex'); // ab0150babe0000babe001122334455667788990262656e0365312e302e3004696d792d64657669636566737472696e676b68656c6c6f20776f726c64666e756d626572187b67626f6f6c65616ef565617272617983010203666f626a656374a2616101616202646e756c6cf66464617465c07818323032312d30312d30315430303a30303a30302e3030305a
 
         // Decode
-        const decodedMetadata = CryptoPortfolioMetadata.fromCBOR(cbor);
+        const decodedMetadata = CryptoPortfolioMetadata.fromCBOR(Buffer.from(cbor, 'hex'));
 
         expect(decodedMetadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
         expect(decodedMetadata.getLanguageCode()).toBe("en");
