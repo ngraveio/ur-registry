@@ -73,8 +73,7 @@ describe('TxSignature', () => {
 
 
         // Encode
-        const cbor = txSignature.toCBOR().toString('hex'); // a301d825500000000000000000000000000000babe0244abdacaca03d9057ca401f702f70365312e332e3104664e6772617665
-        console.log('cbor with meta', cbor);
+        const cbor = txSignature.toCBOR().toString('hex'); // a301d825500000000000000000000000000000babe0244abdacaca03d9057ca20365312e332e3104664e6772617665
 
         // Decode
         const decodedTxSignature = CryptoTxSignature.fromCBOR(Buffer.from(cbor, 'hex'));

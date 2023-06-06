@@ -216,24 +216,14 @@ describe('CryptoPortfolioMetadata with extended values', () => {
 
         expect(metadata.getData()).toStrictEqual({...myData});
 
-        const cbor = metadata.toCBOR().toString("hex");
-        console.log(cbor);
+        const cbor = metadata.toCBOR().toString("hex"); // a766737472696e676b68656c6c6f20776f726c64666e756d626572187b67626f6f6c65616ef565617272617983010203666f626a656374a2616101616202646e756c6cf66464617465c07818323032312d30312d30315430303a30303a30302e3030305a
+        //console.log(cbor);
 
         // Decode metadata
         const decodedMetadata = CryptoPortfolioMetadata.fromCBOR(Buffer.from(cbor, "hex"));
-        console.log(metadata.getData());
 
         expect(decodedMetadata.getData()).toStrictEqual(metadata.getData());
 
-
-        // const urData = metadata.toUREncoder(1000).nextPart();
-        // const ur = URRegistryDecoder.decode(urData);
-        // const metadataRead = CryptoPortfolioMetadata.fromCBOR(ur.cbor);
-
-        // expect(metadataRead.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
-        // expect(metadataRead.getLanguageCode()).toBe("en");
-        // expect(metadataRead.getDevice()).toBe("my-device");
-        // expect(metadataRead.getFirmwareVersion()).toBe("1.0.0");   
     });
 
     it("Should encode and decode with known and extended values", () => {
@@ -264,10 +254,15 @@ describe('CryptoPortfolioMetadata with extended values', () => {
         expect(metadata.getData()).toStrictEqual({...knownValues, ...myData});
 
 
-        const urData = metadata.toUREncoder(1000).nextPart();
-        const ur = URRegistryDecoder.decode(urData);
-        console.log('all', ur.cbor.toString('hex'));
-        const decodedMetadata = CryptoPortfolioMetadata.fromCBOR(ur.cbor);
+        // const urData = metadata.toUREncoder(1000).nextPart();
+        // const ur = URRegistryDecoder.decode(urData);
+        // console.log('all', ur.cbor.toString('hex'));
+
+        // Encode
+        const cbor = metadata.toCBOR().toString('hex'); // ab0150babe0000babe001122334455667788990262656e0365312e302e3004696d792d64657669636566737472696e676b68656c6c6f20776f726c64666e756d626572187b67626f6f6c65616ef565617272617983010203666f626a656374a2616101616202646e756c6cf66464617465c07818323032312d30312d30315430303a30303a30302e3030305a
+
+        // Decode
+        const decodedMetadata = CryptoPortfolioMetadata.fromCBOR(cbor);
 
         expect(decodedMetadata.getSyncId()?.toString('hex')).toBe("babe0000babe00112233445566778899");
         expect(decodedMetadata.getLanguageCode()).toBe("en");

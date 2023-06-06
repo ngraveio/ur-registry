@@ -82,10 +82,6 @@ export class CryptoSignRequest extends RegistryItem {
       // Find metadata type
       const metaType = CryptoSignRequest.findMetadataType(coinId);
 
-      if (metadata instanceof EthSignRequestMeta) {
-        console.log('metadata is EthSignRequestMeta');
-      }
-
       // Check if we have an object or an instance of SignRequestMeta
       if (metadata instanceof SignRequestMeta) {
         // Check if that is correct instance
