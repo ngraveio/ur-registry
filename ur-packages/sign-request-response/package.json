@@ -1,6 +1,6 @@
 {
   "name": "@ngraveio/bc-ur-sign-request-response",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Provides BC-UR types for signature request and response from cold wallets to hot wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,8 +21,8 @@
   "license": "MIT",
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.5.4",
-    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.2.1",
-    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.0.1"
+    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.3.0",
+    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.1.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",

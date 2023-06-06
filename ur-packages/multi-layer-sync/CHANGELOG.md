@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-multi-layer-sync@0.2.1...@ngraveio/bc-ur-multi-layer-sync@0.3.0) (2023-06-06)
+
+
+### Bug Fixes
+
+* **portfolio:** fix tests ([2c48345](https://github.com/ngraveio/ur-registry/commit/2c48345634d7e700952d71b08f058803432ae788))
+* **sync:** do not add optional metadas if they are undefined ([4f772d7](https://github.com/ngraveio/ur-registry/commit/4f772d765b7462e26e3a754cc701396a27e5a046))
+* **sync:** Remove undefined values from portfolio metadata ([6340e7b](https://github.com/ngraveio/ur-registry/commit/6340e7bd8e6d87f0ee24bdcbdee61e3dd8383721))
+
+
+### Features
+
+* **metadata:** Move portfolio-metadata to its own package ([46e9952](https://github.com/ngraveio/ur-registry/commit/46e9952110cd007a3b119951b7e9fdebfc63fed9))
+* **sync:** Make metadata extendable ([91d3668](https://github.com/ngraveio/ur-registry/commit/91d3668e000abff2b7b95e824136400c1e2adc68))
+
+
+
+
+
 ## [0.2.1](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-multi-layer-sync@0.2.0...@ngraveio/bc-ur-multi-layer-sync@0.2.1) (2023-05-16)
 
 **Note:** Version bump only for package @ngraveio/bc-ur-multi-layer-sync

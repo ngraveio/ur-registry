@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-registry-hex-string@0.2.1...@ngraveio/bc-ur-registry-hex-string@0.3.0) (2023-06-06)
+
+
+### Features
+
+* **metadata:** Move portfolio-metadata to its own package ([46e9952](https://github.com/ngraveio/ur-registry/commit/46e9952110cd007a3b119951b7e9fdebfc63fed9))
+
+
+
+
+
 ## [0.2.1](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-registry-hex-string@0.2.0...@ngraveio/bc-ur-registry-hex-string@0.2.1) (2023-05-16)
 
 **Note:** Version bump only for package @ngraveio/bc-ur-registry-hex-string

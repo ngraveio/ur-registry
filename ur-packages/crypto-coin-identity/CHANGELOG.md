@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-registry-crypto-coin-identity@0.2.1...@ngraveio/bc-ur-registry-crypto-coin-identity@0.3.0) (2023-06-06)
+
+
+### Features
+
+* added comparison function for coinIdentities as url ([bd0dbfd](https://github.com/ngraveio/ur-registry/commit/bd0dbfd420cbdb254f299f6af877ea25a280c008))
+* **coinID:** Add get parent, geneator and change subtype ([90d6573](https://github.com/ngraveio/ur-registry/commit/90d6573bae18746692bcffecc3cc0224de6b03b4))
+
+
+
+
+
 ## [0.2.1](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-registry-crypto-coin-identity@0.2.0...@ngraveio/bc-ur-registry-crypto-coin-identity@0.2.1) (2023-05-16)
 
 **Note:** Version bump only for package @ngraveio/bc-ur-registry-crypto-coin-identity
