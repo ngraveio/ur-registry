@@ -151,7 +151,7 @@ describe('toURL', () => {
     const coinID = CryptoCoinIdentity.fromUrl(uri)
     expect(coinID.getCurve()).toBe('secp256k1')
     expect(coinID.getType()).toBe(60)
-    expect(coinID.getSubType()).toBe([])
+    expect(coinID.getSubType()).toStrictEqual([])
   })
 })
 
