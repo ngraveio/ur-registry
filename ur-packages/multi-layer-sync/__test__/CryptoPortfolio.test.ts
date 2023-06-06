@@ -1,11 +1,7 @@
 import { CryptoHDKey, CryptoOutput, URRegistryDecoder, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
 
 import { CryptoDetailedAccount, CryptoPortfolioCoin, CryptoPortfolio, CryptoPortfolioMetadata} from '../src';
-import { HexString } from '@ngraveio/bc-ur-registry-hex-string';
 import { CryptoCoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
-import { ScriptExpression } from '@keystonehq/bc-ur-registry/dist/ScriptExpression';
-
-const { RegistryTypes, decodeToDataItem } = extend;
 
 describe('Crypto Portfolio', () => {
   it('should generate / decode CryptoPortfolio with empty coin array', () => {

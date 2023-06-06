@@ -1,10 +1,7 @@
-import { CryptoHDKey, CryptoOutput, URRegistryDecoder, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
+import { CryptoHDKey, CryptoOutput, CryptoKeypath, PathComponent, ScriptExpressions } from '@keystonehq/bc-ur-registry';
 
 import { CryptoDetailedAccount, CryptoPortfolioCoin } from '../src';
-import { HexString } from '@ngraveio/bc-ur-registry-hex-string';
 import { CryptoCoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
-
-const { RegistryTypes, decodeToDataItem } = extend;
 
 describe('Crypto Sync Coin with DetailedAccount', () => {
 
