@@ -19,7 +19,8 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "test:ci": "lerna run --parallel test:coverage",
     "watch": "tsc --watch",
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "test": "jest"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.0",
