@@ -203,7 +203,6 @@ describe('parent', () => {
     // Total of 6 expect statements should be called
     expect.assertions(6);
     for (const parent of coinIdentity.getAllParents()) {
-      console.log(parent.toURL());
       expect(parent?.getCurve()).toBe(curve)
       expect(parent?.getType()).toBe(type)
       switch(i) {
