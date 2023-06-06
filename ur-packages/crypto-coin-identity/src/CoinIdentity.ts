@@ -46,6 +46,15 @@ export enum EllipticCurve {
   secp256k1 = 8, // SECG secp256k1 curve	IESG
 }
 
+export enum ComparisonMethod {
+  ExactMatch = '==',
+  Parent = '>',
+  Child = '<',
+  NotEqual = '!=',
+  LessThanOrEqual = '<=',
+  GreaterThanOrEqual = '>=',
+}
+
 type hex_string = Buffer | string
 type sub_type_exp = number | string | hex_string
 
@@ -185,5 +194,55 @@ export class CryptoCoinIdentity extends RegistryItem {
     const curve = parts[0]
     const type = +parts[1]
     return new CryptoCoinIdentity(curve as any, type)
+  }
+
+  /**
+   * Compare the current id to a given id
+   * @param coinIdentity CoinIdentity to compare the current one with
+   * @param comparison comparison method to check
+   * @returns boolean indicating if the comparison is valid
+   */
+  public compare = (coinIdentity: CryptoCoinIdentity, comparison: ComparisonMethod): boolean => {
+    const url = this.toURL().replace('bc-coin://', '')
+    const urlToCompare = coinIdentity.toURL().replace('bc-coin://', '')
+
+    return CryptoCoinIdentity.compareCoinIds(url, urlToCompare, comparison)
+  }
+
+  /**
+   * Compare a coin url, generated with '.toUrl()' method, with a different one
+   * @param coinUrl1 first coinIdentity as a url.
+   * @param coinUrl2 second coinIdentity as a url.
+   * @param comparison comparison method.
+   * @returns boolean indicating if the comparison is valid
+   */
+  static compareCoinIds(coinUrl1: string, coinUrl2: string, comparison: ComparisonMethod): boolean {
+    const dict = CryptoCoinIdentity.compareCoinIdsDict(coinUrl1, coinUrl2)
+    return dict[comparison]
+  }
+
+  /**
+   * Creates a dictionary for all comparison methods for two given coin urls, generated with '.toUrl()'.
+   * @param coinUrl1 first coinIdentity as a url.
+   * @param coinUrl2 second coinIdentity as a url.
+   * @returns dictionary indicating which comparison methods are true | false.
+   */
+  static compareCoinIdsDict(coinUrl1: string, coinUrl2: string) {
+    const url = coinUrl1.replace('bc-coin://', '')
+    const urlToCompare = coinUrl2.replace('bc-coin://', '')
+
+    const isEqual = url === urlToCompare
+    const isChild = url.includes(urlToCompare);
+    const isParent = urlToCompare.includes(url)
+    const isNotEqual = url !== urlToCompare
+
+    return {
+      [ComparisonMethod.ExactMatch]: isEqual,
+      [ComparisonMethod.Child]: isChild,
+      [ComparisonMethod.Parent]: isParent,
+      [ComparisonMethod.NotEqual]: isNotEqual,
+      [ComparisonMethod.LessThanOrEqual]: isEqual || isChild,
+      [ComparisonMethod.GreaterThanOrEqual]: isEqual || isParent,
+    }
   }
 }
