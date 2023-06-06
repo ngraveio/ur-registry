@@ -64,8 +64,8 @@ describe('Crypto Portfolio', () => {
     // Create a coin identity
     const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
 
-    // Sync Coin CBOR with 2 accounts
-    const syncCoinCbor = 'a201d90579a3010802183c03f70281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a';
+    // Sync Coin CBOR with 1 accounts
+    const syncCoinCbor = 'a201d90579a2010802183c0281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a';
     const cryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(syncCoinCbor, 'hex'));
 
     // Create a CryptoPortfolio
@@ -78,8 +78,7 @@ describe('Crypto Portfolio', () => {
     // Expect coin id to be ethereum
     expect(cryptoPortfolio.getCoins()[0].getCoinId().toURL()).toEqual('bc-coin://secp256k1/60');
 
-    const cbor = cryptoPortfolio.toCBOR().toString('hex'); // a10181d9057ba201d90579a3010802183c03f70280
-    const ur = cryptoPortfolio;
+    const cbor = cryptoPortfolio.toCBOR().toString('hex'); // a10181d9057ba201d90579a2010802183c0281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a
 
     // Decode payload
     const decodedCryptoPortfolio = CryptoPortfolio.fromCBOR(Buffer.from(cbor, 'hex'));
