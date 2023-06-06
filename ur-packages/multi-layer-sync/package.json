@@ -1,7 +1,7 @@
 {
-  "name": "@ngrave/bc-ur-multi-layer-sync",
-  "version": "0.2.0",
-  "description": "bc-ur-registry extension for multi layer sync payload",
+  "name": "@ngraveio/bc-ur-multi-layer-sync",
+  "version": "0.1.0",
+  "description": "Provides BC-UR types for syncing multiple coins and accounts from cold wallets to watch only wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -17,12 +17,12 @@
     "build": "tsc --build",
     "test": "jest --passWithNoTests"
   },
-  "author": "Irfan Bilaloglu<irfan.bilaloglu@ngrave.io>",
+  "author": "Irfan Bilaloglu, Pieter Uyttersprot<irfan.bilaloglu@ngrave.io, pieter.uyttersprot@ngrave.io>",
   "license": "MIT",
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.5.4",
-    "@ngrave/bc-ur-registry-crypto-coin-identity": "^0.1.0",
-    "@ngrave/bc-ur-registry-hex-string": "^0.1.0"
+    "@ngraveio/bc-ur-registry-crypto-coin-identity": "^0.1.0",
+    "@ngraveio/bc-ur-registry-hex-string": "^0.1.0"
   },
   "devDependencies": {
     "@types/uuid": "^9.0.0",

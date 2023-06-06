@@ -7,11 +7,11 @@ This repository is the hex string extension of [bc-ur-registry](https://github.c
 To install, run:
 
 ```bash
-yarn add @ngrave/bc-ur-registry-hex-string
+yarn add @ngraveio/bc-ur-registry-hex-string
 ```
 
 ```bash
-npm install --save @ngrave/bc-ur-registry-hex-string
+npm install --save @ngraveio/bc-ur-registry-hex-string
 ```
 
 **Source:** https://github.com/toravir/CBOR-Tag-Specs/blob/master/hexString.md

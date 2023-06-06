@@ -9,11 +9,11 @@ Definition document: https://github.com/ngraveio/Research/blob/main/papers/nbcr-
 To install, run:
 
 ```bash
-yarn add @ngrave/bc-ur-registry-crypto-coin-identity
+yarn add @ngraveio/bc-ur-registry-crypto-coin-identity
 ```
 
 ```bash
-npm install --save @ngrave/bc-ur-registry-crypto-coin-identity
+npm install --save @ngraveio/bc-ur-registry-crypto-coin-identity
 ```
 
 ## CDDL
@@ -65,7 +65,7 @@ The URI format is as follows: bc-coin://{subtype2.subtype1.subtype0}.{curve}/typ
 
 Below the coinIdentity of Polygon (MATIC) as an example: "bc-coin://137.secp256k1/60"
 ```js
-import {CryptoCoinIdentity, EllipticCurve } from from '@ngrave/bc-ur-registry';
+import {CryptoCoinIdentity, EllipticCurve } from from '@ngraveio/bc-ur-registry';
 
 const curve = EllipticCurve.secp256k1 // 8
 const type = 60
