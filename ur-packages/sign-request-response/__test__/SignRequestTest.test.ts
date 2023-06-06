@@ -653,7 +653,7 @@ describe('Coin Tests', () => {
     const xrpSignRequest = new CryptoSignRequest({
       coinId: new CryptoCoinIdentity(EllipticCurve.Ed25519, 148),
       derivationPath: "m/44'/148'/0'",
-      signData: Buffer.from(nativeTx, 'hex'),
+      signData: Buffer.from(nativeTx),
     });
 
     // Encode
