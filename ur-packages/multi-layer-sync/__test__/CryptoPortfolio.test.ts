@@ -98,7 +98,7 @@ describe('Crypto Portfolio', () => {
 
   });
 
-  it('should generate / decode CryptoPortfolio with 2 coin', () => {
+  it('should generate / decode CryptoPortfolio with 2 coins', () => {
 
     const coinIdentityEth = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
 
@@ -203,7 +203,7 @@ describe('Crypto Portfolio', () => {
 
   });
 
-  it('should encode / decode Crypto Portfolio with 3 coins and Metadata', () => {
+  it('should encode / decode Crypto Portfolio with 4 coins and Metadata', () => {
     const coinIdEth =   new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
     const coinIdSol =   new CryptoCoinIdentity(EllipticCurve.secp256k1, 501);
     const coinIdMatic = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60, [137]);
@@ -290,7 +290,7 @@ describe('Crypto Portfolio', () => {
     );
 
 
-    // Create a coins
+    // Create the coins
     const cryptoCoinEth = new CryptoSyncCoin(coinIdEth, [accountEth]);
     const cryptoCoinSol = new CryptoSyncCoin(coinIdSol, [accountSol]);
     const cryptoCoinMatic = new CryptoSyncCoin(coinIdMatic, [accountMatic]);
@@ -304,7 +304,7 @@ describe('Crypto Portfolio', () => {
       device: 'NGRAVE ZERO',
     });
 
-    // Create a Crypto Portfolio
+    // Create the Crypto Portfolio
     const cryptoPortfolio = new CryptoPortfolio([cryptoCoinEth, cryptoCoinSol, cryptoCoinMatic, cryptoCoinBtc], metadata);
 
     // Encode the Crypto Portfolio to CBOR
