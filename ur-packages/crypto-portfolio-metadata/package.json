@@ -1,6 +1,6 @@
 {
   "name": "@ngraveio/bc-ur-registry-crypto-portfolio-metadata",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Provides BC UR type for crypto portfolio metadata.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,7 +34,7 @@
   ],
   "bugs": {
     "url": "https://github.com/ngraveio/ur-registry/issues"
-  },  
+  },
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.5.4"
   },

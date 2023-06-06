@@ -1,6 +1,6 @@
 {
   "name": "@ngraveio/bc-ur-multi-layer-sync",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Provides BC-UR types for syncing multiple coins and accounts from cold wallets to watch only wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,12 +36,12 @@
   ],
   "bugs": {
     "url": "https://github.com/ngraveio/ur-registry/issues"
-  },  
+  },
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.5.4",
-    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.3.0",
-    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.1.0",
-    "@ngraveio/bc-ur-registry-hex-string": "0.3.0"
+    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.3.1",
+    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.1.1",
+    "@ngraveio/bc-ur-registry-hex-string": "0.3.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",

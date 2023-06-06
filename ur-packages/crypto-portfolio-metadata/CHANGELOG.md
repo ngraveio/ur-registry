@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-registry-crypto-portfolio-metadata@0.1.0...@ngraveio/bc-ur-registry-crypto-portfolio-metadata@0.1.1) (2023-06-06)
+
+**Note:** Version bump only for package @ngraveio/bc-ur-registry-crypto-portfolio-metadata
+
+
+
+
+
 # 0.1.0 (2023-06-06)
 
 

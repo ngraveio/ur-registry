@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-registry-crypto-coin-identity@0.3.0...@ngraveio/bc-ur-registry-crypto-coin-identity@0.3.1) (2023-06-06)
+
+**Note:** Version bump only for package @ngraveio/bc-ur-registry-crypto-coin-identity
+
+
+
+
+
 # [0.3.0](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-registry-crypto-coin-identity@0.2.1...@ngraveio/bc-ur-registry-crypto-coin-identity@0.3.0) (2023-06-06)
 
 
