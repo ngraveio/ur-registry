@@ -8,7 +8,6 @@ This package add support for following ur types:
 | ------------------------- | ------------------------------------------------------------------------ | ------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `crypto-detailed-account` | 1402                                                                     | Ngrave | Import multiple accounts with and without output descriptors and specify optionally tokens to synchronize | [[NBCR-2023-002]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-002-multi-layer-sync.md) |
 | `crypto-portfolio-coin`             | 1403                                                                     | Ngrave | Associate several accounts to its coin identity                                                           | [[NBCR-2023-002]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-002-multi-layer-sync.md) |
-| `crypto-portfolio-metadata`    | 1404                                                                     | Ngrave | Specify wallet metadata                                                                                   | [[NBCR-2023-002]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-002-multi-layer-sync.md) |
 | `crypto-portfolio`        | 1405                                                                     | Ngrave | Aggregate the portfolio information                                                                       | [[NBCR-2023-002]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-002-multi-layer-sync.md) |
 
 This repository is an extension of [bc-ur-registry](https://github.com/KeystoneHQ/ur-registry)
@@ -117,43 +116,6 @@ console.log(ur)
 
     // Get HDKey
     const cryptoOutput = detailedAccount.getAccount() as CryptoOutput;
-```
-
-### [CryptoPortfolioMetadata] Construct the crypto sync metadata.
-
-```js
-// Create sync id
-const sync_id = Buffer.from('babe0000babe00112233445566778899', 'hex')
-
-// Create metadata
-const metadata = new CryptoPortfolioMetadata({ sync_id: sync_id, device: 'my-device', language_code: 'en', fw_version: '1.0.0' })
-
-const cbor = metadata.toCBOR().toString('hex')
-console.log(cbor)
-// a40150babe0000babe001122334455667788990262656e0365312e302e3004696d792d646576696365
-
-const ur = metadata.toUREncoder(1000).nextPart()
-console.log(ur)
-// ur:crypto-portfolio-metadata/oxadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoidihjtaxihehdmdydmdyaainjnkkdpieihkoiniaihfrzmytvl
-```
-
-### [CryptoPortfolioMetadata] Decode crypto sync metadata.
-
-```js
-// read ur
-const ur = metadata.toUREncoder(1000).nextPart()
-
-// decoded ur
-const ur = URRegistryDecoder.decode(urData)
-
-// get the class from the cbor data
-const cryptoPortfolioMetadata = CryptoPortfolioMetadata.fromCBOR(ur.cbor)
-
-// read its properties
-cryptoPortfolioMetadata.getSyncId() // babe0000babe00112233445566778899
-cryptoPortfolioMetadata.getLanguageCode() // en
-cryptoPortfolioMetadata.getDevice() // my-device
-cryptoPortfolioMetadata.getFirmwareVersion() // 1.0.0
 ```
 
 ## [CryptoPortfolioCoin] create CryptoPortfolioCoin with 2 detailed accounts with tokens

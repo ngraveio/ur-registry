@@ -5,7 +5,7 @@ import {
   DataItemMap
 } from "@keystonehq/bc-ur-registry";
 import { ExtendedRegistryTypes } from "./RegistryType";
-import { CryptoPortfolioMetadata } from "@ngraveio/bc-ur-multi-layer-sync"
+import { CryptoPortfolioMetadata } from "@ngraveio/bc-ur-registry-crypto-portfolio-metadata";
 
 const { RegistryTypes, decodeToDataItem } = extend;
 

@@ -1,5 +1,5 @@
 import { URRegistryDecoder } from "@keystonehq/bc-ur-registry";
-import { CryptoPortfolioMetadata } from "../src"
+import { CryptoPortfolioMetadata } from "../src/CryptoPortfolioMetadata";
 
 describe("CryptoPortfolioMetadata", () => {
     

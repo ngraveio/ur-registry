@@ -1,6 +1,6 @@
 import { CryptoHDKey, CryptoOutput, URRegistryDecoder, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
-
-import { CryptoDetailedAccount, CryptoPortfolioCoin, CryptoPortfolio, CryptoPortfolioMetadata} from '../src';
+import {CryptoPortfolioMetadata } from "@ngraveio/bc-ur-registry-crypto-portfolio-metadata";
+import { CryptoDetailedAccount, CryptoPortfolioCoin, CryptoPortfolio} from '../src';
 import { CryptoCoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
 
 describe('Crypto Portfolio', () => {

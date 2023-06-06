@@ -6,7 +6,7 @@ import {
   } from "@keystonehq/bc-ur-registry";
 import { ExtendedRegistryTypes } from "./RegistryType";
 import { CryptoPortfolioCoin } from "./CryptoPortfolioCoin"
-import { CryptoPortfolioMetadata } from "./CryptoPortfolioMetadata";
+import { CryptoPortfolioMetadata } from "@ngraveio/bc-ur-registry-crypto-portfolio-metadata";
 
 const { RegistryTypes, decodeToDataItem } = extend;
 
@@ -72,7 +72,7 @@ export class CryptoPortfolio extends RegistryItem {
     // If metadata is set add it to map
     if (this.metadata) {
       map[Keys.metadata] = this.metadata.toDataItem();
-      map[Keys.metadata].setTag(ExtendedRegistryTypes.CRYPTO_SYNC_METADATA.getTag());
+      map[Keys.metadata].setTag(this.metadata.getRegistryType().getTag());
     }
 
     return new DataItem(map);

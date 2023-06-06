@@ -1,4 +1,4 @@
-import { CryptoPortfolioMetadata } from "@ngraveio/bc-ur-multi-layer-sync";
+import {CryptoPortfolioMetadata } from "@ngraveio/bc-ur-registry-crypto-portfolio-metadata";
 import { CryptoTxSignature } from "../src";
 
 
