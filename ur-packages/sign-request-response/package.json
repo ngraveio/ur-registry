@@ -1,7 +1,7 @@
 {
-  "name": "@ngraveio/bc-ur-multi-layer-sync",
-  "version": "0.2.1",
-  "description": "Provides BC-UR types for syncing multiple coins and accounts from cold wallets to watch only wallets.",
+  "name": "@ngraveio/bc-ur-sign-request-response",
+  "version": "0.1.0",
+  "description": "Provides BC-UR types for signature request and response from cold wallets to hot wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -17,13 +17,12 @@
     "build": "tsc --build",
     "test": "jest --passWithNoTests"
   },
-  "author": "Irfan Bilaloglu, Pieter Uyttersprot<irfan.bilaloglu@ngrave.io, pieter.uyttersprot@ngrave.io>",
+  "author": "Irfan Bilaloglu<irfan.bilaloglu@ngrave.io>",
   "license": "MIT",
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.5.4",
     "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.2.1",
-    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.0.1",
-    "@ngraveio/bc-ur-registry-hex-string": "0.2.1"
+    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.0.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
@@ -34,6 +33,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "d969bc11f4897aa528d3ad9dd789dcaa8aeba409"
+  }
 }

@@ -8,6 +8,5 @@ patchTags(
     .map(rt => rt.getTag()) as number[]
 );
 
-export { CryptoPortfolioCoin } from "./CryptoPortfolioCoin";
-export { CryptoPortfolio } from "./CryptoPortfolio";
-export { CryptoDetailedAccount } from "./CryptoDetailedAccount";
+export { CryptoSignRequest } from "./CryptoSignRequest";
+export { CryptoTxSignature } from "./CryptoTxSignature";

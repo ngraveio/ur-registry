@@ -34,7 +34,7 @@ export class TronSignRequest extends RegistryItem {
   private address?: Buffer;
   private origin?: string;
 
-  getRegistryType = () => ExtendedRegistryTypes.TRON_SIGN_REQUEST;
+  getRegistryType = () => ExtendedRegistryTypes.CRYPTO_SIGNATURE_REQUEST;
 
   constructor(args: SignRequestProps) {
     super();

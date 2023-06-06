@@ -1,4 +1,4 @@
-import { CryptoHDKey, CryptoOutput, URRegistryDecoder, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
+import { CryptoHDKey, CryptoOutput, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
 
 import { CryptoDetailedAccount } from '../src';
 import { HexString } from '@ngraveio/bc-ur-registry-hex-string';

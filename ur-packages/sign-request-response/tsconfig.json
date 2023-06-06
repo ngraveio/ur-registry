@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["src/*"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -8,13 +8,10 @@
   },
   "references": [
     {
-      "path": "../hex-string"
-    },
-    {
       "path": "../crypto-coin-identity"
     },
     {
       "path": "../crypto-portfolio-metadata"
-    },    
+    },
   ],
 }

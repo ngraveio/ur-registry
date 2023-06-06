@@ -17,7 +17,8 @@ export class TronSignature extends RegistryItem {
   private requestId?: Buffer;
   private signature: Buffer;
 
-  getRegistryType = () => ExtendedRegistryTypes.TRON_SIGNATURE;
+  //getRegistryType = () => ExtendedRegistryTypes.TRON_SIGNATURE;
+  getRegistryType = () => ExtendedRegistryTypes.CRYPTO_SIGNATURE;
 
   constructor(
     signature: Buffer,
