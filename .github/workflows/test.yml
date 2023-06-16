@@ -18,6 +18,13 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Run test over the merged changes
+        run: |
+            git checkout $GITHUB_BASE_REF
+            git merge $GITHUB_HEAD_REF
+            yarn test 
+        if: github.event_name == 'pull_request'
+
       - name: Test
         run: |
           yarn test
