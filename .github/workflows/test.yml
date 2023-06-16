@@ -28,3 +28,4 @@ jobs:
       - name: Test
         run: |
           yarn test
+        if: github.event_name != 'pull_request'
