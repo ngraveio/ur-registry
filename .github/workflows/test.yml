@@ -26,7 +26,7 @@ jobs:
             git fetch origin $GITHUB_BASE_REF
             git checkout -b pr
             git checkout $GITHUB_BASE_REF
-            git merge --allow-unrelated-histories pr
+            git merge --no-edit --allow-unrelated-histories pr
             yarn test 
         if: github.event_name == 'pull_request'
 
