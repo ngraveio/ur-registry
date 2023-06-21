@@ -28,10 +28,12 @@ jobs:
             git checkout $GITHUB_BASE_REF
             git merge --no-commit --no-edit --allow-unrelated-histories pr
             yarn
+            yarn lerna run build
             yarn test 
         if: github.event_name == 'pull_request'
 
       - name: Test
         run: |
+          yarn lerna run build
           yarn test
         if: github.event_name != 'pull_request'
