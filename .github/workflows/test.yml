@@ -27,6 +27,7 @@ jobs:
             git checkout -b pr
             git checkout $GITHUB_BASE_REF
             git merge --no-commit --no-edit --allow-unrelated-histories pr
+            yarn
             yarn test 
         if: github.event_name == 'pull_request'
 
