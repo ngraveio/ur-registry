@@ -37,3 +37,6 @@ jobs:
           yarn lerna run build
           yarn test
         if: github.event_name != 'pull_request'
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
