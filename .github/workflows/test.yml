@@ -23,7 +23,7 @@ jobs:
 
       - name: Run test over the merged changes
         run: |
-            git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
             git config --global user.name "github-actions[bot]"
             HEAD_SHA=$(git log --oneline | head -n1 | awk '{print $3}')
             git checkout $GITHUB_BASE_REF
