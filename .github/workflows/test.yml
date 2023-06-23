@@ -25,9 +25,8 @@ jobs:
         run: |
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             git config --global user.name "github-actions[bot]"
-            HEAD_SHA=$(git log --oneline | head -n1 | awk '{print $3}')
             git checkout $GITHUB_BASE_REF
-            git merge --no-commit --no-edit $HEAD_SHA
+            git merge --no-commit --no-edit ${{ github.event.pull_request.head.sha }}
             yarn
             yarn lerna run build
             yarn test 
