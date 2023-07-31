@@ -39,7 +39,7 @@ export class EthSignRequestMeta extends SignRequestMeta {
 }
 
 export interface PolygonSignRequestProps extends EthSignRequestProps {
-    extraData: string;
+    //extraData: string;
 }
 
 export class PolygonMeta extends EthSignRequestMeta {
@@ -52,9 +52,9 @@ export class PolygonMeta extends EthSignRequestMeta {
     checkInputData(data: PolygonSignRequestProps) {
         super.checkInputData(data);
         // Make sure extraData is string
-        if (data?.extraData && typeof data.extraData !== 'string') {
-            throw new Error('Invalid extraData');
-        }
+        // if (data?.extraData && typeof data.extraData !== 'string') {
+        //     throw new Error('Invalid extraData');
+        // }
     }
 }
 
