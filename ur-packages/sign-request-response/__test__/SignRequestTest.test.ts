@@ -705,3 +705,131 @@ describe('Coin Tests', () => {
     expect(decodedEgldSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
   });
 });
+
+describe('Transaction Requests with contract', () => {
+
+  it('Should encode/decode Ethereum with erc20 contract (TOKEN) and metadata correctly', () => {
+
+    /**
+     * This transaction is from the following ERC20 transfer request rpl:
+     * from: "0xeB012c6d43542D105b6De63f4E8F8eff1f2a916e"
+     * to: "0x42cda393bbe6d079501B98cc9cCF1906901b10Bf"
+     * value: 0
+     * contractAddress: "0x27054b13b1b798b345b591a4d22e6562d47ea75a"
+     * token: "AirSwap (AST) 
+     * tokenValue: 0.0001
+     */
+    const nativeTx = 'f869068505d90661eb82a31d9427054b13b1b798b345b591a4d22e6562d47ea75a80b844a9059cbb00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf0000000000000000000000000000000000000000000000000000000000000001808080';
+
+    const ethSignRequest = new CryptoSignRequest({
+      coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+      derivationPath: "m/44'/60'/0'/0/1",
+      signData: Buffer.from(nativeTx, 'hex'),
+      metadata: new EthSignRequestMeta({
+        dataType: EthDataType.transaction, // rlp encoded transaction
+      }),
+    });
+
+    // Encode
+    const cbor = ethSignRequest.toCBOR().toString('hex'); // a501d8255066faa8ff51d07b7ad09322dda934da2202d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f404586bf869068505d90661eb82a31d9427054b13b1b798b345b591a4d22e6562d47ea75a80b844a9059cbb00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000000000000000000000000000000000000000000000180808007a168646174615479706501
+
+    // Decode
+    const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'));
+
+    // Check all fields
+    expect(decodedEthSignRequest.getRequestId().toString('hex')).toEqual(ethSignRequest.getRequestId().toString('hex'));
+    expect(decodedEthSignRequest.getCoinId().toURL()).toEqual(ethSignRequest.getCoinId().toURL());
+    expect(decodedEthSignRequest.getDerivationPath().getPath()).toEqual(ethSignRequest.getDerivationPath().getPath());
+    expect(decodedEthSignRequest.getSignData().toString('hex')).toEqual(ethSignRequest.getSignData().toString('hex'));
+    // Metadata and meta types
+    expect(decodedEthSignRequest.getMetadata()?.getData()).toStrictEqual(ethSignRequest.getMetadata()?.getData());
+    expect(decodedEthSignRequest.getMetadata()?.constructor.name).toEqual(ethSignRequest.getMetadata()?.constructor.name);
+
+    // Expect decoded cbor to be same
+    expect(decodedEthSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
+  });
+
+  it.only('Should encode/decode Ethereum with erc721 contract (NFT) and metadata correctly', () => {
+
+    /**
+     * This transaction is from the following erc721 NFT transfer request rpl:
+     * from: "0xeB012c6d43542D105b6De63f4E8F8eff1f2a916e"
+     * to: "0x42cda393bbe6d079501B98cc9cCF1906901b10Bf"
+     * value: 0
+     * contractAddress: "0xc9154424B823b10579895cCBE442d41b9Abd96Ed"
+     * tokenId: 30215980622330187411918288900688501299580125367569939549692495857307848015874
+     */
+    const nativeTx = 'f88a068506275583f48301281c94c9154424b823b10579895ccbe442d41b9abd96ed80b86442842e0e000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000002808080';
+
+    const ethSignRequest = new CryptoSignRequest({
+      coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+      derivationPath: "m/44'/60'/0'/0/1",
+      signData: Buffer.from(nativeTx, 'hex'),
+      metadata: new EthSignRequestMeta({
+        dataType: EthDataType.transaction, // rlp encoded transaction
+      }),
+    });
+
+    // Encode
+    const cbor = ethSignRequest.toCBOR().toString('hex'); // a501d82550dcbc47e80f4b0a666fdda1de90cdb33b02d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f404588cf88a068506275583f48301281c94c9154424b823b10579895ccbe442d41b9abd96ed80b86442842e0e000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf00000000000000000000000280808007a168646174615479706501
+    console.log(cbor);
+
+    // Decode
+    const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'));
+
+    // Check all fields
+    expect(decodedEthSignRequest.getRequestId().toString('hex')).toEqual(ethSignRequest.getRequestId().toString('hex'));
+    expect(decodedEthSignRequest.getCoinId().toURL()).toEqual(ethSignRequest.getCoinId().toURL());
+    expect(decodedEthSignRequest.getDerivationPath().getPath()).toEqual(ethSignRequest.getDerivationPath().getPath());
+    expect(decodedEthSignRequest.getSignData().toString('hex')).toEqual(ethSignRequest.getSignData().toString('hex'));
+    // Metadata and meta types
+    expect(decodedEthSignRequest.getMetadata()?.getData()).toStrictEqual(ethSignRequest.getMetadata()?.getData());
+    expect(decodedEthSignRequest.getMetadata()?.constructor.name).toEqual(ethSignRequest.getMetadata()?.constructor.name);
+
+    // Expect decoded cbor to be same
+    expect(decodedEthSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
+  });
+
+  it.only('Should encode/decode Ethereum with erc1155 contract (NFT) and metadata correctly', () => {
+
+    /**
+     * This transaction is from the following erc1155 NFT transfer request rpl:
+     * from: "0xeB012c6d43542D105b6De63f4E8F8eff1f2a916e"
+     * to: "0x42cda393bbe6d079501B98cc9cCF1906901b10Bf"
+     * value: 0
+     * contractAddress: "0xB66a603f4cFe17e3D27B87a8BfCaD319856518B8"
+     * tokenId: 30215980622330187411918288900688501299580125367569939549692495857307848015879
+     * nftValue: 1
+     */
+    const nativeTx = 'f8e906850666b5ee5582ba8c94b66a603f4cfe17e3d27b87a8bfcad319856518b880b8c4f242432a000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000007000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000808080';
+
+    const ethSignRequest = new CryptoSignRequest({
+      coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+      derivationPath: "m/44'/60'/0'/0/1",
+      signData: Buffer.from(nativeTx, 'hex'),
+      metadata: new EthSignRequestMeta({
+        dataType: EthDataType.transaction, // rlp encoded transaction
+      }),
+    });
+
+    // Encode
+    const cbor = ethSignRequest.toCBOR().toString('hex'); // a501d82550d9e96428277d76b12e2562ca76b301a302d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f40458ebf8e906850666b5ee5582ba8c94b66a603f4cfe17e3d27b87a8bfcad319856518b880b8c4f242432a000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000007000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000080808007a168646174615479706501
+    console.log(cbor);
+
+    // Decode
+    const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'));
+
+    // Check all fields
+    expect(decodedEthSignRequest.getRequestId().toString('hex')).toEqual(ethSignRequest.getRequestId().toString('hex'));
+    expect(decodedEthSignRequest.getCoinId().toURL()).toEqual(ethSignRequest.getCoinId().toURL());
+    expect(decodedEthSignRequest.getDerivationPath().getPath()).toEqual(ethSignRequest.getDerivationPath().getPath());
+    expect(decodedEthSignRequest.getSignData().toString('hex')).toEqual(ethSignRequest.getSignData().toString('hex'));
+    // Metadata and meta types
+    expect(decodedEthSignRequest.getMetadata()?.getData()).toStrictEqual(ethSignRequest.getMetadata()?.getData());
+    expect(decodedEthSignRequest.getMetadata()?.constructor.name).toEqual(ethSignRequest.getMetadata()?.constructor.name);
+
+    // Expect decoded cbor to be same
+    expect(decodedEthSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
+  });  
+
+});
