@@ -749,7 +749,7 @@ describe('Transaction Requests with contract', () => {
     expect(decodedEthSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
   });
 
-  it.only('Should encode/decode Ethereum with erc721 contract (NFT) and metadata correctly', () => {
+  it('Should encode/decode Ethereum with erc721 contract (NFT) and metadata correctly', () => {
 
     /**
      * This transaction is from the following erc721 NFT transfer request rpl:
@@ -772,7 +772,7 @@ describe('Transaction Requests with contract', () => {
 
     // Encode
     const cbor = ethSignRequest.toCBOR().toString('hex'); // a501d82550dcbc47e80f4b0a666fdda1de90cdb33b02d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f404588cf88a068506275583f48301281c94c9154424b823b10579895ccbe442d41b9abd96ed80b86442842e0e000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf00000000000000000000000280808007a168646174615479706501
-    console.log(cbor);
+    //console.log(cbor);
 
     // Decode
     const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'));
@@ -790,7 +790,7 @@ describe('Transaction Requests with contract', () => {
     expect(decodedEthSignRequest.toCBOR().toString('hex')).toEqual(cbor);      
   });
 
-  it.only('Should encode/decode Ethereum with erc1155 contract (NFT) and metadata correctly', () => {
+  it('Should encode/decode Ethereum with erc1155 contract (NFT) and metadata correctly', () => {
 
     /**
      * This transaction is from the following erc1155 NFT transfer request rpl:
@@ -814,7 +814,7 @@ describe('Transaction Requests with contract', () => {
 
     // Encode
     const cbor = ethSignRequest.toCBOR().toString('hex'); // a501d82550d9e96428277d76b12e2562ca76b301a302d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f40458ebf8e906850666b5ee5582ba8c94b66a603f4cfe17e3d27b87a8bfcad319856518b880b8c4f242432a000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000007000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000080808007a168646174615479706501
-    console.log(cbor);
+    //console.log(cbor);
 
     // Decode
     const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'));
