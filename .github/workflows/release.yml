@@ -36,12 +36,3 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
       - run: yarn install --frozen-lockfile
-
-      - name: Generate version
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: yarn version-packages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_MONOREPO_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.GH_MONOREPO_TOKEN }}
