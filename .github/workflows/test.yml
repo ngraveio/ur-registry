@@ -9,34 +9,21 @@ jobs:
     name: Test
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
 
       - name: Install dependencies
         run: yarn
 
-      - name: Run test over the merged changes
-        run: |
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git config --global user.name "github-actions[bot]"
-            git checkout $GITHUB_BASE_REF
-            git merge --no-commit --no-edit ${{ github.event.pull_request.head.sha }}
-            yarn
-            yarn lerna run build
-            yarn test 
-        if: github.event_name == 'pull_request'
+      - name: Run build
+        run: yarn lerna run build
 
-      - name: Test
-        run: |
-          yarn lerna run build
-          yarn test
-        if: github.event_name != 'pull_request'
+      - name: Run test
+        run: yarn test
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
