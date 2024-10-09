@@ -30,7 +30,12 @@ jobs:
       - name: Run build
         run: yarn lerna run build
 
+      - name: Bump package versions
+        run: yarn lerna version --yes --conventional-commits --exact --create-release github --loglevel silly
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Publish to NPM
-        run: yarn lerna publish --yes --no-private
+        run: yarn lerna publish from-package --yes --no-private --loglevel silly
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
