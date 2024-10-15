@@ -6,7 +6,7 @@
   "command": {
     "version": {
       "message": "chore(release): Publish 🚀 [ci publish]",
-      "allowBranch": ["main"],
+      "allowBranch": ["main", "development"],
       "conventional-commits": true,
       "create-release": "github"
     }

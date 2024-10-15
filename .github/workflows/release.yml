@@ -11,6 +11,8 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   release:
     name: Release
+    # Skip if [ci publish] is in the commit message
+    if: ${{ !contains(github.event.head_commit.message, '[ci publish]') }} 
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -33,12 +35,17 @@ jobs:
       - name: Run test
         run: yarn test
 
+      - name: Configure git user
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
       - name: Bump version and create release
         run: |
           if [ "${{ github.ref_name }}" == "development" ]; then
-            yarn lerna version --yes --conventional-commits --conventional-prerelease --exact --create-release github --loglevel silly
+            yarn lerna version --yes --conventional-commits --conventional-prerelease --exact --create-release github --preid beta --loglevel silly
           else
-            yarn lerna version --yes --conventional-commits --exact --create-release github --loglevel silly
+            yarn lerna version --yes --conventional-commits --conventional-graduate --exact --create-release github --loglevel silly
           fi
         env:
           GH_TOKEN: ${{ github.token }}
