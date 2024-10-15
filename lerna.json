@@ -5,7 +5,7 @@
   "useNx": true,
   "command": {
     "version": {
-      "message": "chore(release): Publish 🚀 [ci publish]",
+      "message": "chore(release): [skip ci] Publish 🚀",
       "allowBranch": ["main", "development"],
       "conventional-commits": true,
       "create-release": "github"
