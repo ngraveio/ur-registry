@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - development
+      - release
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -40,7 +40,7 @@ jobs:
 
       - name: Bump version and create release
         run: |
-          if [ "${{ github.ref_name }}" == "development" ]; then
+          if [ "${{ github.ref_name }}" == "main" ]; then
             yarn lerna version --yes --conventional-commits --conventional-prerelease --exact --create-release github --preid beta --loglevel silly
           else
             yarn lerna version --yes --conventional-commits --conventional-graduate --exact --create-release github --loglevel silly
@@ -50,7 +50,7 @@ jobs:
 
       - name: Publish to NPM
         run: |
-          if [ "${{ github.ref_name }}" == "development" ]; then
+          if [ "${{ github.ref_name }}" == "main" ]; then
             yarn lerna publish from-package --yes --no-private --loglevel silly --preid beta --dist-tag beta
           else
             yarn lerna publish from-package --yes --no-private --loglevel silly
