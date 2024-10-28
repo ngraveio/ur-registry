@@ -46,7 +46,7 @@ jobs:
             yarn lerna version --yes --conventional-commits --conventional-graduate --exact --create-release github --loglevel silly
           fi
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
 
       - name: Publish to NPM
         run: |
