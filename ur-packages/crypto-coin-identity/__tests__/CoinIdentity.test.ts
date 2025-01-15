@@ -1,9 +1,9 @@
 import { CryptoCoinIdentity } from '../src'
 import { ComparisonMethod, EllipticCurve } from '../src/CoinIdentity'
-import { CborEncoding, createUrTranscoder } from '@ngraveio/bc-ur'
+import { Ur } from '@ngraveio/bc-ur'
 
-const { encoder, decoder } = createUrTranscoder()
-const cbor = new CborEncoding()
+// Uint8Array to hex
+const toHex = (bytes: Uint8Array) => Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("")
 
 describe('CoinIdentity', () => {
   it('Should have registryType with the correct tag and type.', () => {
@@ -26,8 +26,8 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual([])
 
-    const urEncoded = encoder.encodeUr(coinIdentity)
-    const coinIdentityRead = decoder.decodeUr(urEncoded) as CryptoCoinIdentity
+    const urEncoded = new Ur(coinIdentity)
+    const coinIdentityRead = urEncoded.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -43,8 +43,8 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
-    const urData = encoder.encodeUr(coinIdentity)
-    const coinIdentityRead = decoder.decodeUr(urData) as CryptoCoinIdentity
+    const urData = new Ur(coinIdentity);
+    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -54,7 +54,7 @@ describe('CoinIdentity', () => {
     const curve = EllipticCurve.secp256k1
     const type = 0
     const subTypeValue = 'babe0000babe00112233445566778899'
-    const subType = [Buffer.from(subTypeValue, 'hex')]
+    const subType = [new Uint8Array(Buffer.from(subTypeValue, 'hex'))]
 
     /**
      * A3                                      # map(3)
@@ -72,23 +72,25 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getCurve()).toBe(curve)
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
-    expect((coinIdentity.getSubType()?.[0] as Buffer).toString('hex')).toStrictEqual(subTypeValue)
+    // @ts-ignore
+    expect((toHex(coinIdentity.getSubType()?.[0]))).toStrictEqual(subTypeValue)
 
-    const urData = encoder.encodeUr(coinIdentity)
-    const coinIdentityRead = decoder.decodeUr(urData) as CryptoCoinIdentity
+    const urData = new Ur(coinIdentity);
+    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
     expect(coinIdentityRead.getSubType()).toStrictEqual(subType)
-    expect((coinIdentityRead.getSubType()?.[0] as Buffer).toString('hex')).toStrictEqual(subTypeValue)
+    // @ts-ignore
+    expect(toHex(coinIdentityRead.getSubType()?.[0])).toStrictEqual(subTypeValue)
   })
   it('Should encode/decode with all possible values', () => {
     const curve = EllipticCurve.secp256k1
     const type = 0
     const subType = [
-      Buffer.from('babe0000babe00112233445566778899', 'hex'),
-      Buffer.from('babe0000babe001122334', 'hex'),
-      Buffer.from('babe', 'hex'),
+      new Uint8Array(Buffer.from('babe0000babe00112233445566778899', 'hex')),
+      new Uint8Array(Buffer.from('babe0000babe001122334', 'hex')),
+      new Uint8Array(Buffer.from('babe', 'hex')),
       'segwit',
       123,
     ]
@@ -99,8 +101,8 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
-    const urData = encoder.encodeUr(coinIdentity)
-    const coinIdentityRead = decoder.decodeUr(urData) as CryptoCoinIdentity
+    const urData = new Ur(coinIdentity);
+    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
