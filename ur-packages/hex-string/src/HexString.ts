@@ -25,13 +25,17 @@ const HexStringBase: RegistryItemClass = registryItemFactory({
 export class HexString extends HexStringBase {
   public data: Buffer
 
-  constructor(data: Buffer | string) {
+  constructor(data: Buffer | Uint8Array | string) {
     super(data)
 
     // Here we only accept Buffer or string
     if (data instanceof Buffer) {
       this.data = data
-    } else if (typeof data === 'string') {
+    } 
+    else if (data instanceof Uint8Array){
+      this.data = Buffer.from(data)
+    }
+    else if (typeof data === 'string') {
       // Check if string starts with 0x, if so, remove it
       if (data.startsWith('0x')) {
         data = data.slice(2)
@@ -52,7 +56,8 @@ export class HexString extends HexStringBase {
       if (!hexRegex.test(input)) {
         return { valid: false, reasons: [new Error('Invalid hex string provided')] }
       }
-    } else if (!(input instanceof Buffer)) {
+    } 
+    else if (!(input instanceof Uint8Array)) {
       return { valid: false, reasons: [new Error('Invalid data type for HexString, data must be valid hex string or buffer')] }
     }
     return { valid: true }
