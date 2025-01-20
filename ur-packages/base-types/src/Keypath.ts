@@ -40,6 +40,14 @@ export interface IKeypathInput {
   depth?: Uint8 // Optional; 0 if this is a public key derived directly from a master key
 }
 
+/**
+ * This is basically bip44 path that supports wildcard and pair components and range
+ * - m/44'/0'/0'/0/0
+ * - m/44'/1-6'/0 (range)
+ * - m/44'/0'/0'/* (wildcard)
+ * - m/44'/0'/0'/<0;1h>/* (pair) // https://github.com/bitcoin/bitcoin/pull/22838
+ * // https://github.com/bitcoin/bitcoin/blob/master/doc/descriptors.md#specifying-receiving-and-change-descriptors-in-one-descriptor
+ */
 export class Keypath extends registryItemFactory({
   tag: 40304,
   URType: 'keypath',
@@ -270,3 +278,9 @@ console.log(pathComponents); // Array of PathComponent objects
 // Convert PathComponent array back to BIP44 path string
 const bip44Path = PathComponentHelper.toBIP44PathString(pathComponents);
 console.log(bip44Path); // "m/44'/0'/0'/0/0"
+
+
+
+/// Example Paths
+// m/44'/0'/0'/0/0
+// m/44'/1-5/*/*
