@@ -1,52 +1,34 @@
 import { Ur, registryItemFactory, RegistryItemClass } from '@ngraveio/bc-ur'
-
-// Type definitions from CDDL
-// Type aliases for basic types
-type Uint32 = number // Limited to 4 bytes, must validate elsewhere
-type Uint31 = number // Should be validated as < 0x80000000
-type Uint8 = number // Represents an 8-bit unsigned integer
-
-// Basic components
-type ChildIndex = Uint31
-type IsHardened = boolean
-
-type ChildIndexComponent = {
-  childIndex: ChildIndex
-  isHardened: IsHardened
-}
-
-type ChildRangeComponent = {
-  range: [ChildIndex, ChildIndex] // [low, high] where low < high
-  isHardened: IsHardened
-}
-
-type ChildWildcardComponent = {
-  wildcard: [] // Empty array for wildcard
-  isHardened: IsHardened
-}
-
-type ChildPairComponent = [
-  ChildIndexComponent, // Child to use for external addresses
-  ChildIndexComponent // Child to use for internal addresses
-]
-
-// path-component can be one of the child component types
-type IPathComponent = ChildIndexComponent | ChildRangeComponent | ChildWildcardComponent | ChildPairComponent
-
-// keypath structure
-export interface IKeypathInput {
-  components: IPathComponent[] // An array of path components; if empty, sourceFingerprint is required
-  sourceFingerprint?: Uint32 // Must be present if components are empty; not equal to 0
-  depth?: Uint8 // Optional; 0 if this is a public key derived directly from a master key
-}
+import { PathComponent } from './classes/PathComponent'
 
 /**
- * This is basically bip44 path that supports wildcard and pair components and range
- * - m/44'/0'/0'/0/0
- * - m/44'/1-6'/0 (range)
- * - m/44'/0'/0'/* (wildcard)
- * - m/44'/0'/0'/<0;1h>/* (pair) // https://github.com/bitcoin/bitcoin/pull/22838
- * // https://github.com/bitcoin/bitcoin/blob/master/doc/descriptors.md#specifying-receiving-and-change-descriptors-in-one-descriptor
+ * Keypath class for handling hierarchical key derivation paths.
+ *
+ * Valid Path String Rules:
+ *
+ * 1. Paths can include:
+ *    - Single indices (e.g., `44'/0'/0'/0/0`).
+ *    - Ranges with hardening applied individually (e.g., `1h-6h`; `1-6h` is invalid).
+ *    - Wildcards (`*`) at any depth (e.g., `44'/0'/0'/*`).
+ *    - Pairs for external/internal addresses (e.g., `<0h;1h>` or `<0;1>`).
+ *    - Mixed components combining ranges, wildcards, and pairs (e.g., `44'/0'/1'-5'/<0h;1h>/*`).
+ *
+ * 2. Rules for hardening:
+ *    - Hardened indices must be ≤ `0x80000000`.
+ *    - Hardened chars (`'` or `h`) must immediately follow the index.
+ *
+ * 3. Path formatting:
+ *    - Paths can optionally start with `m`, but it is not required.
+ *    - Components must be delimited by `/` and contain integers, ranges, wildcards, or pairs.
+ *
+ * Invalid Examples:
+ * - `1-6h` (hardening not applied to all indices in range).
+ * - `<0;1h>` (mixed hardening in pair).
+ *
+ * Usage:
+ * - The `components` can be passed as a string or an array of `PathComponent`.
+ * - `source-fingerprint`: The fingerprint of the ancestor or master key. Required if `components` is empty.
+ * - `depth`: The number of derivation steps in the path. If omitted, it will be inferred from `components`.
  */
 export class Keypath extends registryItemFactory({
   tag: 40304,
@@ -103,184 +85,86 @@ export class Keypath extends registryItemFactory({
     depth: 3,
   },
 }) {
-  public data: IKeypathInput
-  constructor(input: IKeypathInput) {
+  public data: {
+    components: PathComponent[]
+    sourceFingerprint?: number
+    depth?: number
+  }
+
+  constructor(input: { components: string | PathComponent[]; sourceFingerprint?: number; depth?: number }) {
     super(input)
-    this.data = input
-  }
 
-  public getComponents = () => this.data.components
-  public getSourceFingerprint = () => this.data.sourceFingerprint
-  public getDepth = () => this.data.depth
-}
+    // Convert string components to PathComponent array if necessary
+    const componentsArray = typeof input.components === 'string' ? Keypath.pathToComponents(input.components) : input.components
 
-// Input type for PathComponent constructor
-export type PathComponentArgs = {
-  index?: number; // Single child index, if defined
-  range?: [number, number]; // Range of child indices (low, high)
-  wildcard?: boolean; // Whether the component is a wildcard
-  hardened: boolean; // Whether the component is hardened
-  pair?: [PathComponent, PathComponent]; // Pair of child components
-};
+    // Set depth if not provided
+    const depth = input.depth ?? componentsArray.length
 
-export class PathComponent {
-  public static readonly HARDENED_BIT = 0x80000000;
-
-  private index?: number;
-  private range?: [number, number];
-  private wildcard: boolean;
-  private hardened: boolean;
-  private pair?: [PathComponent, PathComponent];
-
-  constructor(args: PathComponentArgs) {
-    const { index, range, wildcard, hardened, pair } = args;
-
-    if (index !== undefined) {
-      if ((index & PathComponent.HARDENED_BIT) !== 0) {
-        throw new Error(
-          `#[ur-registry][PathComponent][fn.constructor]: Invalid index ${index} - most significant bit cannot be set`
-        );
-      }
-      if (range || wildcard || pair) {
-        throw new Error(
-          "A PathComponent cannot have both index and range, wildcard, or pair."
-        );
-      }
-      this.index = index;
-      this.wildcard = false;
-    } else if (range) {
-      if (range[0] >= range[1]) {
-        throw new Error(
-          `#[ur-registry][PathComponent][fn.constructor]: Invalid range [${range[0]}, ${range[1]}] - low must be less than high.`
-        );
-      }
-      if (wildcard || pair) {
-        throw new Error(
-          "A PathComponent cannot have both range and wildcard or pair."
-        );
-      }
-      this.range = range;
-      this.wildcard = false;
-    } else if (wildcard) {
-      if (pair) {
-        throw new Error(
-          "A PathComponent cannot have both wildcard and pair."
-        );
-      }
-      this.wildcard = true;
-    } else if (pair) {
-      if (hardened) {
-        throw new Error(
-          "A PathComponent cannot be a pair and hardened at the same time."
-        );
-      }
-      this.pair = pair;
-      this.wildcard = false;
-    } else {
-      throw new Error(
-        "Invalid PathComponent: at least one of index, range, wildcard, or pair must be defined."
-      );
+    // Ensure sourceFingerprint is present if components are empty
+    if (componentsArray.length === 0 && !input.sourceFingerprint) {
+      throw new Error('Keypath requires a source-fingerprint if components are empty.')
     }
 
-    this.hardened = hardened;
-  }
-
-  // Getters
-  public getIndex = () => this.index;
-  public getRange = () => this.range;
-  public isWildcard = () => this.wildcard;
-  public isHardened = () => this.hardened;
-  public getPair = () => this.pair;
-
-  // Utility functions
-  public isChildIndexComponent = (): boolean => this.index !== undefined;
-
-  public isChildRangeComponent = (): boolean => this.range !== undefined;
-
-  public isChildWildcardComponent = (): boolean => this.wildcard === true;
-
-  public isChildPairComponent = (): boolean => this.pair !== undefined;
-
-  // Static helper to create hardened components
-  public static createHardened(index: number): PathComponent {
-    if (index >= PathComponent.HARDENED_BIT) {
-      throw new Error(
-        `Invalid index ${index} - cannot set the hardened bit manually.`
-      );
+    this.data = {
+      components: componentsArray,
+      sourceFingerprint: input.sourceFingerprint,
+      depth,
     }
-    return new PathComponent({ index, hardened: true });
-  }
-}
-
-
-
-export class PathComponentHelper {
-  /**
-   * Converts a BIP44 path string to an array of PathComponent objects.
-   * @param pathString The BIP44 path string (e.g., "m/44'/0'/0'/0/0")
-   * @returns An array of PathComponent objects
-   */
-  public static fromBIP44PathString(pathString: string): PathComponent[] {
-    if (!pathString.startsWith('m')) {
-      throw new Error('Invalid BIP44 path string. Must start with "m".');
-    }
-
-    const segments = pathString.split('/').slice(1); // Remove "m"
-    return segments.map((segment) => {
-      const hardened = segment.endsWith("'");
-      const indexStr = hardened ? segment.slice(0, -1) : segment;
-
-      const index = parseInt(indexStr, 10);
-      if (isNaN(index)) {
-        throw new Error(`Invalid path segment: ${segment}`);
-      }
-
-      if (index < 0 || index >= PathComponent.HARDENED_BIT) {
-        throw new Error(
-          `Path index out of bounds: ${index}. Must be between 0 and ${
-            PathComponent.HARDENED_BIT - 1
-          }.`
-        );
-      }
-
-      return new PathComponent({ index, hardened });
-    });
   }
 
   /**
-   * Converts an array of PathComponent objects to a BIP44 path string.
-   * @param components An array of PathComponent objects
-   * @returns The BIP44 path string (e.g., "m/44'/0'/0'/0/0")
+   * Parses a path string into an array of PathComponent objects.
+   * @param path The path string to parse.
    */
-  public static toBIP44PathString(components: PathComponent[]): string {
-    const segments = components.map((component) => {
-      const index = component.getIndex();
-      if (index === undefined) {
-        throw new Error(
-          'Invalid PathComponent: Cannot convert wildcard or other unsupported types to BIP44 path.'
-        );
-      }
+  public static pathToComponents(path: string): PathComponent[] {
+    const components = path.split('/') // Split the path into components
+    return components.map(component => PathComponent.fromString(component))
+  }
 
-      return component.isHardened() ? `${index}'` : `${index}`;
-    });
+  /**
+   * Converts an array of PathComponent objects back into a path string.
+   * @param components Array of PathComponent objects.
+   */
+  public static componentsToString(components: PathComponent[]): string {
+    return components.map(component => component.toString()).join('/')
+  }
 
-    return `m/${segments.join('/')}`;
+  /**
+   * Converts a path string into a CDDL-compliant structure for CBOR encoding.
+   * @param path The path string to parse and convert.
+   */
+  public static pathToCBORData(path: string): any {
+    const components = Keypath.pathToComponents(path)
+    return components.map(component => component.toCBORData())
+  }
+
+  /**
+   * Converts the Keypath components back to a path string.
+   */
+  public toString(): string {
+    return Keypath.componentsToString(this.data.components)
+  }
+
+  /**
+   * Converts the Keypath to a CDDL-compliant structure for CBOR encoding.
+   */
+  public toCBORData(): any {
+    return {
+      components: this.data.components.map(component => component.toCBORData()),
+      source_fingerprint: this.data.sourceFingerprint,
+      depth: this.data.depth,
+    }
+  }
+
+  public getComponents(): PathComponent[] {
+    return this.data.components
+  }
+
+  public getSourceFingerprint(): number | undefined {
+    return this.data.sourceFingerprint
+  }
+
+  public getDepth(): number | undefined {
+    return this.data.depth
   }
 }
-
-
-// Convert BIP44 path string to PathComponent array
-const pathString = "m/44'/0'/0'/0/0";
-const pathComponents = PathComponentHelper.fromBIP44PathString(pathString);
-
-console.log(pathComponents); // Array of PathComponent objects
-
-// Convert PathComponent array back to BIP44 path string
-const bip44Path = PathComponentHelper.toBIP44PathString(pathComponents);
-console.log(bip44Path); // "m/44'/0'/0'/0/0"
-
-
-
-/// Example Paths
-// m/44'/0'/0'/0/0
-// m/44'/1-5/*/*
