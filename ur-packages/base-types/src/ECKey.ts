@@ -5,32 +5,35 @@ export class ECKey extends registryItemFactory({
   URType: "eckey", // Updated UR Type
   keyMap: {
     curve: 1,
-    privateKey: 2,
+    isPrivate: 2,
     data: 3,
   },
   CDDL: `
-      eckey = #6.40306({
-          curve: uint,
-          ? privateKey: bool,
-          data: bstr
-      })
-  
-      curve = 1
-      privateKey = 2
-      data = 3
+    tagged-eckey = #6.40306(eckey)
+
+    eckey = {
+      ? curve: uint .default 0,
+      ? is-private: bool .default false,
+      data: bytes
+    }
+
+    curve = 1
+    is-private = 2
+    data = 3
   `,
 }) {
   constructor(
-    data: Buffer,
-    curve?: number,
-    privateKey?: boolean,
-  ) {
+    input: {
+      data: Buffer;
+      curve?: number;
+      isPrivate?: boolean;
+    }) {
     // Pass a data object
-    super({ data, curve, privateKey });
+    super({ ...input });
   }
 
   public getCurve = () => this.data.curve || 0;
-  public isPrivateKey = () => this.data.privateKey || false;
+  public getIsPrivate = () => this.data.isPrivate || false;
   public getData = () => this.data.data;
 
   override verifyInput(input: any): { valid: boolean; reasons?: Error[]; } {
@@ -42,8 +45,8 @@ export class ECKey extends registryItemFactory({
     if (input.curve !== undefined && typeof input.curve !== "number") {
       errors.push(new Error("curve must be a number"));
     }
-    if (input.privateKey !== undefined && typeof input.privateKey !== "boolean") {
-      errors.push(new Error("privateKey must be a boolean"));
+    if (input.isPrivate !== undefined && typeof input.isPrivate !== "boolean") {
+      errors.push(new Error("isPrivate must be a boolean"));
     }
 
     return {
@@ -52,16 +55,6 @@ export class ECKey extends registryItemFactory({
     };
   }
 
-  /**
-   * We need to override this method because class expects multiple arguments instead of an object
-   */
-  static override fromCBORData(val: any, allowKeysNotInMap?: boolean, tagged?: any) {
-    // Do some post processing data coming from the cbor decoder
-    const data = this.postCBOR(val, allowKeysNotInMap);
-
-    // Return an instance of the generated class
-    return new this(data.data, data.curve, data.privateKey);
-  }
 }
 
 // Save to the registry
