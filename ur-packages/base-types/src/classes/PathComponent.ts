@@ -72,27 +72,6 @@ export class PathComponent {
 
   public isPairComponent = (): boolean => this.pair !== undefined
 
-  // Converts to CDDL-compliant structure for CBOR encoding
-  public toCBORData(): any {
-    if (this.isIndexComponent()) {
-      return [this.index!, this.hardened]
-    }
-    if (this.isRangeComponent()) {
-      return [[this.range![0], this.range![1]], this.hardened]
-    }
-    if (this.isWildcardComponent()) {
-      return [[], this.hardened]
-    }
-    if (this.isPairComponent()) {
-      const [external, internal] = this.pair!
-      return [
-        [external.index, external.hardened],
-        [internal.index, internal.hardened],
-      ]
-    }
-    throw new Error('Invalid PathComponent: Cannot convert to CDDL.')
-  }
-
   // Converts the component to a string representation
   public toString(): string {
     if (this.isIndexComponent()) {
@@ -100,7 +79,7 @@ export class PathComponent {
     }
     if (this.isRangeComponent()) {
       const [low, high] = this.range!
-      return `${low}${this.hardened ? 'h' : ''}-${high}${this.hardened ? 'h' : ''}`
+      return `${low}-${high}${this.hardened ? "'" : ''}`
     }
     if (this.isWildcardComponent()) {
       return `*${this.hardened ? 'h' : ''}`
@@ -114,11 +93,8 @@ export class PathComponent {
 
   // Parses a string into a PathComponent
   public static fromString(component: string): PathComponent {
-    if (component === '*') {
-      return new PathComponent({ wildcard: true, hardened: false })
-    }
-    if (component.endsWith('*')) {
-      const hardened = component.endsWith('h*')
+    if (component === '*' || component === "*'" || component === '*h') {
+      const hardened = component.endsWith("'") || component.endsWith('h')
       return new PathComponent({ wildcard: true, hardened })
     }
     if (component.includes('-')) {
@@ -135,7 +111,7 @@ export class PathComponent {
       }
       return new PathComponent({
         range: [low.index, high.index],
-        hardened: low.hardened && high.hardened,
+        hardened: high.hardened,
       })
     }
     if (component.startsWith('<') && component.endsWith('>')) {
@@ -159,10 +135,5 @@ export class PathComponent {
     }
     return new PathComponent({ index, hardened })
   }
-}
 
-// const wildcard = new PathComponent({ hardened: true });
-// console.log(wildcard.toCDDL());
-// // Output: [[], true]
-// console.log(wildcard.toString());
-// // Output: "*h"
+}

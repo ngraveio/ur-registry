@@ -1,28 +1,41 @@
-import { Ur, registryItemFactory, RegistryItemClass } from '@ngraveio/bc-ur'
+import { registryItemFactory } from '@ngraveio/bc-ur'
 import { PathComponent } from './classes/PathComponent'
+
+interface KeypathInput {
+  path: string | PathComponent[]
+  sourceFingerprint?: number
+  depth?: number
+}
+
+interface KeypathData {
+  components: PathComponent[]
+  sourceFingerprint?: number
+  depth?: number
+}
 
 /**
  * Keypath class for handling hierarchical key derivation paths.
  *
- * Valid Path String Rules:
+ * Metadata for the complete or partial derivation path of a key:
+ * - 'source-fingerprint': Fingerprint of the ancestor key or master key if components are empty.
+ * - 'depth': Number of derivation steps in the path.
  *
+ * Valid Path String Rules:
  * 1. Paths can include:
  *    - Single indices (e.g., `44'/0'/0'/0/0`).
- *    - Ranges with hardening applied individually (e.g., `1h-6h`; `1-6h` is invalid).
+ *    - Ranges with hardening applied to the second element (e.g., `1-6'`; `1h-6` is invalid).
  *    - Wildcards (`*`) at any depth (e.g., `44'/0'/0'/*`).
  *    - Pairs for external/internal addresses (e.g., `<0h;1h>` or `<0;1>`).
  *    - Mixed components combining ranges, wildcards, and pairs (e.g., `44'/0'/1'-5'/<0h;1h>/*`).
- *
  * 2. Rules for hardening:
  *    - Hardened indices must be ≤ `0x80000000`.
  *    - Hardened chars (`'` or `h`) must immediately follow the index.
- *
  * 3. Path formatting:
  *    - Paths can optionally start with `m`, but it is not required.
  *    - Components must be delimited by `/` and contain integers, ranges, wildcards, or pairs.
  *
  * Invalid Examples:
- * - `1-6h` (hardening not applied to all indices in range).
+ * - `1h-6` (hardening not applied to the second element in range).
  * - `<0;1h>` (mixed hardening in pair).
  *
  * Usage:
@@ -81,24 +94,18 @@ export class Keypath extends registryItemFactory({
   `,
   keyMap: {
     components: 1,
-    source_fingerprint: 2,
+    sourceFingerprint: 2,
     depth: 3,
   },
 }) {
-  public data: {
-    components: PathComponent[]
-    sourceFingerprint?: number
-    depth?: number
-  }
+  public data: KeypathData
 
-  constructor(input: { components: string | PathComponent[]; sourceFingerprint?: number; depth?: number }) {
+  constructor(input: KeypathInput) {
     super(input)
 
     // Convert string components to PathComponent array if necessary
-    const componentsArray = typeof input.components === 'string' ? Keypath.pathToComponents(input.components) : input.components
-
-    // Set depth if not provided
-    const depth = input.depth ?? componentsArray.length
+    //@ts-ignore
+    const componentsArray = typeof input.path === 'string' ? Keypath.pathToComponents(input.path) : input.path || input.components
 
     // Ensure sourceFingerprint is present if components are empty
     if (componentsArray.length === 0 && !input.sourceFingerprint) {
@@ -108,15 +115,20 @@ export class Keypath extends registryItemFactory({
     this.data = {
       components: componentsArray,
       sourceFingerprint: input.sourceFingerprint,
-      depth,
+      depth: input.depth,
     }
   }
 
   /**
    * Parses a path string into an array of PathComponent objects.
    * @param path The path string to parse.
+   * @returns {PathComponent[]} Array of PathComponent objects.
    */
   public static pathToComponents(path: string): PathComponent[] {
+    // Ignore leading 'm' if present
+    if (path.startsWith('m/')) {
+      path = path.slice(2)
+    }
     const components = path.split('/') // Split the path into components
     return components.map(component => PathComponent.fromString(component))
   }
@@ -124,47 +136,134 @@ export class Keypath extends registryItemFactory({
   /**
    * Converts an array of PathComponent objects back into a path string.
    * @param components Array of PathComponent objects.
+   * @returns {string} Path string.
    */
   public static componentsToString(components: PathComponent[]): string {
     return components.map(component => component.toString()).join('/')
   }
 
   /**
-   * Converts a path string into a CDDL-compliant structure for CBOR encoding.
-   * @param path The path string to parse and convert.
-   */
-  public static pathToCBORData(path: string): any {
-    const components = Keypath.pathToComponents(path)
-    return components.map(component => component.toCBORData())
-  }
-
-  /**
    * Converts the Keypath components back to a path string.
+   * @returns {string} Path string.
    */
   public toString(): string {
     return Keypath.componentsToString(this.data.components)
   }
 
   /**
-   * Converts the Keypath to a CDDL-compliant structure for CBOR encoding.
+   * Gets the components of the Keypath.
+   * @returns {PathComponent[]} Array of PathComponent objects.
    */
-  public toCBORData(): any {
-    return {
-      components: this.data.components.map(component => component.toCBORData()),
-      source_fingerprint: this.data.sourceFingerprint,
-      depth: this.data.depth,
-    }
-  }
-
   public getComponents(): PathComponent[] {
     return this.data.components
   }
 
+  /**
+   * Gets the source fingerprint of the Keypath.
+   * @returns {number | undefined} Source fingerprint.
+   */
   public getSourceFingerprint(): number | undefined {
     return this.data.sourceFingerprint
   }
 
+  /**
+   * Gets the depth of the Keypath.
+   * @returns {number | undefined} Depth.
+   */
   public getDepth(): number | undefined {
     return this.data.depth
+  }
+
+  // Override to preCBOR function to convert all pathComponents to CBOR data and put them in array
+  override preCBOR() {
+    const data = super.preCBOR() as Map<string | number, any>
+
+    const components = this.data.components
+    const converted: any[] = []
+
+    // Convert components to CBOR Data Item
+    components.forEach((component: PathComponent) => {
+      if (component.isIndexComponent()) {
+        converted.push(component.getIndex(), component.isHardened())
+      } else if (component.isRangeComponent()) {
+        converted.push(component.getRange(), component.isHardened())
+      } else if (component.isWildcardComponent()) {
+        converted.push([], component.isHardened())
+      } else if (component.isPairComponent()) {
+        const pair = component.getPair()!
+        converted.push([pair[0].index, pair[0].hardened, pair[1].index, pair[1].hardened])
+      }
+    })
+
+    data.set(this.keyMap.components, converted)
+    return data
+  }
+
+  // Override postCBOR function to convert all pathComponents from CBOR data back to PathComponent
+  static override postCBOR(_data: Map<string | number, any>) {
+    // First call the super postCBOR function to get the data
+    const data = super.postCBOR(_data) as KeypathData
+
+    // Assume data components are the path m/1'/2/3-4/5-6'/*/*'/<7;8'>/<9';0>"
+    // CBOR: [1, true, 2, false, [3, 4], false, [5, 6], true, [], false, [], true, [7, false, 8, true], [9, true, 0, false]]
+    // this will be converted to: child-index-componen, child-index-componen, child-range-component, child-range-component, child-wildcard-component, child-wildcard-component, child-pair-component, child-pair-component
+
+    const components: PathComponent[] = []
+    const pathItems = data['components'] as any[]
+    // Now going over the array element we will decide its type
+    for (let i = 0; i < pathItems.length; i++) {
+      const current = pathItems[i]
+      // If the current element is integer, then it is a child-index-component // 1, true,
+      if (typeof current === 'number') {
+        // Check if the second element is boolean, if not then throw error
+        if (typeof pathItems[i + 1] !== 'boolean') {
+          throw new Error('Invalid child-index-component: Cannot convert to PathComponent.')
+        }
+        const hardened = pathItems[i + 1] as boolean
+        components.push(new PathComponent({ index: current, hardened }))
+        i++
+      }
+      // If the current element is an array, then it is a either child-wildcard-component, child-range-componentor child-pair-component
+      else if (current instanceof Array) {
+        // If the array is empty, then it is a child-wildcard-component // [], false,
+        if (current.length === 0) {
+          // Check if the second element is boolean, if not then throw error
+          if (typeof pathItems[i + 1] !== 'boolean') {
+            throw new Error('Invalid child-wildcard-component: Cannot convert to PathComponent.')
+          }
+          const hardened = pathItems[i + 1] as boolean
+          components.push(new PathComponent({ wildcard: true, hardened }))
+          i++
+        }
+        // If the array has 2 elements then it is a child-range-component // [5, 6], true,
+        else if (current.length === 2) {
+          // Check if the second element is boolean, if not then throw error
+          if (typeof pathItems[i + 1] !== 'boolean') {
+            throw new Error('Invalid child-range-component: Cannot convert to PathComponent.')
+          }
+          const hardened = pathItems[i + 1] as boolean
+          components.push(new PathComponent({ range: current as [number, number], hardened }))
+          i++
+        }
+        // If the array has 4 elements then it is a child-pair-component // [9, true, 0, false]
+        else if (current.length === 4) {
+          const first = { index: current[0], hardened: current[1] } as { index: number; hardened: boolean }
+          const second = { index: current[2], hardened: current[3] } as { index: number; hardened: boolean }
+          components.push(new PathComponent({ pair: [first, second] }))
+        } else {
+          throw new Error('Invalid PathComponent Element is invalid for child-wildcard-component, child-range-component or child-pair-component.')
+        } // End for array length check
+      } // End For type check
+      else {
+        throw new Error('Invalid PathComponent: Element is not a number or an array.')
+      }
+    } // End of the for loop
+
+    // Change components name to path
+    // @ts-ignore
+    data['path'] = components
+    // @ts-ignore
+    delete data['components']
+    return data
   }
 }
