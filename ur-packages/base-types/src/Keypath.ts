@@ -2,7 +2,7 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 import { PathComponent } from './classes/PathComponent'
 
 interface KeypathInput {
-  path: string | PathComponent[]
+  path?: string | PathComponent[]
   sourceFingerprint?: number
   depth?: number
 }
@@ -103,13 +103,27 @@ export class Keypath extends registryItemFactory({
   constructor(input: KeypathInput) {
     super(input)
 
-    // Convert string components to PathComponent array if necessary
-    //@ts-ignore
-    const componentsArray = typeof input.path === 'string' ? Keypath.pathToComponents(input.path) : input.path || input.components
+    // if input.path is undefined then input.components takes priorty
+    // @ts-ignore
+    let inputPath = input.path || input.components
+    let componentsArray: PathComponent[] = []
+
+    if (inputPath !== undefined) {
+      // Convert string components to PathComponent array if necessary
+      // @ts-ignore
+      componentsArray = typeof inputPath === 'string' ? Keypath.pathToComponents(inputPath) : inputPath
+    }
 
     // Ensure sourceFingerprint is present if components are empty
     if (componentsArray.length === 0 && !input.sourceFingerprint) {
       throw new Error('Keypath requires a source-fingerprint if components are empty.')
+    }
+
+    if (input.sourceFingerprint !== undefined) {
+      // Finger print should be integer higher than 0
+      if (typeof input.sourceFingerprint !== 'number' || input.sourceFingerprint <= 0) {
+        throw new Error('Invalid source-fingerprint: Must be a positive integer.')
+      }
     }
 
     this.data = {
@@ -119,16 +133,30 @@ export class Keypath extends registryItemFactory({
     }
   }
 
+
+  /**
+   * Sets the depth of the Keypath based on the number of components.
+   * Representing the number of derivation steps
+   */
+  public setDepth(): void {
+    this.data.depth = this.data?.components?.length || 0
+  }
+
   /**
    * Parses a path string into an array of PathComponent objects.
    * @param path The path string to parse.
    * @returns {PathComponent[]} Array of PathComponent objects.
    */
   public static pathToComponents(path: string): PathComponent[] {
+    if (!path) return []
+
     // Ignore leading 'm' if present
     if (path.startsWith('m/')) {
       path = path.slice(2)
+    } else if (path.startsWith('m')) {
+      path = path.slice(1)
     }
+
     const components = path.split('/') // Split the path into components
     return components.map(component => PathComponent.fromString(component))
   }
@@ -138,16 +166,16 @@ export class Keypath extends registryItemFactory({
    * @param components Array of PathComponent objects.
    * @returns {string} Path string.
    */
-  public static componentsToString(components: PathComponent[]): string {
-    return components.map(component => component.toString()).join('/')
+  public static componentsToString(components: PathComponent[], hardenedFlag?: "'" | 'h'): string {
+    return components.map(component => component.toString(hardenedFlag)).join('/')
   }
 
   /**
    * Converts the Keypath components back to a path string.
    * @returns {string} Path string.
    */
-  public toString(): string {
-    return Keypath.componentsToString(this.data.components)
+  public toString(hardenedFlag?: "'" | 'h'): string {
+    return Keypath.componentsToString(this.data.components, hardenedFlag)
   }
 
   /**

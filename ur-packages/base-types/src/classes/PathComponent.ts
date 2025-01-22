@@ -73,20 +73,20 @@ export class PathComponent {
   public isPairComponent = (): boolean => this.pair !== undefined
 
   // Converts the component to a string representation
-  public toString(): string {
+  public toString(hardenedFlag: "'" | "h" = "'"): string {
     if (this.isIndexComponent()) {
-      return `${this.index}${this.hardened ? "'" : ''}`
+      return `${this.index}${this.hardened ? hardenedFlag : ''}`
     }
     if (this.isRangeComponent()) {
       const [low, high] = this.range!
-      return `${low}-${high}${this.hardened ? "'" : ''}`
+      return `${low}-${high}${this.hardened ? hardenedFlag : ''}`
     }
     if (this.isWildcardComponent()) {
-      return `*${this.hardened ? 'h' : ''}`
+      return `*${this.hardened ? hardenedFlag : ''}`
     }
     if (this.isPairComponent()) {
       const [external, internal] = this.pair!
-      return `<${external.index}${external.hardened ? 'h' : ''};${internal.index}${internal.hardened ? 'h' : ''}>`
+      return `<${external.index}${external.hardened ? hardenedFlag : ''};${internal.index}${internal.hardened ? hardenedFlag : ''}>`
     }
     throw new Error('Invalid PathComponent: Cannot convert to string.')
   }
