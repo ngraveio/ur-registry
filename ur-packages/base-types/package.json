@@ -34,7 +34,8 @@
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "@ngraveio/bc-ur": "file:/home/irfan/code/backend/bc-ur"
+    "@ngraveio/bc-ur": "file:/home/irfan/code/backend/bc-ur",
+    "@scure/base": "^1.2.4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
