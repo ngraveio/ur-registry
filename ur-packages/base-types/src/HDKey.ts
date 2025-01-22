@@ -156,11 +156,11 @@ export class HDKey extends registryItemFactory({
     if (typeof input.isMaster !== 'boolean') {
       errors.push(new Error('isMaster must be a boolean'))
     }
-    if (!Buffer.isBuffer(input.keyData)) {
-      errors.push(new Error('keyData must be a Buffer'))
+    if (!(input.keyData instanceof Uint8Array)) {
+      errors.push(new Error('keyData must be a Buffer or Uint8Array'))
     }
-    if (!Buffer.isBuffer(input.chainCode)) {
-      errors.push(new Error('chainCode must be a Buffer'))
+    if (!(input.chainCode instanceof Uint8Array)) {
+      errors.push(new Error('chainCode must be a Buffer or Uint8Array'))
     }
     if (input.isPrivateKey !== undefined && typeof input.isPrivateKey !== 'boolean') {
       errors.push(new Error('isPrivateKey must be a boolean'))
@@ -176,7 +176,7 @@ export class HDKey extends registryItemFactory({
     }
     if (input.parentFingerprint) {
       // It needs to be an integer and bigger than 0 and maximum 32 bit size
-      if (typeof input.parentFingerprint !== 'number' || input.parentFingerprint < 0 || input.parentFingerprint > 0xFFFFFFFF) {
+      if (typeof input.parentFingerprint !== 'number' || input.parentFingerprint < 0 || input.parentFingerprint > 0xffffffff) {
         errors.push(new Error('parentFingerprint must be a positive integer (uint32)'))
       }
     }
@@ -192,4 +192,63 @@ export class HDKey extends registryItemFactory({
       reasons: errors.length > 0 ? errors : undefined,
     }
   }
-}
+
+  // TODO: add deserializeFromBIP32
+
+//   function xpubToHdkey(xpub: string, xpubPath: string) {
+//     // decode xpub from base58 to hex
+//     const xpubHex = base58.decode(xpub);
+//     // Generate path components from path
+//     const pathComponents = generatePathComponentsFromPath(xpubPath);
+  
+//     // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
+//     // zpub6rBVCActEAEGdH5TJVz3H3H1kBYxmB2AiKEnfFJSFeiKU4vBepoxwCqDBqrgkvmeiUUfvGSUrii7J5anRWgyk8kN63xpXWhpcF2Lgi4gpkE
+//     // 4 byte: version bytes (mainnet: 0x0488B21E public, 0x0488ADE4 private; testnet: 0x043587CF public, 0x04358394 private)
+//     // 1 byte: depth: 0x00 for master nodes, 0x01 for level-1 derived keys, ....
+//     // 4 bytes: the fingerprint of the parent's key (0x00000000 if master key)
+//     // 4 bytes: child number. This is ser32(i) for i in xi = xpar/i, with xi the key being serialized. (0x00000000 if master key)
+//     // 32 bytes: the chain code
+//     // 33 bytes: the public key or private key data (serP(K) for public keys, 0x00 || ser256(k) for private keys)
+//     // 04b24746 03 75bb5468 80000000 529cb574542b8163f9f0a6bdc01180137350fdb50cf54186bffc067694d05d35 03fbd43643e702d2f9b7306345963ae77c49c5e2f6736d36b11db617918f8d28a4 c783598f
+//     // First 4 bytes are version bytes
+//     const versionBytes = xpubHex.slice(0, 4);
+//     // Next byte is depth (1 byte)
+//     const depth = xpubHex.slice(4, 5);
+//     // Next 4 bytes are fingerprint
+//     const fingerprint = xpubHex.slice(5, 9);
+//     // Next 4 bytes are child number
+//     const childNumber = xpubHex.slice(9, 13);
+//     // Next 32 bytes are chain code
+//     const chainCode = xpubHex.slice(13, 45);
+//     // Next 33 bytes are public key
+//     const publicKey = xpubHex.slice(45, 78);
+//     // Next 4 bytes are checksum (last 4 bytes)
+//     const checksum = xpubHex.slice(-4);
+  
+//     // Children path componentes for /0/* (wildcard)
+//     const childrenPath = [
+//       new PathComponent({ index: 0, hardened: false }),
+//       new PathComponent({ index: undefined, hardened: false }),
+//     ];
+  
+//     const xpubHdKeyParams = {
+//       isMaster: false,
+//       isPrivateKey: false,
+//       key: Buffer.from(publicKey),
+//       chainCode: Buffer.from(chainCode),
+//       origin: new CryptoKeypath(
+//         pathComponents,
+//         Buffer.from(fingerprint),
+//         depth[0]
+//       ),
+//       parentFingerprint: Buffer.from(fingerprint),
+//       // Children path componentes for /0/* (wildcard)
+//       children: new CryptoKeypath(childrenPath, Buffer.from(fingerprint)), // TODO check depth
+//       //note: xpub,
+//     };
+  
+//     // Lets Generate the xpubs HD KEY
+//     const xpubHdKey = new CryptoHDKey(xpubHdKeyParams);
+  
+//     return xpubHdKey;  
+// }
