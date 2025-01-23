@@ -1,4 +1,4 @@
-import { HDKey } from "../src/index";
+import { CoinInfo, HDKey } from "../src/index";
 import { PathComponent } from "../src/classes/PathComponent";
 import { Ur } from "@ngraveio/bc-ur";
 
@@ -57,6 +57,16 @@ describe("HDKey", () => {
 
     // xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi
 
+    // Encode same example using deserialization method
+    const xpubDecoded = HDKey.fromXpub("xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi", "m/44'/1'/1'/0/1");
+    //@ts-ignore
+    xpubDecoded.data.useInfo = new CoinInfo({type:0, network:1});
+
+    const xpubUr = xpubDecoded.toUr();
+    const xpubHex = xpubUr.getPayloadHex();
+
+    expect(xpubHex).toBe(expectedBytes);
+    expect(xpubUr.toString()).toBe(expectedUr);
   });
 
 });

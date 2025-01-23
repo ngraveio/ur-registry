@@ -1,12 +1,12 @@
 import { registryItemFactory, UrRegistry } from '@ngraveio/bc-ur'
 import { Keypath } from './Keypath'
 import { CoinInfo } from './CoinInfo'
-import { base58 } from "@scure/base";
+import { base58 } from '@scure/base'
 
 interface HDKeyConstructorArgs {
   isMaster?: boolean
   keyData: Buffer
-  chainCode: Buffer
+  chainCode?: Buffer
   isPrivateKey?: boolean
   useInfo?: CoinInfo
   origin?: Keypath
@@ -116,6 +116,7 @@ export class HDKey extends registryItemFactory({
 
     // Check if this is a master key key or a derived key
     if (input.isMaster) {
+      //@ts-ignore
       this.data = {
         isMaster: true,
         keyData: input.keyData,
@@ -172,7 +173,7 @@ export class HDKey extends registryItemFactory({
     if (input.origin && !(input.origin instanceof Keypath)) {
       errors.push(new Error('origin must be an instance of Keypath'))
     }
-    if (input.children &&  !(input.origin instanceof Keypath)) {
+    if (input.children && !(input.origin instanceof Keypath)) {
       errors.push(new Error('children must be an instance of Keypath'))
     }
     if (input.parentFingerprint) {
@@ -194,62 +195,105 @@ export class HDKey extends registryItemFactory({
     }
   }
 
-  // TODO: add deserializeFromBIP32
+  static fromXpub(xpub: string, xpubPath?: string) {
+    const { versionBytes, depth, parentFingerprint, childNumber, chainCode, keyData, checksum, isMaster } = HDKey.parseXpub(xpub)
 
-//   function xpubToHdkey(xpub: string, xpubPath: string) {
-//     // decode xpub from base58 to hex
-//     const xpubHex = base58.decode(xpub);
-//     // Generate path components from path
-//     const pathComponents = generatePathComponentsFromPath(xpubPath);
-  
-//     // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
-//     // zpub6rBVCActEAEGdH5TJVz3H3H1kBYxmB2AiKEnfFJSFeiKU4vBepoxwCqDBqrgkvmeiUUfvGSUrii7J5anRWgyk8kN63xpXWhpcF2Lgi4gpkE
-//     // 4 byte: version bytes (mainnet: 0x0488B21E public, 0x0488ADE4 private; testnet: 0x043587CF public, 0x04358394 private)
-//     // 1 byte: depth: 0x00 for master nodes, 0x01 for level-1 derived keys, ....
-//     // 4 bytes: the fingerprint of the parent's key (0x00000000 if master key)
-//     // 4 bytes: child number. This is ser32(i) for i in xi = xpar/i, with xi the key being serialized. (0x00000000 if master key)
-//     // 32 bytes: the chain code
-//     // 33 bytes: the public key or private key data (serP(K) for public keys, 0x00 || ser256(k) for private keys)
-//     // 04b24746 03 75bb5468 80000000 529cb574542b8163f9f0a6bdc01180137350fdb50cf54186bffc067694d05d35 03fbd43643e702d2f9b7306345963ae77c49c5e2f6736d36b11db617918f8d28a4 c783598f
-//     // First 4 bytes are version bytes
-//     const versionBytes = xpubHex.slice(0, 4);
-//     // Next byte is depth (1 byte)
-//     const depth = xpubHex.slice(4, 5);
-//     // Next 4 bytes are fingerprint
-//     const fingerprint = xpubHex.slice(5, 9);
-//     // Next 4 bytes are child number
-//     const childNumber = xpubHex.slice(9, 13);
-//     // Next 32 bytes are chain code
-//     const chainCode = xpubHex.slice(13, 45);
-//     // Next 33 bytes are public key
-//     const publicKey = xpubHex.slice(45, 78);
-//     // Next 4 bytes are checksum (last 4 bytes)
-//     const checksum = xpubHex.slice(-4);
-  
-//     // Children path componentes for /0/* (wildcard)
-//     const childrenPath = [
-//       new PathComponent({ index: 0, hardened: false }),
-//       new PathComponent({ index: undefined, hardened: false }),
-//     ];
-  
-//     const xpubHdKeyParams = {
-//       isMaster: false,
-//       isPrivateKey: false,
-//       key: Buffer.from(publicKey),
-//       chainCode: Buffer.from(chainCode),
-//       origin: new CryptoKeypath(
-//         pathComponents,
-//         Buffer.from(fingerprint),
-//         depth[0]
-//       ),
-//       parentFingerprint: Buffer.from(fingerprint),
-//       // Children path componentes for /0/* (wildcard)
-//       children: new CryptoKeypath(childrenPath, Buffer.from(fingerprint)), // TODO check depth
-//       //note: xpub,
-//     };
-  
-//     // Lets Generate the xpubs HD KEY
-//     const xpubHdKey = new CryptoHDKey(xpubHdKeyParams);
-  
-//     return xpubHdKey;  
-// }
+    if (isMaster) {
+      const masterKeyParams: MasterKeyProps = {
+        isMaster: true,
+        keyData: Buffer.from(keyData),
+        chainCode: Buffer.from(chainCode),
+      }
+
+      // Lets Generate the master HD KEY
+      const masterHdKey = new HDKey(masterKeyParams)
+
+      return masterHdKey
+    }
+
+    // Otherwise its a derived key
+    const xpubHdKeyParams: DeriveKeyProps = {
+      isMaster: false,
+      isPrivateKey: false, // TODO: Check version bytes
+      keyData: Buffer.from(keyData),
+      chainCode: Buffer.from(chainCode),
+      // origin: new Keypath({
+      //   path: xpubPath,
+      //   sourceFingerprint: parentFingerprint.readUInt32BE(0),
+      //   depth: Number(depth[0]),
+      // }),
+      parentFingerprint: parentFingerprint.readUInt32BE(0),
+      // children: new Keypath({ path: '/0/*' })
+      //note: xpub,
+    }
+
+    // If xpubPath is provided, add origin path
+    if (xpubPath) {
+      xpubHdKeyParams.origin = new Keypath({
+        path: xpubPath,
+        sourceFingerprint: parentFingerprint.readUInt32BE(0),
+        depth: depth,
+      })
+    }
+
+    // Lets Generate the xpubs HD KEY
+    const xpubHdKey = new HDKey(xpubHdKeyParams)
+
+    return xpubHdKey
+  }
+
+  static parseXpub(xpub: string) {
+    // decode xpub from base58 to hex
+    const xpubHex = base58.decode(xpub) as Buffer
+
+    // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
+    // zpub6rBVCActEAEGdH5TJVz3H3H1kBYxmB2AiKEnfFJSFeiKU4vBepoxwCqDBqrgkvmeiUUfvGSUrii7J5anRWgyk8kN63xpXWhpcF2Lgi4gpkE
+    // 4 byte: version bytes (mainnet: 0x0488B21E public, 0x0488ADE4 private; testnet: 0x043587CF public, 0x04358394 private)
+    // 1 byte: depth: 0x00 for master nodes, 0x01 for level-1 derived keys, ....
+    // 4 bytes: the fingerprint of the parent's key (0x00000000 if master key)
+    // 4 bytes: child number. This is ser32(i) for i in xi = xpar/i, with xi the key being serialized. (0x00000000 if master key)
+    // 32 bytes: the chain code
+    // 33 bytes: the public key or private key data (serP(K) for public keys, 0x00 || ser256(k) for private keys)
+    // 04b24746 03 75bb5468 80000000 529cb574542b8163f9f0a6bdc01180137350fdb50cf54186bffc067694d05d35 03fbd43643e702d2f9b7306345963ae77c49c5e2f6736d36b11db617918f8d28a4 c783598f
+    // First 4 bytes are version bytes
+    const versionBytes = xpubHex.slice(0, 4)
+    // Next byte is depth (1 byte)
+    const depth = xpubHex.slice(4, 5).readInt8()
+    // Next 4 bytes are fingerprint
+    const parentFingerprint = xpubHex.slice(5, 9)
+    // Next 4 bytes are child number
+    const childNumber = xpubHex.slice(9, 13)
+    // Next 32 bytes are chain code
+    const chainCode = xpubHex.slice(13, 45)
+    // Next 33 bytes are public key
+    const keyData = xpubHex.slice(45, 78)
+    // Next 4 bytes are checksum (last 4 bytes)
+    const checksum = xpubHex.slice(-4)
+
+    // Check if this is a master key key or a derived key
+    const isMaster = depth === 0
+
+
+    // TODO: check version bytes to determine if its private or public key
+    // But this will only work for bitcoin in this case
+
+    // #define MAINNET_XPUB    0x0488B21E
+    // #define MAINNET_XPRIV   0x0488ADE4
+    // #define TESTNET_XPUB    0x043587CF
+    // #define TESTNET_XPRIV   0x04358394
+    // bool isPrivate = (version == MAINNET_XPRIV || version == TESTNET_XPRIV);
+    // bool isPublic = (version == MAINNET_XPUB || version == TESTNET_XPUB);
+
+
+    return {
+      versionBytes,
+      depth,
+      parentFingerprint,
+      childNumber,
+      chainCode,
+      keyData,
+      checksum,
+      isMaster,
+    }
+  }
+}
