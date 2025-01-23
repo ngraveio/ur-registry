@@ -124,7 +124,7 @@ export class HDKey extends registryItemFactory({
       }
     } else {
       this.data = {
-        isMaster: undefined,
+        isMaster: input?.isMaster,
         isPrivateKey: input.isPrivateKey, // By default it is false
         keyData: input.keyData,
         chainCode: input.chainCode,
@@ -161,7 +161,11 @@ export class HDKey extends registryItemFactory({
     if (!(input.keyData instanceof Uint8Array)) {
       errors.push(new Error('keyData must be a Buffer or Uint8Array'))
     }
-    if (!(input.chainCode instanceof Uint8Array)) {
+    // If this is a master key, chainCode is required
+    if (input.isMaster && !input.chainCode) {
+      errors.push(new Error('chainCode is required for master key'))
+    }
+    if (input.chainCode && !(input.chainCode instanceof Uint8Array)) {
       errors.push(new Error('chainCode must be a Buffer or Uint8Array'))
     }
     if (input.isPrivateKey !== undefined && typeof input.isPrivateKey !== 'boolean') {
