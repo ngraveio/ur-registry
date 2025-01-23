@@ -23,7 +23,7 @@ type MasterKeyProps = {
 }
 
 type DeriveKeyProps = {
-  isMaster: false
+  isMaster: false | undefined
   isPrivateKey?: boolean
   keyData: Buffer
   chainCode?: Buffer
@@ -124,7 +124,7 @@ export class HDKey extends registryItemFactory({
       }
     } else {
       this.data = {
-        isMaster: false,
+        isMaster: undefined,
         isPrivateKey: input.isPrivateKey, // By default it is false
         keyData: input.keyData,
         chainCode: input.chainCode,
@@ -137,7 +137,7 @@ export class HDKey extends registryItemFactory({
       }
     }
   }
-  public getIsMaster = () => this.data.isMaster
+  public getIsMaster = () => this.data.isMaster || false;
   public getIsPrivateKey = () => {
     // Master key is always private
     if (this.getIsMaster()) return false
@@ -155,7 +155,7 @@ export class HDKey extends registryItemFactory({
   override verifyInput(input: HDKeyConstructorArgs): { valid: boolean; reasons?: Error[] } {
     const errors: Error[] = []
 
-    if (typeof input.isMaster !== 'boolean') {
+    if (input.isMaster !== undefined && typeof input.isMaster !== 'boolean') {
       errors.push(new Error('isMaster must be a boolean'))
     }
     if (!(input.keyData instanceof Uint8Array)) {
@@ -244,7 +244,7 @@ export class HDKey extends registryItemFactory({
 
   static parseXpub(xpub: string) {
     // decode xpub from base58 to hex
-    const xpubHex = base58.decode(xpub) as Buffer
+    const xpubHex = Buffer.from(base58.decode(xpub)) as Buffer
 
     // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
     // zpub6rBVCActEAEGdH5TJVz3H3H1kBYxmB2AiKEnfFJSFeiKU4vBepoxwCqDBqrgkvmeiUUfvGSUrii7J5anRWgyk8kN63xpXWhpcF2Lgi4gpkE
