@@ -9,15 +9,7 @@ export class MultiKey extends registryItemFactory({
     threshold: 1,
     keys: 2,
   },
-  CDDL: `
-      multikey = #6.123321123321({
-          threshold: uint,
-          keys: [+ (eckey / hdkey)]
-      })
-  
-      threshold = 1
-      keys = 2
-  `,
+  CDDL: ``, // no CDDL for MultiKey
 }) {
   constructor(
     threshold: number,

@@ -152,6 +152,13 @@ export class HDKey extends registryItemFactory({
   public getName = () => (this.data as DeriveKeyProps).name
   public getNote = () => (this.data as DeriveKeyProps).note
 
+  override preCBOR() {
+    const { valid, reasons } = this.verifyInput(this.data);
+    if (!valid) {
+      throw new Error(`Invalid HDKey: ${reasons?.map((r) => r.message).join(', ')}`);
+    }
+    return super.preCBOR();
+  };
   override verifyInput(input: HDKeyConstructorArgs): { valid: boolean; reasons?: Error[] } {
     const errors: Error[] = []
 
@@ -177,13 +184,36 @@ export class HDKey extends registryItemFactory({
     if (input.origin && !(input.origin instanceof Keypath)) {
       errors.push(new Error('origin must be an instance of Keypath'))
     }
-    if (input.children && !(input.origin instanceof Keypath)) {
+    if (input.children && !(input.children instanceof Keypath)) {
       errors.push(new Error('children must be an instance of Keypath'))
     }
-    if (input.parentFingerprint) {
+    if (input.parentFingerprint !== undefined) {
       // It needs to be an integer and bigger than 0 and maximum 32 bit size
       if (typeof input.parentFingerprint !== 'number' || input.parentFingerprint < 0 || input.parentFingerprint > 0xffffffff) {
         errors.push(new Error('parentFingerprint must be a positive integer (uint32)'))
+      }
+      // Check if this is a master key
+      if (input.isMaster) {
+        errors.push(new Error('Master key cannot contain a parent fingerprint'))
+      }
+    }
+    if (input.origin && (input.origin as Keypath).getComponents().length === 1 && input.origin.getSourceFingerprint() !== undefined) {
+      if (input.parentFingerprint !== input.origin.getSourceFingerprint()) {
+        errors.push(new Error('Parent fingerprint for single derivation path should match the source fingerprint of the origin keypath.'))
+      }
+    }
+    if (input.useInfo && input.origin) {
+      const components = input.origin.getComponents();
+      if (components.length < 2) {
+        errors.push(new Error('When BIP44 is specified, the derivation path should contain at least two components.'))
+      } else if (components.length >= 2 && components[1].getIndex() !== input.useInfo.getType()) {
+        errors.push(new Error('When BIP44 is specified, the derivation path should contain the coin type value.'))
+      }
+    }
+    if (input.children) {
+      const components = input.children.getComponents();
+      if (components.some(component => component.isHardened()) && !input.isPrivateKey) {
+        errors.push(new Error('Only a private key can have hardened children keys.'))
       }
     }
     if (input.name && typeof input.name !== 'string') {
