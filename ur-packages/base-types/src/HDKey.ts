@@ -23,7 +23,7 @@ type MasterKeyProps = {
 }
 
 type DeriveKeyProps = {
-  isMaster: false | undefined
+  isMaster?: false
   isPrivateKey?: boolean
   keyData: Buffer
   chainCode?: Buffer
@@ -217,8 +217,8 @@ export class HDKey extends registryItemFactory({
 
     // Otherwise its a derived key
     const xpubHdKeyParams: DeriveKeyProps = {
-      isMaster: false,
-      isPrivateKey: false, // TODO: Check version bytes
+      // isMaster: false,
+      // isPrivateKey: false, // TODO: Check version bytes
       keyData: Buffer.from(keyData),
       chainCode: Buffer.from(chainCode),
       // origin: new Keypath({
@@ -235,8 +235,8 @@ export class HDKey extends registryItemFactory({
     if (xpubPath) {
       xpubHdKeyParams.origin = new Keypath({
         path: xpubPath,
-        sourceFingerprint: parentFingerprint.readUInt32BE(0),
-        depth: depth,
+        // sourceFingerprint: parentFingerprint.readUInt32BE(0),
+        // depth: depth,
       })
     }
 

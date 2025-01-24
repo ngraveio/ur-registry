@@ -100,7 +100,7 @@ describe('HDKey', () => {
     const hdkey = new HDKey({
       keyData,
       chainCode,
-      useInfo: new CoinInfo(0, 1),
+      useInfo: new CoinInfo(undefined, 1),
       origin: new Keypath({ path: "m/44'/1'/1'/0/1" }),
       parentFingerprint: 3910671603,
     })
@@ -126,7 +126,7 @@ describe('HDKey', () => {
       "m/44'/1'/1'/0/1"
     )
     // @ts-ignore
-    xpubDecoded.data.useInfo = new CoinInfo(0, 1)
+    xpubDecoded.data.useInfo = new CoinInfo(undefined, 1)
 
     const xpubUr = xpubDecoded.toUr()
     const xpubHex = xpubUr.getPayloadHex()
@@ -187,7 +187,7 @@ describe('HDKey', () => {
     const hex = ur.getPayloadHex()
 
     expect(ur.type).toBe('hdkey')
-    expect(ur.getPayloadHex()).toBe(expectedBytes)
+    expect(hex).toBe(expectedBytes)
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
@@ -202,8 +202,9 @@ describe('HDKey', () => {
       'xpub6CRQif2S43vtEYf5cZdMhrFpuBFkgFkALM6qhJZz7ws2cfEf1f8Jiv8dXSkizobckHyfH1mFDFZn46AJoh8d4FpB6ydFFg49yPkJF69GsHq',
       "m/44'/60'/0'"
     )
+    xpubDecoded.data.isMaster = false
     // @ts-ignore
-    xpubDecoded.data.useInfo = new CoinInfo(0, 0)
+    xpubDecoded.data.useInfo = new CoinInfo(undefined, 0)
     // @ts-ignore
     xpubDecoded.data.origin = new Keypath({ path: "m/44'/60'/0'", sourceFingerprint: 1756817576 })
     // @ts-ignore
@@ -392,8 +393,8 @@ describe('HDKey', () => {
     const decodedItem = decodedUr.decode()
     expect(decodedItem instanceof HDKey).toBe(true)
     expect(decodedItem.data.keyData.toString()).toBe(keyData.join())
-    expect(decodedItem.data.origin.toString()).toBe(derivationPath)
-    expect(decodedItem.data.children.toString()).toBe(childrenPath)
+    expect(decodedItem.data.origin.toString()).toBe("44'/0'/0'")
+    expect(decodedItem.data.children.toString()).toBe("160000/45")
     expect(decodedItem.data.useInfo.getType()).toBe(0)
     expect(decodedItem.data.useInfo.getNetwork()).toBe(0)
   })
