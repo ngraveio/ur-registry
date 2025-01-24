@@ -1,11 +1,3 @@
-import { patchTags } from "@keystonehq/bc-ur-registry";
-import { ExtendedRegistryTypes } from "./RegistryType";
-export * from "@keystonehq/bc-ur-registry";
+import './addToRegistry'
 
-patchTags(
-  Object.values(ExtendedRegistryTypes)
-    .filter(rt => !!rt.getTag())
-    .map(rt => rt.getTag()) as number[]
-);
-
-export { CryptoCoinIdentity, EllipticCurve } from "./CoinIdentity";
+export { CryptoCoinIdentity, EllipticCurve } from './CoinIdentity'

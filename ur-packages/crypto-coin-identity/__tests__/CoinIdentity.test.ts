@@ -1,6 +1,9 @@
 import { CryptoCoinIdentity } from '../src'
 import { ComparisonMethod, EllipticCurve } from '../src/CoinIdentity'
-import { URRegistryDecoder } from '@keystonehq/bc-ur-registry'
+import { Ur } from '@ngraveio/bc-ur'
+
+// Uint8Array to hex
+const toHex = (bytes: Uint8Array) => Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("")
 
 describe('CoinIdentity', () => {
   it('Should have registryType with the correct tag and type.', () => {
@@ -9,9 +12,9 @@ describe('CoinIdentity', () => {
 
     const coinIdentity = new CryptoCoinIdentity(curve, type)
 
-    const RegistryType = coinIdentity.getRegistryType()
-    expect(RegistryType.getTag()).toBe(1401)
-    expect(RegistryType.getType()).toBe('crypto-coin-identity')
+    const RegistryType = coinIdentity.type
+    expect(RegistryType.tag).toBe(1401)
+    expect(RegistryType.URType).toBe('crypto-coin-identity')
   })
   it('Should encode/decode with required values', () => {
     const curve = EllipticCurve.secp256k1
@@ -23,9 +26,8 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual([])
 
-    const urData = coinIdentity.toUREncoder(1000).nextPart()
-    const ur = URRegistryDecoder.decode(urData)
-    const coinIdentityRead = CryptoCoinIdentity.fromCBOR(ur.cbor)
+    const urEncoded = new Ur(coinIdentity)
+    const coinIdentityRead = urEncoded.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -41,9 +43,8 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
-    const urData = coinIdentity.toUREncoder(1000).nextPart()
-    const ur = URRegistryDecoder.decode(urData)
-    const coinIdentityRead = CryptoCoinIdentity.fromCBOR(ur.cbor)
+    const urData = new Ur(coinIdentity);
+    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -53,42 +54,43 @@ describe('CoinIdentity', () => {
     const curve = EllipticCurve.secp256k1
     const type = 0
     const subTypeValue = 'babe0000babe00112233445566778899'
-    const subType = [Buffer.from(subTypeValue, 'hex')]
+    const subType = [new Uint8Array(Buffer.from(subTypeValue, 'hex'))]
 
     /**
-         * A3                                      # map(3)
-            01                                   # unsigned(1)
-            08                                   # unsigned(8)
-            02                                   # unsigned(2)
-            00                                   # unsigned(0)
-            03                                   # unsigned(3)
-            81                                   # array(1)
-                50                                # bytes(16)
-         BABE0000BABE00112233445566778899 # "\xBA\xBE\u0000\u0000\xBA\xBE\u0000\u0011\"3DUfw\x88\x99"
-         */
+     * A3                                      # map(3)
+     *   01                                   # unsigned(1)
+     *   08                                   # unsigned(8)
+     *   02                                   # unsigned(2)
+     *   00                                   # unsigned(0)
+     *   03                                   # unsigned(3)
+     *   81                                   # array(1)
+     *       50                                # bytes(16)
+     * BABE0000BABE00112233445566778899 # "\xBA\xBE\u0000\u0000\xBA\xBE\u0000\u0011\"3DUfw\x88\x99"
+    */
     const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
 
     expect(coinIdentity.getCurve()).toBe(curve)
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
-    expect((coinIdentity.getSubType()?.[0] as Buffer).toString('hex')).toStrictEqual(subTypeValue)
+    // @ts-ignore
+    expect((toHex(coinIdentity.getSubType()?.[0]))).toStrictEqual(subTypeValue)
 
-    const urData = coinIdentity.toUREncoder(1000).nextPart()
-    const ur = URRegistryDecoder.decode(urData)
-    const coinIdentityRead = CryptoCoinIdentity.fromCBOR(ur.cbor)
+    const urData = new Ur(coinIdentity);
+    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
     expect(coinIdentityRead.getSubType()).toStrictEqual(subType)
-    expect((coinIdentityRead.getSubType()?.[0] as Buffer).toString('hex')).toStrictEqual(subTypeValue)
+    // @ts-ignore
+    expect(toHex(coinIdentityRead.getSubType()?.[0])).toStrictEqual(subTypeValue)
   })
   it('Should encode/decode with all possible values', () => {
     const curve = EllipticCurve.secp256k1
     const type = 0
     const subType = [
-      Buffer.from('babe0000babe00112233445566778899', 'hex'),
-      Buffer.from('babe0000babe001122334', 'hex'),
-      Buffer.from('babe', 'hex'),
+      new Uint8Array(Buffer.from('babe0000babe00112233445566778899', 'hex')),
+      new Uint8Array(Buffer.from('babe0000babe001122334', 'hex')),
+      new Uint8Array(Buffer.from('babe', 'hex')),
       'segwit',
       123,
     ]
@@ -99,9 +101,8 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
-    const urData = coinIdentity.toUREncoder(1000).nextPart()
-    const ur = URRegistryDecoder.decode(urData)
-    const coinIdentityRead = CryptoCoinIdentity.fromCBOR(ur.cbor)
+    const urData = new Ur(coinIdentity);
+    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -259,7 +260,7 @@ describe('compareCoinIds', () => {
     const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(false)
   })
-});
+})
 
 describe('parent', () => {
   it('should return parent coin identity', () => {
@@ -272,8 +273,8 @@ describe('parent', () => {
 
     expect(parent?.getCurve()).toBe(curve)
     expect(parent?.getType()).toBe(type)
-    expect(parent?.getSubType()).toStrictEqual([]);
-  });
+    expect(parent?.getSubType()).toStrictEqual([])
+  })
 
   it('should return parent coin identity twice and null when its done', () => {
     const curve = EllipticCurve.secp256k1
@@ -285,17 +286,16 @@ describe('parent', () => {
 
     expect(parent?.getCurve()).toBe(curve)
     expect(parent?.getType()).toBe(type)
-    expect(parent?.getSubType()).toStrictEqual([137]);
+    expect(parent?.getSubType()).toStrictEqual([137])
 
-    const parent2 = parent?.getParent();
+    const parent2 = parent?.getParent()
     expect(parent2?.getCurve()).toBe(curve)
     expect(parent2?.getType()).toBe(type)
-    expect(parent2?.getSubType()).toStrictEqual([]);
+    expect(parent2?.getSubType()).toStrictEqual([])
 
-    const parent3 = parent2?.getParent();
-    expect(parent3).toBe(null);
-
-  });
+    const parent3 = parent2?.getParent()
+    expect(parent3).toBe(null)
+  })
 
   it('should return parent until subtypes are over with generator getAllParents', () => {
     const curve = EllipticCurve.secp256k1
@@ -303,27 +303,25 @@ describe('parent', () => {
     const subType = ['blabla', 137]
 
     const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
-    let i = 2;
-    
+    let i = 2
+
     // Total of 6 expect statements should be called
-    expect.assertions(6);
+    expect.assertions(6)
     for (const parent of coinIdentity.getAllParents()) {
       expect(parent?.getCurve()).toBe(curve)
       expect(parent?.getType()).toBe(type)
-      switch(i) {
+      switch (i) {
         case 2:
-          expect(parent?.getSubType()).toStrictEqual([137]);
-          break;
+          expect(parent?.getSubType()).toStrictEqual([137])
+          break
         case 1:
-          expect(parent?.getSubType()).toStrictEqual([]);
-          break;
-      };
-      i--;
+          expect(parent?.getSubType()).toStrictEqual([])
+          break
+      }
+      i--
     }
-  
-  });  
+  })
 })
-
 
 describe('parent', () => {
   it('should return parent coin identity', () => {
@@ -336,8 +334,8 @@ describe('parent', () => {
 
     expect(parent?.getCurve()).toBe(curve)
     expect(parent?.getType()).toBe(type)
-    expect(parent?.getSubType()).toStrictEqual([]);
-  });
+    expect(parent?.getSubType()).toStrictEqual([])
+  })
 
   it('should return parent coin identity twice and null when its done', () => {
     const curve = EllipticCurve.secp256k1
@@ -349,17 +347,16 @@ describe('parent', () => {
 
     expect(parent?.getCurve()).toBe(curve)
     expect(parent?.getType()).toBe(type)
-    expect(parent?.getSubType()).toStrictEqual([137]);
+    expect(parent?.getSubType()).toStrictEqual([137])
 
-    const parent2 = parent?.getParent();
+    const parent2 = parent?.getParent()
     expect(parent2?.getCurve()).toBe(curve)
     expect(parent2?.getType()).toBe(type)
-    expect(parent2?.getSubType()).toStrictEqual([]);
+    expect(parent2?.getSubType()).toStrictEqual([])
 
-    const parent3 = parent2?.getParent();
-    expect(parent3).toBe(null);
-
-  });
+    const parent3 = parent2?.getParent()
+    expect(parent3).toBe(null)
+  })
 
   it('should return parent until subtypes are over with generator getAllParents', () => {
     const curve = EllipticCurve.secp256k1
@@ -367,24 +364,22 @@ describe('parent', () => {
     const subType = ['blabla', 137]
 
     const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
-    let i = 2;
-    
+    let i = 2
+
     // Total of 6 expect statements should be called
-    expect.assertions(6);
+    expect.assertions(6)
     for (const parent of coinIdentity.getAllParents()) {
       expect(parent?.getCurve()).toBe(curve)
       expect(parent?.getType()).toBe(type)
-      switch(i) {
+      switch (i) {
         case 2:
-          expect(parent?.getSubType()).toStrictEqual([137]);
-          break;
+          expect(parent?.getSubType()).toStrictEqual([137])
+          break
         case 1:
-          expect(parent?.getSubType()).toStrictEqual([]);
-          break;
-      };
-      i--;
+          expect(parent?.getSubType()).toStrictEqual([])
+          break
+      }
+      i--
     }
-  
-  });  
+  })
 })
-

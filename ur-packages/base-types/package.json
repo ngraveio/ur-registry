@@ -1,7 +1,7 @@
 {
-  "name": "@ngraveio/bc-ur-registry-hex-string",
-  "version": "0.3.2-beta.0",
-  "description": "Provides BC UR type for hex string.",
+  "name": "@ngraveio/bc-ur-registry",
+  "version": "0.0.1",
+  "description": "A JS implementation of Uniform Resources(UR) Registry specification from Blockchain Commons.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -28,8 +28,7 @@
   "keywords": [
     "bc-ur",
     "Blockchain Commons",
-    "cbor",
-    "hexstring"
+    "cbor"
   ],
   "bugs": {
     "url": "https://github.com/ngraveio/ur-registry/issues"
@@ -46,6 +45,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "d969bc11f4897aa528d3ad9dd789dcaa8aeba409"
+  }
 }

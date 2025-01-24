@@ -11,6 +11,9 @@
   },
   "references": [
     {
+      "path": "./ur-packages/base-types"
+    },
+    {
       "path": "./ur-packages/hex-string"
     },
     {
