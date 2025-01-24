@@ -757,6 +757,17 @@
     write-pkg "4.0.0"
     yargs "16.2.0"
 
+"@ngraveio/bc-ur@2.0.0-beta.3":
+  version "2.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur/-/bc-ur-2.0.0-beta.3.tgz#eda0a5a379a1b6ef74bfb28842b675acd9e31b49"
+  integrity sha512-riQU1vAxrWPMDANWxOkX485TIAqtT/9ESEAjgf77OEr1uT5S2sn7RAiMoSjQ+OQsuhDFLNeRGNB7tbMtsAqQRQ==
+  dependencies:
+    "@keystonehq/alias-sampling" "^0.1.1"
+    cbor2 "^1.8.0"
+    crc "^4.3.2"
+    sha.js "^2.4.11"
+    uint8array-extras "^1.4.0"
+
 "@ngraveio/bc-ur@^1.1.5":
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur/-/bc-ur-1.1.13.tgz#27719fd3e745ccdbe97a7950905edcd1fed4844b"
@@ -769,15 +780,6 @@
     crc "^3.8.0"
     jsbi "^3.1.5"
     sha.js "^2.4.11"
-
-"@ngraveio/bc-ur@file:../../backend/bc-ur":
-  version "2.0.1-beta.1"
-  dependencies:
-    "@keystonehq/alias-sampling" "^0.1.1"
-    cbor2 "^1.8.0"
-    crc "^4.3.2"
-    sha.js "^2.4.11"
-    uint8array-extras "^1.4.0"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -1243,6 +1245,11 @@
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
+
+"@scure/base@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@scure/base/-/base-1.2.4.tgz#002eb571a35d69bdb4c214d0995dff76a8dcd2a9"
+  integrity sha512-5Yy9czTO47mqz+/J8GM6GIId4umdCk1wc1q8rKERQulIoc8VP9pzDcghv10Tl2E7R96ZUx/PhND3ESYUQX8NuQ==
 
 "@sigstore/bundle@^1.1.0":
   version "1.1.0"
