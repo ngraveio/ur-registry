@@ -4,7 +4,7 @@ import { CoinInfo, Network } from "../src/index";
 describe("CoinInfo", () => {
   it("should create an instance with default values", () => {
     const coinInfo = new CoinInfo();
-    expect(coinInfo.getType()).toBe(1);
+    expect(coinInfo.getType()).toBe(0);
     expect(coinInfo.getNetwork()).toBe(Network.mainnet);
   });
 
@@ -44,11 +44,11 @@ describe("CoinInfo", () => {
   });
 
   it("should encode/decode Ethereum to/from UR and CBOR correctly", () => {
-    const coinInfo = new CoinInfo(60, Network.mainnet); // 60 is SLIP-44 for Ethereum
+    const coinInfo = new CoinInfo(60); // 60 is SLIP-44 for Ethereum
     const ur = coinInfo.toUr();
     const hex = ur.getPayloadHex();
-    const expectedHex = "a201183c0200";
-    const expectedUr = "ur:coin-info/oeadcsfnaoaegmnseswt";
+    const expectedHex = "a101183c";
+    const expectedUr = "ur:coin-info/oyadcsfnksdadlmd";
 
     expect(hex).toBe(expectedHex);
     expect(ur.toString()).toBe(expectedUr);
@@ -70,8 +70,8 @@ describe("CoinInfo", () => {
     const coinInfo = new CoinInfo(undefined, Network.testnet);
     const ur = coinInfo.toUr();
     const hex = ur.getPayloadHex();
-    const expectedHex = "a201010201";
-    const expectedUr = "ur:coin-info/oeadadaoaddyleiepm";
+    const expectedHex = "a10201";
+    const expectedUr = "ur:coin-info/oyaoadidsgrfgy";
 
     expect(hex).toBe(expectedHex);
     expect(ur.toString()).toBe(expectedUr);
@@ -93,8 +93,8 @@ describe("CoinInfo", () => {
     const coinInfo = new CoinInfo(undefined, undefined);
     const ur = coinInfo.toUr();
     const hex = ur.getPayloadHex();
-    const expectedHex = "a201010200";
-    const expectedUr = "ur:coin-info/oeadadaoaefllgghfr";
+    const expectedHex = "a0";
+    const expectedUr = "ur:coin-info/nbaatygsih";
 
     expect(hex).toBe(expectedHex);
     expect(ur.toString()).toBe(expectedUr);
