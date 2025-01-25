@@ -2,7 +2,7 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 
 export class Bytes extends registryItemFactory({
   tag: NaN, // This is just bytes, so no need to tag it for CBOR
-  URType: 'psbt',
+  URType: 'bytes',
   CDDL: `bytes`,
 }) {
   constructor(psbt: Buffer | Uint8Array) {
