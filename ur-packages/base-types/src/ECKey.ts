@@ -56,6 +56,3 @@ export class ECKey extends registryItemFactory({
   }
 
 }
-
-// Save to the registry
-UrRegistry.addItem(ECKey);
