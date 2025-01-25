@@ -1,121 +1,148 @@
-// import { registryItemFactory, UrRegistry } from "@ngraveio/bc-ur";
-// import { CryptoKeypath } from './CryptoKeypath';
+import { registryItemFactory } from '@ngraveio/bc-ur'
+import { base16 } from '@scure/base'
+import { CoinInfo } from './CoinInfo'
+import { decodeAddress, encodeAddress } from './classes/AddressHelpers'
 
-// export class Address extends registryItemFactory({
-//   tag: 40303, // Updated CBOR tag
-//   URType: "address", // Updated UR Type
-//   keyMap: {
-//     isMaster: 1,
-//     isPrivateKey: 2,
-//     keyData: 3,
-//     chainCode: 4,
-//     useInfo: 5,
-//     origin: 6,
-//     children: 7,
-//     parentFingerprint: 8,
-//     name: 9,
-//     note: 10,
-//   },
-//   CDDL: `
-//       tagged-address = #6.40307(address)
-//       address = {
-//         ? info: tagged-coininfo,
-//         ? type: address-type,
-//         data: bytes
-//       }
-//       info = 1
-//       type = 2
-//       data = 3
-//       address-type = p2pkh / p2sh / p2wpkh
-//       p2pkh = 0
-//       p2sh = 1
-//       p2wpkh = 2
-//       ; The `type` field MAY be included for Bitcoin (and similar cryptocurrency) addresses, and MUST be omitted for non-applicable types.
-//       ; `data` contains:
-//       ;   For addresses of type `p2pkh`, the hash160 of the public key (20 bytes).
-//       ;   For addresses of type `p2sh`, the hash160 of the script bytes (20 bytes).
-//       ;   For addresses of type `p2wphk`, the sha256 of the script bytes (32 bytes).
-//       ;   For ethereum addresses, the last 20 bytes of the keccak256 hash of the public key (20 bytes).
-//     `
-//   }) {
-//   constructor(
-//     isMaster: boolean,
-//     keyData: Buffer,
-//     chainCode: Buffer,
-//     isPrivateKey ?: boolean,
-//     useInfo ?: CryptoCoinInfo,
-//     origin ?: CryptoKeypath,
-//     children ?: CryptoKeypath[],
-//     parentFingerprint ?: Buffer,
-//     name ?: string,
-//     note ?: string,
-//   ) {
-//     // Pass a data object
-//     super({ isMaster, keyData, chainCode, isPrivateKey, useInfo, origin, children, parentFingerprint, name, note });
-//   }
+interface IAddressInput {
+  /** Type of the coin and network (testnet, mainnet) */
+  info?: CoinInfo // When omitted defaults to bitcoin mainnet
+  /**
+   * The `type` field MAY be included for Bitcoin (and similar cryptocurrency) addresses, and MUST be omitted for non-applicable types.
+   * For bitcoin script type eg: p2ms, p2pk, p2pkh, p2sh, p2wpkh, p2wsh, P2TR
+   **/
+  type?: AddressScriptType
+  /** Public key or script hash that is encoded */
+  data: Uint8Array | Buffer
+}
 
-//   public getIsMaster = () => this.data.isMaster;
-//   public getIsPrivateKey = () => this.data.isPrivateKey;
-//   public getKeyData = () => this.data.keyData;
-//   public getChainCode = () => this.data.chainCode;
-//   public getUseInfo = () => this.data.useInfo;
-//   public getOrigin = () => this.data.origin;
-//   public getChildren = () => this.data.children;
-//   public getParentFingerprint = () => this.data.parentFingerprint;
-//   public getName = () => this.data.name;
-//   public getNote = () => this.data.note;
+export enum AddressScriptType {
+  P2PKH = 0,
+  P2SH = 1,
+  P2WPKH = 2,
+  P2WSH = 3,
+  P2TR = 4,
+  P2MS = 5,
+}
 
-//   override verifyInput(input: any): { valid: boolean; reasons ?: Error[]; } {
-//     const errors: Error[] = [];
+// https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-009-address.md
+export class Address extends registryItemFactory({
+  tag: 40307,
+  URType: 'address',
+  CDDL: `
+    tagged-address = #6.40307(address)
 
-//     if (typeof input.isMaster !== "boolean") {
-//       errors.push(new Error("isMaster must be a boolean"));
-//     }
-//     if (!Buffer.isBuffer(input.keyData)) {
-//       errors.push(new Error("keyData must be a Buffer"));
-//     }
-//     if (!Buffer.isBuffer(input.chainCode)) {
-//       errors.push(new Error("chainCode must be a Buffer"));
-//     }
-//     if (input.isPrivateKey !== undefined && typeof input.isPrivateKey !== "boolean") {
-//       errors.push(new Error("isPrivateKey must be a boolean"));
-//     }
-//     if (input.useInfo && !(input.useInfo instanceof CryptoCoinInfo)) {
-//       errors.push(new Error("useInfo must be an instance of CryptoCoinInfo"));
-//     }
-//     if (input.origin && !(input.origin instanceof CryptoKeypath)) {
-//       errors.push(new Error("origin must be an instance of CryptoKeypath"));
-//     }
-//     if (input.children && !Array.isArray(input.children)) {
-//       errors.push(new Error("children must be an array"));
-//     }
-//     if (input.parentFingerprint && !Buffer.isBuffer(input.parentFingerprint)) {
-//       errors.push(new Error("parentFingerprint must be a Buffer"));
-//     }
-//     if (input.name && typeof input.name !== "string") {
-//       errors.push(new Error("name must be a string"));
-//     }
-//     if (input.note && typeof input.note !== "string") {
-//       errors.push(new Error("note must be a string"));
-//     }
+    address = {
+      ? info: tagged-coininfo,
+      ? type: address-type,
+      data: bytes
+    }
 
-//     return {
-//       valid: errors.length === 0,
-//       reasons: errors.length > 0 ? errors : undefined,
-//     };
-//   }
+    info = 1
+    type = 2
+    data = 3
 
-//   /**
-//    * We need to override this method because class expects multiple arguments instead of an object
-//    */
-//   static override fromCBORData(val: any, allowKeysNotInMap ?: boolean, tagged ?: any) {
-//     // Do some post processing data coming from the cbor decoder
-//     const data = this.postCBOR(val, allowKeysNotInMap);
+    address-type = p2pkh / p2sh / p2wpkh / p2wsh / p2tr / p2ms
+    p2pkh = 0
+    p2sh = 1
+    p2wpkh = 2
+    p2wsh = 3
+    p2tr = 4
+    p2ms = 5
 
-//     // Return an instance of the generated class
-//     return new this(data.isMaster, data.keyData, data.chainCode, data.isPrivateKey, data.useInfo, data.origin, data.children, data.parentFingerprint, data.name, data.note);
-//   }
-// }
+    ; The \`type\` field MAY be included for Bitcoin (and similar cryptocurrency) addresses, and MUST be omitted for non-applicable types.
 
-// // Save to the registry
-// UrRegistry.addItem(Address);
+    ; \`data\` contains:
+    ;   For addresses of type \`p2pkh\`, the hash160 of the public key (20 bytes).
+    ;   For addresses of type \`p2sh\`, the hash160 of the script bytes (20 bytes).
+    ;   For addresses of type \`p2wphk\`, the sha256 of the script bytes (32 bytes).
+    ;   For ethereum addresses, the last 20 bytes of the keccak256 hash of the public key (20 bytes).  
+  `,
+  keyMap: {
+    info: 1,
+    type: 2,
+    data: 3,
+  },
+}) {
+  public data: IAddressInput
+
+  constructor(input: IAddressInput) {
+    super(input)
+    this.data = input
+  }
+
+  public getAddressInfo = () => this.data.info || new CoinInfo()
+  public getAddressScriptType: () => AddressScriptType | undefined = () => {
+    // if its not bitcoin return undefined
+    if (this.getAddressInfo().getType() !== 0) {
+      return undefined
+    }
+
+    // Otherwise return the script type
+    return this.data.type || AddressScriptType.P2PKH
+  }
+
+  public static fromAddress(address: string, network?: 'mainnet' | 'testnet'): Address {
+    const decoded = decodeAddress(address)
+    if (network !== undefined && decoded.network !== network) {
+      throw new Error(`Address network mismatch: expected ${network}, got ${decoded.network ?? 'unknown'}`)
+    }
+    let info: CoinInfo
+    let scriptType: number | undefined
+
+    const coinType = decoded.type
+    switch (coinType) {
+      case 0:
+        info = new CoinInfo(coinType, decoded.network === 'mainnet' ? 0 : 1)
+        switch (decoded.scriptType) {
+          case 'P2PKH':
+            scriptType = AddressScriptType.P2PKH
+            break
+          case 'P2SH':
+            scriptType = AddressScriptType.P2SH
+            break
+          case 'P2WPKH':
+            scriptType = AddressScriptType.P2WPKH
+            break
+          case 'P2WSH':
+            scriptType = AddressScriptType.P2WSH
+            break
+          case 'P2TR':
+            scriptType = AddressScriptType.P2TR
+            break
+          default:
+            throw new Error('Unknown script type')
+        }
+        break
+      case 60:
+        info = new CoinInfo(60, network === 'mainnet' ? 0 : 1)
+        scriptType = undefined
+        break
+      default:
+        throw new Error('Unknown coin type')
+    }
+
+    return new Address({
+      data: decoded.payload,
+      info,
+      type: scriptType,
+    })
+  }
+
+  /**
+   * Convert the address object to its string representation.
+   * @returns The encoded address string.
+   */
+  public toAddress(): string {
+    const info = this.getAddressInfo()
+    const type = info.getType()
+    const network = info.getNetwork() === 0 ? 'mainnet' : 'testnet'
+    const scriptTypeValue = this.getAddressScriptType()
+    const scriptType = scriptTypeValue !== undefined ? AddressScriptType[scriptTypeValue] : undefined
+
+    if (type !== 0 && type !== 60) {
+      throw new Error('Invalid coin type')
+    }
+
+    return encodeAddress(type, scriptType, network, this.data.data)
+  }
+}
