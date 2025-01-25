@@ -92,7 +92,8 @@ export class Address extends registryItemFactory({
     const coinType = decoded.type
     switch (coinType) {
       case 0:
-        info = new CoinInfo(coinType, decoded.network === 'mainnet' ? 0 : 1)
+        // Keep undefined for default values
+        info = new CoinInfo(undefined, decoded.network === 'mainnet' ? undefined : 1)
         switch (decoded.scriptType) {
           case 'P2PKH':
             scriptType = AddressScriptType.P2PKH
