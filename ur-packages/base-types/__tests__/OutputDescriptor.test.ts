@@ -1,4 +1,4 @@
-import { HDKey, OutputDescriptor, ECKey, Address, CoinInfo, AddressScriptType, Keypath } from '../src/index';
+import { HDKey, OutputDescriptor, ECKey, Address, Keypath } from '../src/index';
 
 // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-010-output-descriptor.md
 describe('OutputDescriptor', () => {
@@ -45,7 +45,6 @@ describe('OutputDescriptor', () => {
 
     expect(cbor).toEqual(expectedCBOR);
   });
-
 
   it('Example/Test Vector 2 - testnet P2WPKH (native segwit) address  ', () => {
 
@@ -155,7 +154,6 @@ describe('OutputDescriptor', () => {
     // Create HDKey objects
     const hdkey1 = HDKey.fromXpub("xpub6DiYrfRwNnjeX4vHsWMajJVFKrbEEnu8gAW9vDuQzgTWEsEHE16sGWeXXUV1LBWQE1yCTmeprSNcqZ3W74hqVdgDbtYHUv3eM4W2TEUhpan");
     const sourceFingerprint = Buffer.from("dc567276", "hex").readUint32BE();
-    console.log(sourceFingerprint);
     // @ts-ignore
     hdkey1.data.origin = new Keypath({
       sourceFingerprint: sourceFingerprint,
