@@ -1,4 +1,4 @@
-import { ECKey } from "../src/ECKey";
+import { ECKey } from "../src";
 import { Ur } from "@ngraveio/bc-ur";
 
 describe("ECKey", () => {

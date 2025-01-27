@@ -137,7 +137,7 @@ export class HDKey extends registryItemFactory({
       }
     }
   }
-  public getIsMaster = () => this.data.isMaster || false;
+  public getIsMaster = () => this.data.isMaster || false
   public getIsPrivateKey = () => {
     // Master key is always private
     if (this.getIsMaster()) return false
@@ -152,6 +152,13 @@ export class HDKey extends registryItemFactory({
   public getName = () => (this.data as DeriveKeyProps).name
   public getNote = () => (this.data as DeriveKeyProps).note
 
+  override preCBOR() {
+    const { valid, reasons } = this.verifyInput(this.data)
+    if (!valid) {
+      throw new Error(`Invalid HDKey: ${reasons?.map(r => r.message).join(', ')}`)
+    }
+    return super.preCBOR()
+  }
   override verifyInput(input: HDKeyConstructorArgs): { valid: boolean; reasons?: Error[] } {
     const errors: Error[] = []
 
@@ -177,13 +184,36 @@ export class HDKey extends registryItemFactory({
     if (input.origin && !(input.origin instanceof Keypath)) {
       errors.push(new Error('origin must be an instance of Keypath'))
     }
-    if (input.children && !(input.origin instanceof Keypath)) {
+    if (input.children && !(input.children instanceof Keypath)) {
       errors.push(new Error('children must be an instance of Keypath'))
     }
-    if (input.parentFingerprint) {
+    if (input.parentFingerprint !== undefined) {
       // It needs to be an integer and bigger than 0 and maximum 32 bit size
       if (typeof input.parentFingerprint !== 'number' || input.parentFingerprint < 0 || input.parentFingerprint > 0xffffffff) {
         errors.push(new Error('parentFingerprint must be a positive integer (uint32)'))
+      }
+      // Check if this is a master key
+      if (input.isMaster) {
+        errors.push(new Error('Master key cannot contain a parent fingerprint'))
+      }
+    }
+    if (input.origin && (input.origin as Keypath).getComponents().length === 1 && input.origin.getSourceFingerprint() !== undefined) {
+      if (input.parentFingerprint !== input.origin.getSourceFingerprint()) {
+        errors.push(new Error('Parent fingerprint for single derivation path should match the source fingerprint of the origin keypath.'))
+      }
+    }
+    if (input.useInfo && input.origin) {
+      const components = input.origin.getComponents()
+      if (components.length < 2) {
+        errors.push(new Error('When BIP44 is specified, the derivation path should contain at least two components.'))
+      } else if (components.length >= 2 && components[1].getIndex() !== input.useInfo.getType()) {
+        errors.push(new Error('When BIP44 is specified, the derivation path should contain the coin type value.'))
+      }
+    }
+    if (input.children) {
+      const components = input.children.getComponents()
+      if (components.some(component => component.isHardened()) && !input.isPrivateKey) {
+        errors.push(new Error('Only a private key can have hardened children keys.'))
       }
     }
     if (input.name && typeof input.name !== 'string') {
@@ -246,6 +276,16 @@ export class HDKey extends registryItemFactory({
     return xpubHdKey
   }
 
+  static extractParentFingerprint(xpub: string): number {
+    try {
+      const { parentFingerprint } = HDKey.parseXpub(xpub)
+      return parentFingerprint.readUInt32BE(0)
+    } catch (e) {
+      console.warn('Error extracting parent fingerprint from xpub', e)
+    }
+    return 0
+  }
+
   static parseXpub(xpub: string) {
     // decode xpub from base58 to hex
     const xpubHex = Buffer.from(base58.decode(xpub)) as Buffer
@@ -274,9 +314,10 @@ export class HDKey extends registryItemFactory({
     // Next 4 bytes are checksum (last 4 bytes)
     const checksum = xpubHex.slice(-4)
 
+    // TODO: Check checksum value
+
     // Check if this is a master key key or a derived key
     const isMaster = depth === 0
-
 
     // TODO: check version bytes to determine if its private or public key
     // But this will only work for bitcoin in this case
@@ -287,7 +328,6 @@ export class HDKey extends registryItemFactory({
     // #define TESTNET_XPRIV   0x04358394
     // bool isPrivate = (version == MAINNET_XPRIV || version == TESTNET_XPRIV);
     // bool isPublic = (version == MAINNET_XPUB || version == TESTNET_XPUB);
-
 
     return {
       versionBytes,
