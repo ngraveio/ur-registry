@@ -331,3 +331,82 @@ To maintain compatibility with the BIP32 standard, an `HDKey` must include the f
 **Important:**
 - If `origin` contains only a **single derivation step** and includes a `source-fingerprint`, the `parent-fingerprint` **must be identical** to the `source-fingerprint` or can be omitted.
 
+
+### Address
+The `Address` class represents a cryptocurrency address, such as a Bitcoin or Ethereum address. It encapsulates the address data and metadata, including the coin type and network (mainnet or testnet).
+
+The Address specification follows the CDDL definition outlined in [BlockchainCommons Research](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-009-address.md).
+
+#### Constructor Arguments
+
+```typescript
+interface IAddressInput {
+  /** Type of the coin and network (testnet, mainnet) */
+  info?: CoinInfo // When omitted defaults to bitcoin mainnet
+  /**
+   * The `type` field MAY be included for Bitcoin (and similar cryptocurrency) addresses, and MUST be omitted for non-applicable types.
+   * For bitcoin script type eg: p2ms, p2pk, p2pkh, p2sh, p2wpkh, p2wsh, P2TR
+   **/
+  type?: AddressScriptType
+  /** Public key or script hash that is encoded */
+  data: Uint8Array | Buffer
+}
+```
+
+#### Usage
+
+```typescript
+import { Address, CoinInfo, Network } from '@ngraveio/bc-ur-registry';
+
+// Example: Creating an Ethereum testnet address
+const ethereumTestnet = new Address({
+  data: Buffer.from("81b7e08f65bdf5648606c89998a9cc8164397647", "hex");
+  info: new CoinInfo(60, 1), // BIP44 coin type 60 (ethereum), testnet
+});
+
+ethereumTestnet.toString(); // 0x81b7e08f65bdf5648606c89998a9cc8164397647
+
+// Creating a Bitcoin mainnet address P2PKH
+const bitcoinMainnet = new Address({
+  data: Buffer.from("77bff20c60e522dfaa3350c39b030a5d004e839a", "hex"),
+  // default info is bitcoin P2PKH
+});
+
+bitcoinMainnet.toString(); // 1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2
+```
+
+#### FromAddress
+`fromAddress` method can be used to create an `Address` object from a string address.
+It currently supports **Bitcoin** and **Ethereum** addresses.
+
+It can infer mainnet or testnet and script type for Bitcoin addresses.
+But it cannot infer the **chainId** for Ethereum addresses. So it needs to be given explicitly.
+
+```typescript
+
+// Example: Creating an Ethereum testnet address
+const ethereumTestnet = Address.fromAddress("0x81b7e08f65bdf5648606c89998a9cc8164397647", 'testnet');
+
+ethereumTestnet.toString(); // 0x81b7e08f65bdf5648606c89998a9cc8164397647
+
+// Creating a Bitcoin testnet address P2PKH
+const bitcoinP2WPKHtestnet = Address.fromAddress("tb1q0mt7t7sjn777f4mgpk7u67a82aykkw3kq4kaad");
+
+bitcoinP2WPKHtestnet.toString(); // tb1q0mt7t7sjn777f4mgpk7u67a82aykkw3kq4kaad
+bitcoinP2WPKHtestnet.getAddressInfo().getType() // BIP44 `0` bitcoin
+bitcoinP2WPKHtestnet.getAddressInfo().getNetwork() // 1 for testnet
+bitcoinP2WPKHtestnet.getAddressScriptType() // AddressScriptType.P2WPKH
+```
+
+
+#### Supported Bitcoin Script Types
+
+| Address Type                              | Starts With         | Version Byte (Mainnet)       | Version Byte (Testnet)       | Encoding Type | Prefix Application                                                                 | Mainnet Example                                                      | Testnet Example                                                |
+|-------------------------------------------|---------------------|------------------------------|------------------------------|---------------|------------------------------------------------------------------------------------|----------------------------------------------------------------------|----------------------------------------------------------------|
+| Pay-to-Public-Key (P2PK)                  | No address format   | N/A                          | N/A                          | Script-based  | No address prefix; directly uses public key in scripts.                            | No specific address; script usage only.                              | No specific address; script usage only.                        |
+| Pay-to-Public-Key-Hash (P2PKH)            | 1                   | 0x00                         | 0x6F                         | Base58Check   | Add the version byte (0x00 or 0x6F) before the hashed public key and checksum.     | 18uWvCS2hqV6D5ehQtDJxrftrePAXGeevS                                   | ms5e572mZ1eDKdeyfR6MpRqXHVv6kM6wAP                             |
+| Pay-to-Script-Hash (P2SH)                 | 3                   | 0x05                         | 0xC4                         | Base58Check   | Add the version byte (0x05 or 0xC4) before the script hash and checksum.           | 3FymWfwDaGzsRWesK47nxFWPDiDmkC8GkR                                   | 2MvJq3ieuKUiwvQP1WVQdfb5WB5fMStTkhH                            |
+| Pay-to-Witness-Public-Key-Hash (P2WPKH)   | bc1q                | Witness Version 0 (0x00)     | Witness Version 0 (0x00)     | Bech32        | Add the human-readable prefix (bc or tb) and encode the data with Bech32.          | bc1q26mhhmkkddq9zd66fec6tac2lp07c7uuaurgtr                           | tb1q0mt7t7sjn777f4mgpk7u67a82aykkw3kq4kaad                     |
+| Pay-to-Witness-Script-Hash (P2WSH)        | bc1q                | Witness Version 0 (0x00)     | Witness Version 0 (0x00)     | Bech32        | Add the human-readable prefix (bc or tb) and encode the data with Bech32.          | bc1q6axwlnwlky7jykqqwlrcjy2s6ragcwaesal0nfpv5pnwdmgu72es5kywz8       | tb1qwjnw4rf07n8wyerlnplyeecpfkw5q2puqn0vux04kqpdu689qx0qx6uqvj |
+| Pay-to-Taproot (P2TR)                     | bc1p                | Witness Version 1 (0x01)     | Witness Version 1 (0x01)     | Bech32m       | Add the human-readable prefix (bc or tb) and encode the data with Bech32m.         | bc1p9cjtuu7rlytzgeuwtdy4fuflmpp00tmpwchr7xjdexs5la94frkqpmcs8f       | tb1p34jjsay897lryzkc0fkxk9wruhvct6vnmknxxaxy75rxnpakqlqs56v2lh |
+| Pay-to-Multisig (P2MS)                    | No address format   | N/A                          | N/A                          | Script-based  | No address prefix; directly uses multisignature script.                            | No specific address; script usage only.                              | No specific address; script usage only.                        |
