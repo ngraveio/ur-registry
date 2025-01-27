@@ -8,14 +8,14 @@ It is refactored version of [Keystone bc-ur-registry](https://github.com/Keyston
 **Supported UR types:**
 | UR Type | CBOR Tag | Description | Definition |
 |------|-----|-------------|------------|
-| `hdkey` ~~`crypto-hdkey`~~ | 40303 ~~303~~ | Hierarchical Deterministic (HD) key | [[BCR-2020-007]](bcr-2020-007-hdkey.md) |
-| `keypath` ~~`crypto-keypath`~~ | 40304 ~~304~~ | Key Derivation Path | [[BCR-2020-007]](bcr-2020-007-hdkey.md) |
-| `coin-info` ~~`crypto-coin-info`~~ | 40305 ~~305~~ | Cryptocurrency Coin Use | [[BCR-2020-007]](bcr-2020-007-hdkey.md) |
-| `eckey` ~~`crypto-eckey`~~ | 40306 ~~306~~ | Elliptic Curve (EC) key | [[BCR-2020-008]](bcr-2020-008-eckey.md) |
-| `address` ~~`crypto-address`~~ | 40307 ~~307~~ | Cryptocurrency Address | [[BCR-2020-009]](bcr-2020-009-address.md) |
-| `output-descriptor` ~~`crypto-output`~~ | 40308 ~~308~~ | Bitcoin Output Descriptor | [[BCR-2020-010]](bcr-2020-010-output-desc.md) |
-| `psbt` ~~`crypto-psbt`~~ | 40310 ~~310~~ | Partially Signed Bitcoin Transaction (PSBT) | [[BCR-2020-0006]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md) |
-| (In Progress)`account-descriptor` ~~`crypto-account`~~ | 40311 ~~311~~ | BIP44 Account | [[BCR-2023-019]](bcr-2023-019-account-descriptor.md) |
+| [`hdkey`](#hdkey) ~~`crypto-hdkey`~~ | 40303 ~~303~~ | Hierarchical Deterministic (HD) key | [[BCR-2020-007]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md) |
+| [`keypath`](#keypath) ~~`crypto-keypath`~~ | 40304 ~~304~~ | Key Derivation Path | [[BCR-2020-007]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md) |
+| [`coin-info`](#coin-info) ~~`crypto-coin-info`~~ | 40305 ~~305~~ | Cryptocurrency Coin Use | [[BCR-2020-007]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md) |
+| [`eckey`](#eckey) ~~`crypto-eckey`~~ | 40306 ~~306~~ | Elliptic Curve (EC) key | [[BCR-2020-008]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-008-eckey.md) |
+| [`address`](#address) ~~`crypto-address`~~ | 40307 ~~307~~ | Cryptocurrency Address | [[BCR-2020-009]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-009-address.md) |
+| [`output-descriptor`](#output-descriptor) ~~`crypto-output`~~ | 40308 ~~308~~ | Bitcoin Output Descriptor | [[BCR-2023-010]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-010-output-descriptor.md) |
+| [`psbt`](#psbt) ~~`crypto-psbt`~~ | 40310 ~~310~~ | Partially Signed Bitcoin Transaction (PSBT) | [[BCR-2020-0006]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md) |
+| [`account-descriptor`](#account-descriptor) ~~`crypto-account`~~ | 40311 ~~311~~ | BIP44 Account | [[BCR-2023-019]](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-019-account-descriptor.md) |
 
 
 ## Installing
