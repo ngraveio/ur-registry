@@ -454,7 +454,7 @@ bitcoinP2WPKHtestnet.getAddressScriptType() // AddressScriptType.P2WPKH
 | Pay-to-Public-Key-Hash (P2PKH)            | 1                   | 0x00                         | 0x6F                         | Base58Check   | Add the version byte (0x00 or 0x6F) before the hashed public key and checksum.     | 18uWvCS2hqV6D5ehQtDJxrftrePAXGeevS                                   | ms5e572mZ1eDKdeyfR6MpRqXHVv6kM6wAP                             |
 | Pay-to-Script-Hash (P2SH)                 | 3                   | 0x05                         | 0xC4                         | Base58Check   | Add the version byte (0x05 or 0xC4) before the script hash and checksum.           | 3FymWfwDaGzsRWesK47nxFWPDiDmkC8GkR                                   | 2MvJq3ieuKUiwvQP1WVQdfb5WB5fMStTkhH                            |
 | Pay-to-Witness-Public-Key-Hash (P2WPKH)   | bc1q                | Witness Version 0 (0x00)     | Witness Version 0 (0x00)     | Bech32        | Add the human-readable prefix (bc or tb) and encode the data with Bech32.          | bc1q26mhhmkkddq9zd66fec6tac2lp07c7uuaurgtr                           | tb1q0mt7t7sjn777f4mgpk7u67a82aykkw3kq4kaad                     |
-| Pay-to-Witness-Script-Hash (P2WSH)        | bc1q                | Witness Version 0 (0x00)     | Witness Version 0 (0x00)     | Bech32        | Add the human-readable prefix (bc or tb) and encode the data with Bech32.          | bc1q6axwlnwlky7jykqqwlrcjy2s6ragcwaesal0nfpv5pnwdmgu72es5kywz8       | tb1qwjnw4rf07n8wyerlnplyeecpfkw5q2puqn0vux04kqpdu689qx0qx6uqvj |
+| Pay-to-Witness-Script-Hash (P2WSH)        | bc1q                | Witness Version 0 (0x00)     | Witness Version 0 (0x00)     | Bech32        | Add the human-readable prefix (bc or tb) and encode the data with Bech32.          | bc1q6axwlnwlky7jykqqwlrcjy2s6ragcwaesal0nfpv5pnwdmgu72es5kywz8f       | tb1qwjnw4rf07n8wyerlnplyeecpfkw5q2puqn0vux04kqpdu689qx0qx6uqvj |
 | Pay-to-Taproot (P2TR)                     | bc1p                | Witness Version 1 (0x01)     | Witness Version 1 (0x01)     | Bech32m       | Add the human-readable prefix (bc or tb) and encode the data with Bech32m.         | bc1p9cjtuu7rlytzgeuwtdy4fuflmpp00tmpwchr7xjdexs5la94frkqpmcs8f       | tb1p34jjsay897lryzkc0fkxk9wruhvct6vnmknxxaxy75rxnpakqlqs56v2lh |
 | Pay-to-Multisig (P2MS)                    | No address format   | N/A                          | N/A                          | Script-based  | No address prefix; directly uses multisignature script.                            | No specific address; script usage only.                              | No specific address; script usage only.                        |
 
@@ -545,3 +545,55 @@ const outputDescriptor = new OutputDescriptor({
 });
 
 ```
+
+### Account Descriptor
+| UR Type | CBOR Tag |
+|------|-----|
+| `account-descriptor` | 40311 |
+
+**Definition:** https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-019-account-descriptor.md
+
+
+The `AccountDescriptor` promotes standards-based sharing of BIP44 account level xpubs and other information, allowing devices to join wallets with minimal user interaction. It addresses the need for devices to share xpubs at the correct derivation path for various script types, reducing the burden on users to select the script type manually. This standard format bundles information for multiple script types into a set, enabling wallet software to select the appropriate type from the set provided by the device.
+
+#### Constructor Arguments
+
+```typescript
+interface IAccountDescriptorArgs {
+  masterFingerprint: number
+  outputDescriptors: OutputDescriptor[]
+}
+```
+
+#### Usage
+
+```typescript
+import { AccountDescriptor, OutputDescriptor } from '@ngraveio/bc-ur-registry';
+
+// Example: Creating an AccountDescriptor
+const outputDescriptor = new OutputDescriptor({
+  // ...output descriptor initialization...
+});
+
+const accountDescriptor = new AccountDescriptor({
+  masterFingerprint: 1234567890,
+  outputDescriptors: [outputDescriptor],
+});
+
+// Access properties
+console.log(accountDescriptor.getMasterFingerprint()); // 1234567890
+console.log(accountDescriptor.getOutputDescriptors()); // [outputDescriptor]
+```
+
+The `AccountDescriptor` class provides methods to access the master fingerprint and output descriptors:
+
+- **`getMasterFingerprint()`**: Returns the master fingerprint.
+- **`getOutputDescriptors()`**: Returns the array of output descriptors.
+
+```typescript
+const masterFingerprint = accountDescriptor.getMasterFingerprint();
+const outputDescriptors = accountDescriptor.getOutputDescriptors();
+```
+
+This class ensures that output descriptors are restricted to HD keys at account level key derivations only, as per the BIP44 standard.
+
