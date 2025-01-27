@@ -33,14 +33,45 @@ npm install --save @ngraveio/bc-ur-registry
 
 ## UR-TYPES
 
+### PSBT
+
+| UR Type | CBOR Tag |
+|------|-----|
+| `psbt` | NaN |
+
+
+https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md#partially-signed-bitcoin-transaction-psbt-psbt
+
+The type psbt contains a single, deterministic length byte string of variable length up to 2^32-1 bytes. Semantically, this byte string MUST be a valid Partially Signed Bitcoin Transaction encoded in the binary format specified by [BIP174].
+
+It encodes CBOR bytes type without any **tag**.
+
+**Usage:**
+
+```typescript
+import { PSBT } from "@ngraveio/bc-ur-registry";
+
+const psbtBytes = Buffer.from("70736274ff01009a020000000258e87a21b56daf0c23be8e7070456c336f7cbaa5c8757924f545887bb2abdd750000000000ffffffff838d0427d0ec650a68aa46bb0b098aea4422c071b2ca78352a077959d07cea1d0100000000ffffffff0270aaf00800000000160014d85c2b71d0060b09c9886aeb815e50991dda124d00e1f5050000000016001400aea9a2e5f0f876a588df5546e8742d1d87008f000000000000000000", "hex");
+
+const psbt = new PSBT(psbtBytes);
+
+psbt.toUr();
+// ur:psbt/hdosjojkidjyzmadaenyaoaeaeaeaohdvsknclrejnpebncnrnmnjojofejzeojlkerdonspkpkkdkykfelokgprpyutkpaeaeaeaeaezmzmzmzmlslgaaditiwpihbkispkfgrkbdaslewdfycprtjsprsgksecdratkkhktikewdcaadaeaeaeaezmzmzmzmaojopkwtayaeaeaeaecmaebbtphhdnjstiambdassoloimwmlyhygdnlcatnbggtaevyykahaeaeaeaecmaebbaeplptoevwwtyakoonlourgofgvsjydpcaltaemyaeaeaeaeaeaeaeaeaebkgdcarh
+```
+
 ### Coin Info
-https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
+| UR Type | CBOR Tag |
+|------|-----|
+| `coin-info` | 40305 |
+
+**Definition:** https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
+
 Has 2 parameters `type` BIP44 coin type and `network` that highlights testnet or mainnet for Bitcoin like coins and for ethereum based coins it is `chainId`
 
 Usage:
 
 ```typescript
-import { CoinInfo, Network } from "@ngraveio/bc-ur-registery";
+import { CoinInfo, Network } from "@ngraveio/bc-ur-registry";
 
 const bitcoinMainnet = new CoinInfo(); // Default is Bitcoin Mainnet
 const bitcoinTestnet = new CoinInfo(undefined, Network.Testnet);
@@ -56,8 +87,13 @@ bitcoinMainnet.getNetwork(); // 0 for mainnet
 ---
 
 ### KeyPath
+| UR Type | CBOR Tag |
+|------|-----|
+| `keypath` | 40304 |
+
+**Definition:** https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
+
 Keypath class for handling BIP44 like hierarchical key derivation paths.
-https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
 
 Example path in string format: 
 - `44'/0'/0'/0/0`
@@ -71,7 +107,7 @@ Example path in string format:
 
 **Usage:**
 ```typescript
-import { KeyPath, PathComponent } from "@ngraveio/bc-ur-registery";
+import { KeyPath, PathComponent } from "@ngraveio/bc-ur-registry";
 
 // Create a KeyPath from a string
 // This path containes Simple index, Range, Wildcard, Pair
@@ -148,7 +184,12 @@ keyPath2.toString(); // 98'/2-6/*/*'/<78200h;0h>
 ----
 
 ### HDKey
-The HDKey specification follows the CDDL definition outlined in [BlockchainCommons Research](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md#cddl-for-hdkey).
+| UR Type | CBOR Tag |
+|------|-----|
+| `hdkey` | 40303 |
+
+Definition: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md#cddl-for-hdkey
+
 
 Hierarchical Deterministic (HD) Keys follow the [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki) standard, enabling secure and structured management of cryptocurrency keys. HDKeys can be serialized in the `xpub` format and are compatible with wallets and platforms using this standard.
 
@@ -333,9 +374,15 @@ To maintain compatibility with the BIP32 standard, an `HDKey` must include the f
 
 
 ### Address
+
+| UR Type | CBOR Tag |
+|------|-----|
+| `address` | 40307 |
+
+**Definition:** https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-009-address.md
+
 The `Address` class represents a cryptocurrency address, such as a Bitcoin or Ethereum address. It encapsulates the address data and metadata, including the coin type and network (mainnet or testnet).
 
-The Address specification follows the CDDL definition outlined in [BlockchainCommons Research](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-009-address.md).
 
 #### Constructor Arguments
 
@@ -410,3 +457,91 @@ bitcoinP2WPKHtestnet.getAddressScriptType() // AddressScriptType.P2WPKH
 | Pay-to-Witness-Script-Hash (P2WSH)        | bc1q                | Witness Version 0 (0x00)     | Witness Version 0 (0x00)     | Bech32        | Add the human-readable prefix (bc or tb) and encode the data with Bech32.          | bc1q6axwlnwlky7jykqqwlrcjy2s6ragcwaesal0nfpv5pnwdmgu72es5kywz8       | tb1qwjnw4rf07n8wyerlnplyeecpfkw5q2puqn0vux04kqpdu689qx0qx6uqvj |
 | Pay-to-Taproot (P2TR)                     | bc1p                | Witness Version 1 (0x01)     | Witness Version 1 (0x01)     | Bech32m       | Add the human-readable prefix (bc or tb) and encode the data with Bech32m.         | bc1p9cjtuu7rlytzgeuwtdy4fuflmpp00tmpwchr7xjdexs5la94frkqpmcs8f       | tb1p34jjsay897lryzkc0fkxk9wruhvct6vnmknxxaxy75rxnpakqlqs56v2lh |
 | Pay-to-Multisig (P2MS)                    | No address format   | N/A                          | N/A                          | Script-based  | No address prefix; directly uses multisignature script.                            | No specific address; script usage only.                              | No specific address; script usage only.                        |
+
+
+### Output Descriptor
+| UR Type | CBOR Tag |
+|------|-----|
+| `output-descriptor` | 40308 |
+
+**Definition:** https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-010-output-descriptor.md
+
+Output descriptors [[OD-IN-CORE]](https://github.com/bitcoin/bitcoin/blob/master/doc/descriptors.md), [[OSD]](https://bitcoinops.org/en/topics/output-script-descriptors/), also called output script descriptors, are a way of specifying Bitcoin payment outputs that can range from a simple address to multisig and segwit using a simple domain-specific language. For more on the motivation for output descriptors, see [[WHY-OD]](https://bitcoin.stackexchange.com/questions/89261/why-does-importmulti-not-support-zpub-and-ypub/89281#89281).
+
+**Important Note:** 
+> Output descritor string parsing is not implemented in this library. So you need to manually parse the output descriptor string and create `HDKey`, `ECKey`, and `Address` objects and pass them to the `OutputDescriptor` class.
+
+**Input Arguments:**
+
+- `text`: The output descriptor string.
+- `keys` *(optional)*: An array of keys that are defined as `HDKey`, `Eckey`, or `Address` classes.
+- `name` *(optional)*: A human-readable name for the descriptor.
+- `note` *(optional)*: Additional notes or comments.
+
+**Usage:**
+
+```typescript
+import { OutputDescriptor, HDKey, ECKey } from '@ngraveio/bc-ur-registry';
+
+// pk(03e220e776d811c44075a4a260734445c8967865f5357ba98ead3bc6a6552c36f2)
+const text = "pk(@0)"
+const eckey = new ECKey({
+  data: Buffer.from("03e220e776d811c44075a4a260734445c8967865f5357ba98ead3bc6a6552c36f2", "hex")
+});
+
+const outputDescriptor = new OutputDescriptor({
+  source: text,
+  keys: [eckey],
+});
+
+```
+
+More advanced example with HDKeys:
+
+```typescript
+import { OutputDescriptor, HDKey, ECKey } from '@ngraveio/bc-ur-registry';
+
+const text = 'wsh(sortedmulti(2,@0,@1,@2))'
+
+// Create HDKey objects
+const hdkey1 = HDKey.fromXpub("xpub6DiYrfRwNnjeX4vHsWMajJVFKrbEEnu8gAW9vDuQzgTWEsEHE16sGWeXXUV1LBWQE1yCTmeprSNcqZ3W74hqVdgDbtYHUv3eM4W2TEUhpan");
+const sourceFingerprint = Buffer.from("dc567276", "hex").readUint32BE();
+
+hdkey1.data.origin = new Keypath({
+  sourceFingerprint: sourceFingerprint,
+  path: "48'/0'/0'/2'"
+});
+// @ts-ignore
+hdkey1.data.children = new Keypath({
+  path: "<0;1>/*",
+});
+
+const hdkey2 = HDKey.fromXpub("xpub6DnT4E1fT8VxuAZW29avMjr5i99aYTHBp9d7fiLnpL5t4JEprQqPMbTw7k7rh5tZZ2F5g8PJpssqrZoebzBChaiJrmEvWwUTEMAbHsY39Ge");
+
+hdkey2.data.origin = new Keypath({
+  sourceFingerprint: Buffer.from("f245ae38", "hex").readUint32BE(),
+  path: "48'/0'/0'/2'"
+});
+// @ts-ignore
+hdkey2.data.children = new Keypath({
+  path: "<0;1>/*",
+});
+
+const hdkey3 = HDKey.fromXpub("xpub6DjrnfAyuonMaboEb3ZQZzhQ2ZEgaKV2r64BFmqymZqJqviLTe1JzMr2X2RfQF892RH7MyYUbcy77R7pPu1P71xoj8cDUMNhAMGYzKR4noZ");
+
+hdkey3.data.origin = new Keypath({
+  sourceFingerprint: Buffer.from("c5d87297", "hex").readUint32BE(),
+  path: "48'/0'/0'/2'"
+});
+
+hdkey3.data.children = new Keypath({
+  path: "<0;1>/*",
+});
+
+const outputDescriptor = new OutputDescriptor({
+  source: text,
+  keys: [hdkey1, hdkey2, hdkey3],
+  name: "Satoshi's Stash",
+});
+
+```
