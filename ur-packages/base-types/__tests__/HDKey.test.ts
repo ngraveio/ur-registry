@@ -176,7 +176,7 @@ describe('HDKey', () => {
       isMaster: false,
       keyData,
       chainCode,
-      useInfo: new CoinInfo(undefined, 0),
+      useInfo: new CoinInfo(60, 0),
       origin: new Keypath({ path: "m/44'/60'/0'", sourceFingerprint: 1756817576 }),
       parentFingerprint: 1756817576,
       name: 'NGRAVE',
@@ -513,7 +513,7 @@ describe('HDKey', () => {
   })
 
   // TODO: handle error cases later
-  describe.skip("Error handling", () => {
+  describe("Error handling", () => {
     /**
      * @brief Test returning an error
      */
@@ -586,7 +586,7 @@ describe('HDKey', () => {
           origin: new Keypath({ path: "m/44'" }),
           useInfo: new CoinInfo(60, 0),
         })
-      }).toThrow('When BIP44 is specified, the derivation path should contain the coin type value.')
+      }).toThrow('When BIP44 is specified, the derivation path should contain at least two components.')
     })
 
     /**

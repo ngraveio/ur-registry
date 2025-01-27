@@ -118,8 +118,8 @@ describe("Keypath", () => {
    */
     it("should encode / decode 1'/2/3-4/5-6'/*/*'/<7;8'>/<9';0>", ()=> {
       const path = "1'/2/3-4/5-6'/*/*'/<7;8'>/<9';0>";
-      const expectedCBOR = "a3018e01f502f4820304f4820506f580f480f58407f408f58409f500f4021a075bcd150308";
-      const expectedUr = "ur:keypath/otadmnadykaowklfaxaawklfahamyklawklayklratwkayyklrasykaewkaocyathpsnbzaxayknjtvwty";
+      const expectedCBOR = "a3018e01f502f4820304f4820506f580f480f58407f408f58409f500f4021a075bcd150308";// copied from zero
+      const expectedUr = "ur:keypath/otadmnadykaowklfaxaawklfahamyklawklayklratwkayyklrasykaewkaocyathpsnbzaxayknjtvwty";//copied from zero
 
       // Encoding
       const myPath = new Keypath({ sourceFingerprint: 123456789, path, depth: 8 });
@@ -158,7 +158,7 @@ describe("Keypath", () => {
    * }
    * 
    */
-    it("should encode / decode m/44'/200/50/0-100", ()=> {
+    it("should encode / decode m/44'/200/50/0-100", ()=> { // do this for coininfo
       const path = "44'/200/50/0-100";
       const expectedCBOR = "A20188182CF518C8F41832F482001864F40304".toLowerCase();
       const expectedUr = "ur:keypath/oeadlocsdwykcsspwkcseywklfaecsiewkaxaarsonnbkk";
