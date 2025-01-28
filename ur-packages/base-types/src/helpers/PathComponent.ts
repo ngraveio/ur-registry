@@ -1,19 +1,25 @@
+export type IRange = [number, number]
+export type IPairPart = { index: number; hardened: boolean }
+export type IPair = [IPairPart, IPairPart]
+
+export interface IPathComponentArgs {
+  index?: number
+  range?: IRange
+  wildcard?: boolean
+  hardened?: boolean
+  pair?: IPair
+}
+
 export class PathComponent {
   public static readonly HARDENED_BIT = 0x80000000
 
   private index?: number
-  private range?: [number, number]
+  private range?: IRange
   private wildcard: boolean = false
   private hardened: boolean = false
-  private pair?: [{ index: number; hardened: boolean }, { index: number; hardened: boolean }]
+  private pair?: IPair
 
-  constructor(args: {
-    index?: number
-    range?: [number, number]
-    wildcard?: boolean
-    hardened?: boolean
-    pair?: [{ index: number; hardened: boolean }, { index: number; hardened: boolean }]
-  }) {
+  constructor(args: IPathComponentArgs) {
     const { index, range, wildcard, hardened, pair } = args
 
     if (index !== undefined) {
@@ -73,19 +79,19 @@ export class PathComponent {
   public isPairComponent = (): boolean => this.pair !== undefined
 
   // Converts the component to a string representation
-  public toString(hardenedFlag: "'" | "h" = "'"): string {
+  public toString(hardenedFlag: "'" | 'h' = "'"): string {
     if (this.isIndexComponent()) {
-      return `${this.index}${this.hardened ? hardenedFlag : ''}`
+      return `${this.index as number}${this.hardened ? hardenedFlag : ''}`
     }
     if (this.isRangeComponent()) {
-      const [low, high] = this.range!
+      const [low, high] = this.range as IRange
       return `${low}-${high}${this.hardened ? hardenedFlag : ''}`
     }
     if (this.isWildcardComponent()) {
       return `*${this.hardened ? hardenedFlag : ''}`
     }
     if (this.isPairComponent()) {
-      const [external, internal] = this.pair!
+      const [external, internal] = this.pair as IPair
       return `<${external.index}${external.hardened ? hardenedFlag : ''};${internal.index}${internal.hardened ? hardenedFlag : ''}>`
     }
     throw new Error('Invalid PathComponent: Cannot convert to string.')
@@ -135,5 +141,4 @@ export class PathComponent {
     }
     return new PathComponent({ index, hardened })
   }
-
 }

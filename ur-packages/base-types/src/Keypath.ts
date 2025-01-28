@@ -1,5 +1,5 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
-import { PathComponent } from './classes/PathComponent'
+import { PathComponent, IPair } from './helpers/PathComponent'
 
 interface KeypathInput {
   path?: string | PathComponent[]
@@ -9,6 +9,12 @@ interface KeypathInput {
 
 interface KeypathData {
   components: PathComponent[]
+  sourceFingerprint?: number
+  depth?: number
+}
+
+interface postCBORData {
+  components: (number | boolean | [number, number] | [] | [number, boolean] | [number, boolean, number, boolean])[]
   sourceFingerprint?: number
   depth?: number
 }
@@ -133,7 +139,6 @@ export class Keypath extends registryItemFactory({
     }
   }
 
-
   /**
    * Sets the depth of the Keypath based on the number of components.
    * Representing the number of derivation steps
@@ -218,7 +223,7 @@ export class Keypath extends registryItemFactory({
       } else if (component.isWildcardComponent()) {
         converted.push([], component.isHardened())
       } else if (component.isPairComponent()) {
-        const pair = component.getPair()!
+        const pair = component.getPair() as IPair
         converted.push([pair[0].index, pair[0].hardened, pair[1].index, pair[1].hardened])
       }
     })
@@ -230,14 +235,14 @@ export class Keypath extends registryItemFactory({
   // Override postCBOR function to convert all pathComponents from CBOR data back to PathComponent
   static override postCBOR(_data: Map<string | number, any>) {
     // First call the super postCBOR function to get the data
-    const data = super.postCBOR(_data) as KeypathData
+    const data = super.postCBOR(_data) as postCBORData
 
     // Assume data components are the path m/1'/2/3-4/5-6'/*/*'/<7;8'>/<9';0>"
     // CBOR: [1, true, 2, false, [3, 4], false, [5, 6], true, [], false, [], true, [7, false, 8, true], [9, true, 0, false]]
     // this will be converted to: child-index-componen, child-index-componen, child-range-component, child-range-component, child-wildcard-component, child-wildcard-component, child-pair-component, child-pair-component
 
     const components: PathComponent[] = []
-    const pathItems = data['components'] as any[]
+    const pathItems = data['components']
     // Now going over the array element we will decide its type
     for (let i = 0; i < pathItems.length; i++) {
       const current = pathItems[i]

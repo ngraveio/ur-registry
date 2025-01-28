@@ -1,4 +1,4 @@
-import { registryItemFactory, UrRegistry } from '@ngraveio/bc-ur'
+import { registryItemFactory } from '@ngraveio/bc-ur'
 import { ECKey } from './ECKey'
 import { HDKey } from './HDKey'
 import { Address } from './Address'
@@ -7,7 +7,7 @@ import { Address } from './Address'
 // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-010-output-descriptor.md
 // TODO: check https://github.com/bitcoinerlab/descriptors for string output parsing
 
-interface inputArgs {
+interface IOutputDescriptorInput {
   source: string
   keys?: (HDKey | ECKey | Address)[]
   name?: string
@@ -43,7 +43,7 @@ export class OutputDescriptor extends registryItemFactory({
       )
   `,
 }) {
-  constructor(input: inputArgs) {
+  constructor(input: IOutputDescriptorInput) {
     // Pass a data object
     super(input)
   }

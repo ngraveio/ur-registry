@@ -1,5 +1,5 @@
 import { Keypath } from "../src/index";
-import { PathComponent } from "../src/classes/PathComponent";
+import { PathComponent } from "../src/helpers/PathComponent";
 import { Ur } from "@ngraveio/bc-ur";
 
 // TODO: add more test cases

@@ -5,7 +5,7 @@ export enum Network {
   testnet = 1,
 }
 
-interface CoinInfoData {
+interface ICoinInfoData {
   type?: number
   network?: number
 }
@@ -43,7 +43,7 @@ export class CoinInfo extends registryItemFactory({
     testnet-eth-gorli = 4;
   `,
 }) {
-  public data: CoinInfoData;
+  public data: ICoinInfoData;
 
   constructor(type?: number, network?: Network) {
     // Pass an data object
@@ -54,7 +54,7 @@ export class CoinInfo extends registryItemFactory({
   public getType = () => this.data.type || 0
   public getNetwork = () => this.data.network || 0
 
-  override verifyInput(input: CoinInfoData): { valid: boolean; reasons?: Error[] } {
+  override verifyInput(input: ICoinInfoData): { valid: boolean; reasons?: Error[] } {
     // Check if type is integer and bigger than 0
     if (input.type !== undefined && (typeof input.type !== 'number' || input.type < 0)) {
       return {
@@ -77,7 +77,7 @@ export class CoinInfo extends registryItemFactory({
    */
   static override fromCBORData(val: any, allowKeysNotInMap = false, tagged?: any) {
     // Do some post processing data coming from the cbor decoder
-    const data = this.postCBOR(val, allowKeysNotInMap) as CoinInfoData;
+    const data = this.postCBOR(val, allowKeysNotInMap) as ICoinInfoData;
 
     // Return an instance of the generated class
     return new this(data.type, data.network)

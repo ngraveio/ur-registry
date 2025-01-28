@@ -1,5 +1,4 @@
 import { CoinInfo, HDKey } from '../src/index'
-import { PathComponent } from '../src/classes/PathComponent'
 import { Keypath } from '../src/index'
 import { Ur } from '@ngraveio/bc-ur'
 

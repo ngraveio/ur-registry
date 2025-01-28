@@ -1,9 +1,8 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
-import { base16 } from '@scure/base'
 import { CoinInfo } from './CoinInfo'
-import { decodeAddress, encodeAddress } from './classes/AddressHelpers'
+import { decodeAddress, encodeAddress } from './helpers/AddressHelpers'
 
-interface IAddressInput {
+interface IAddressArgs {
   /** Type of the coin and network (testnet, mainnet) */
   info?: CoinInfo // When omitted defaults to bitcoin mainnet
   /**
@@ -63,9 +62,9 @@ export class Address extends registryItemFactory({
     data: 3,
   },
 }) {
-  public data: IAddressInput
+  public data: IAddressArgs
 
-  constructor(input: IAddressInput) {
+  constructor(input: IAddressArgs) {
     super(input)
     this.data = input
   }
