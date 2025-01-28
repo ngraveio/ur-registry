@@ -7,6 +7,7 @@ import { HDKey } from './HDKey'
 import { Address } from './Address'
 import { ECKey } from './ECKey'
 import { OutputDescriptor } from './OutputDescriptor'
+import { AccountDescriptor } from './AccountDescriptor'
 
 // Add Classes to the global registry
 UrRegistry.addItem(Bytes)
@@ -17,3 +18,4 @@ UrRegistry.addItem(HDKey)
 UrRegistry.addItem(Address)
 UrRegistry.addItem(ECKey)
 UrRegistry.addItem(OutputDescriptor)
+UrRegistry.addItem(AccountDescriptor)

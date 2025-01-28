@@ -1,22 +1,22 @@
 import { registryItemFactory, UrRegistry } from '@ngraveio/bc-ur'
-import { ECKey } from './ECKey';
-import { HDKey } from './HDKey';
-import { Address } from './Address';
+import { ECKey } from './ECKey'
+import { HDKey } from './HDKey'
+import { Address } from './Address'
 
 // https://github.com/bitcoin/bitcoin/blob/master/doc/descriptors.md
 // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-010-output-descriptor.md
 // TODO: check https://github.com/bitcoinerlab/descriptors for string output parsing
 
 interface inputArgs {
-  source: string;
-  keys?: (HDKey | ECKey | Address )[];
-  name?: string;
-  note?: string;
+  source: string
+  keys?: (HDKey | ECKey | Address)[]
+  name?: string
+  note?: string
 }
 
 export class OutputDescriptor extends registryItemFactory({
   tag: 40308,
-  URType: "output-descriptor",
+  URType: 'output-descriptor',
   keyMap: {
     source: 1,
     keys: 2,
@@ -45,10 +45,9 @@ export class OutputDescriptor extends registryItemFactory({
 }) {
   constructor(input: inputArgs) {
     // Pass a data object
-    super(input);
+    super(input)
   }
 }
-
 
 /**
  * TODO:
@@ -63,8 +62,8 @@ export class OutputDescriptor extends registryItemFactory({
  *         [c5d87297/48'/0'/0'/2']xpub6DjrnfAyuonMaboEb3ZQZzhQ2ZEgaKV2r64BFmqymZqJqviLTe1JzMr2X2RfQF892RH7MyYUbcy77R7pPu1P71xoj8cDUMNhAMGYzKR4noZ/<0;1>/*
  *     )
  * )
- * ``` 
- * to 
+ * ```
+ * to
  * ```
  * wsh(sortedmulti(2,@0,@1,@2))
  * ```
