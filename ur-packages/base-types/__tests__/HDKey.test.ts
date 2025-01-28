@@ -66,9 +66,6 @@ describe('HDKey', () => {
     expect(xpubUr.toString()).toBe(expectedUr)
   })
 
-  // //@ts-ignore
-  // xpubDecoded.data.useInfo = new CoinInfo(0,1);
-
   /**
    * @brief Test the encoding of the test vector 2 of BCR-2020-007-hdkey paper
    * Source: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md

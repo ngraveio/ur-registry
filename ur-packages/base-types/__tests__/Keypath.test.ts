@@ -3,7 +3,6 @@ import { PathComponent } from "../src/helpers/PathComponent";
 import { Ur } from "@ngraveio/bc-ur";
 
 // TODO: add more test cases
-
 describe("Keypath", () => {
   it("should create an instance with a single index", () => {
     const keypath = new Keypath({ path: "44'/0'/0'/0/0" });
@@ -158,7 +157,7 @@ describe("Keypath", () => {
    * }
    * 
    */
-    it("should encode / decode m/44'/200/50/0-100", ()=> { // do this for coininfo
+    it("should encode / decode m/44'/200/50/0-100", ()=> {
       const path = "44'/200/50/0-100";
       const expectedCBOR = "A20188182CF518C8F41832F482001864F40304".toLowerCase();
       const expectedUr = "ur:keypath/oeadlocsdwykcsspwkcseywklfaecsiewkaxaarsonnbkk";
