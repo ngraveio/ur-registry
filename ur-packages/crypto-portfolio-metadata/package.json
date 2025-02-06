@@ -11,6 +11,7 @@
   "files": [
     "dist"
   ],
+  "sideEffects": ["dist/addToRegistry.js"],
   "scripts": {
     "clean": "rm -rf ./dist",
     "watch": "tsc --build --watch",
@@ -36,7 +37,8 @@
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "@keystonehq/bc-ur-registry": "0.5.4"
+    "@ngraveio/bc-ur": "file:/home/irfan/code/backend/bc-ur/ngraveio-bc-ur-v2.0.0-beta.5.tgz",
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
