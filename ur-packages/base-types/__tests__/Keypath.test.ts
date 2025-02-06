@@ -1,6 +1,6 @@
 import { Keypath } from "../src/index";
 import { PathComponent } from "../src/helpers/PathComponent";
-import { Ur } from "@ngraveio/bc-ur";
+import { UR } from "@ngraveio/bc-ur";
 
 // TODO: add more test cases
 describe("Keypath", () => {
@@ -36,13 +36,12 @@ describe("Keypath", () => {
   it("should convert to and from UR", () => {
     const keypath = new Keypath({ path: "44'/0'/0'/0/0" });
     const ur = keypath.toUr();
-    const decodedUR = Ur.fromString(ur.toString())
+    const decodedUR = UR.fromString(ur.toString())
 
     expect(decodedUR.toString()).toBe(ur.toString());
 
     const decodedKeypath = decodedUR.decode() as Keypath;
 
-    console.log(decodedKeypath.toString());
     expect(decodedKeypath.toString()).toBe("44'/0'/0'/0/0");
   });
 
@@ -50,7 +49,7 @@ describe("Keypath", () => {
     const keypath = new Keypath({ path: "44'/0'/0'/0/0" });
     const ur = keypath.toUr();
     const hex = ur.getPayloadHex();
-    const decodedKeypath = Ur.fromCbor({ type: 'keypath', payload: Buffer.from(hex, 'hex') }).decode() as Keypath;
+    const decodedKeypath = UR.fromCbor({ type: 'keypath', payload: Buffer.from(hex, 'hex') }).decode() as Keypath;
     expect(decodedKeypath.toString()).toBe("44'/0'/0'/0/0");
   });
 
@@ -134,7 +133,7 @@ describe("Keypath", () => {
       expect(hex).toBe(expectedCBOR);
 
       // Decoding UR
-      const decodedUr = Ur.fromString(expectedUr);
+      const decodedUr = UR.fromString(expectedUr);
       const decodedCBOR = decodedUr.getPayloadHex();
       
       expect(decodedUr.type).toBe('keypath');
@@ -175,7 +174,7 @@ describe("Keypath", () => {
       expect(ur.toString()).toBe(expectedUr);
 
       // Decoding UR
-      const decodedUr = Ur.fromString(expectedUr);
+      const decodedUr = UR.fromString(expectedUr);
       const decodedCBOR = decodedUr.getPayloadHex();
       
       expect(decodedUr.type).toBe('keypath');
@@ -215,7 +214,7 @@ describe("Keypath", () => {
       expect(ur.toString()).toBe(expectedUr);
 
       // Decoding UR
-      const decodedUr = Ur.fromString(expectedUr);
+      const decodedUr = UR.fromString(expectedUr);
       const decodedCBOR = decodedUr.getPayloadHex();
       
       expect(decodedUr.type).toBe('keypath');
@@ -253,7 +252,7 @@ describe("Keypath", () => {
       expect(ur.toString()).toBe(expectedUr);
 
       // Decoding UR
-      const decodedUr = Ur.fromString(expectedUr);
+      const decodedUr = UR.fromString(expectedUr);
       const decodedCBOR = decodedUr.getPayloadHex();
       
       expect(decodedUr.type).toBe('keypath');
@@ -287,7 +286,7 @@ describe("Keypath", () => {
       expect(ur.toString()).toBe(expectedUr);
 
       // Decoding UR
-      const decodedUr = Ur.fromString(expectedUr);
+      const decodedUr = UR.fromString(expectedUr);
       const decodedCBOR = decodedUr.getPayloadHex();
       
       expect(decodedUr.type).toBe('keypath');
@@ -327,7 +326,7 @@ describe("Keypath", () => {
       expect(ur.toString()).toBe(expectedUr);
 
       // Decoding UR
-      const decodedUr = Ur.fromString(expectedUr);
+      const decodedUr = UR.fromString(expectedUr);
       const decodedCBOR = decodedUr.getPayloadHex();
       
       expect(decodedUr.type).toBe('keypath');
@@ -360,7 +359,7 @@ describe("Keypath", () => {
   
     it("should decode map index in a random order", () => {
       const urToDecode = "ur:keypath/otaocyaeasztdraxaaadloadykaowkcfaohdykcsfxyklnspbnkn";
-      const decodedUr = Ur.fromString(urToDecode);
+      const decodedUr = UR.fromString(urToDecode);
       const decodedKeypath = decodedUr.decode() as Keypath;
       expect(decodedKeypath.toString()).toBe("1'/2/600'/67'");
       expect(decodedKeypath.getSourceFingerprint()).toBe(654378);
@@ -369,27 +368,27 @@ describe("Keypath", () => {
   
     it.skip("should return an error due to wrong UR type", () => {
       const urError = "ur:unknown/otaocyaeasztdraxaaadloadykaowkcfaohdykcsfxyklnspbnkn";
-      expect(() => Ur.fromString(urError).decode()).toThrow();
+      expect(() => UR.fromString(urError).decode()).toThrow();
     });
   
     it.skip("should return an error when the map index is unknown", () => {
       const urError = "ur:keypath/oeadlncsglyklfaoamwklaykayjnkpjtjejtjlktjtcxinjtieihksgyrdoyws";
-      expect(() => Ur.fromString(urError).decode()).toThrow();
+      expect(() => UR.fromString(urError).decode()).toThrow();
     });
   
     it("should return an error when the fingerprint is equal to 0", () => {
       const urError = "ur:keypath/oeadlncfctgaykaaykaewkaoaegrdavych";
-      expect(() => Ur.fromString(urError).decode()).toThrow();
+      expect(() => UR.fromString(urError).decode()).toThrow();
     });
   
     it("should return an error when the child index is superior or equal to 0x80000000", () => {
       const urError = "ur:keypath/oyadlrcfctgawkcylaaeaeeowktohttafx";
-      expect(() => Ur.fromString(urError).decode()).toThrow();
+      expect(() => UR.fromString(urError).decode()).toThrow();
     });
   
     it("should return an error when the child index is superior or equal to 0x80000000 without child components", () => {
       const urError = "ur:keypath/oeaocydwyndavtaxaebswlswva";
-      expect(() => Ur.fromString(urError).decode()).toThrow();
+      expect(() => UR.fromString(urError).decode()).toThrow();
     });
   
     it("should return an error due to malformed keypath UR types", () => {
@@ -423,7 +422,7 @@ describe("Keypath", () => {
   
       urErrors.forEach(urError => {
         expect(() => {
-          Ur.fromString(urError).decode();
+          UR.fromString(urError).decode();
       }).toThrow();
       });
 

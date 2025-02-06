@@ -1,6 +1,6 @@
 import { CoinInfo, HDKey } from '../src/index'
 import { Keypath } from '../src/index'
-import { Ur } from '@ngraveio/bc-ur'
+import { UR } from '@ngraveio/bc-ur'
 
 describe('HDKey', () => {
   /**
@@ -38,7 +38,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.type).toBe('hdkey')
@@ -111,7 +111,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.type).toBe('hdkey')
@@ -188,7 +188,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.getPayloadHex()).toBe(hex)
@@ -268,7 +268,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.getPayloadHex()).toBe(hex)
@@ -329,7 +329,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.type).toBe('hdkey')
@@ -380,7 +380,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.type).toBe('hdkey')
@@ -423,7 +423,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.type).toBe('hdkey')
@@ -489,7 +489,7 @@ describe('HDKey', () => {
     expect(ur.toString()).toBe(expectedUr)
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr)
+    const decodedUr = UR.fromString(expectedUr)
     const decodedCBOR = decodedUr.getPayloadHex()
 
     expect(decodedUr.type).toBe('hdkey')

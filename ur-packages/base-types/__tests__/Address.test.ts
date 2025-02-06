@@ -1,4 +1,4 @@
-import { Ur } from "@ngraveio/bc-ur";
+import { UR } from "@ngraveio/bc-ur";
 import { CoinInfo, Address, AddressScriptType } from "../src/index";
 
 
@@ -111,7 +111,7 @@ describe("Address", () => {
     });
 
     it("should create correct instance from UR P2PKH", () => {
-      const ur = Ur.fromString("ur:address/oyaxghktrswzbnhnvwcpurpkeogdsrndaxbkhlaegllsnyolrsemgu");
+      const ur = UR.fromString("ur:address/oyaxghktrswzbnhnvwcpurpkeogdsrndaxbkhlaegllsnyolrsemgu");
 
       const address = ur.decode() as Address;
 

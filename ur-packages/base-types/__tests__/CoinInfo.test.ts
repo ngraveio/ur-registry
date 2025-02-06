@@ -1,4 +1,4 @@
-import { Ur } from "@ngraveio/bc-ur";
+import { UR } from "@ngraveio/bc-ur";
 import { CoinInfo, Network } from "../src/index";
 
 describe("CoinInfo", () => {
@@ -32,7 +32,7 @@ describe("CoinInfo", () => {
     expect(ur.toString()).toBe(expectedUr);
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr);
+    const decodedUr = UR.fromString(expectedUr);
     const decodedCBOR = decodedUr.getPayloadHex();
 
     expect(decodedUr.type).toBe('coin-info');
@@ -54,7 +54,7 @@ describe("CoinInfo", () => {
     expect(ur.toString()).toBe(expectedUr);
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr);
+    const decodedUr = UR.fromString(expectedUr);
     const decodedCBOR = decodedUr.getPayloadHex();
 
     expect(decodedUr.type).toBe('coin-info');
@@ -77,7 +77,7 @@ describe("CoinInfo", () => {
     expect(ur.toString()).toBe(expectedUr);
 
     // Decoding UR
-    const decodedUr = Ur.fromString(expectedUr);
+    const decodedUr = UR.fromString(expectedUr);
     const decodedCBOR = decodedUr.getPayloadHex();
 
     expect(decodedUr.type).toBe('coin-info');
@@ -114,14 +114,14 @@ describe("CoinInfo", () => {
 
   it("should create an instance from UR", () => {
     const ur = "ur:coin-info/oyadcsfnksdadlmd";
-    const coinInfo = Ur.fromString(ur).decode() as CoinInfo;
+    const coinInfo = UR.fromString(ur).decode() as CoinInfo;
     expect(coinInfo.getType()).toBe(60);
     expect(coinInfo.getNetwork()).toBe(Network.mainnet);
   });
 
   it.skip("should create instance from CBOR", () => {
     const cbor = Buffer.from("a101183c", "hex");
-    const coinInfo = Ur.fromCbor({ type: "coin-info", payload: cbor }).decode() as CoinInfo;
+    const coinInfo = UR.fromCbor({ type: "coin-info", payload: cbor }).decode() as CoinInfo;
     expect(coinInfo.getType()).toBe(60);
     expect(coinInfo.getNetwork()).toBe(Network.mainnet);
   });
