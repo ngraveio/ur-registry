@@ -1,4 +1,4 @@
-import { Ur } from "@ngraveio/bc-ur";
+import { UR } from "@ngraveio/bc-ur";
 import { PSBT } from "../src/index";
 
 describe("PSBT", () => {
@@ -25,7 +25,7 @@ describe("PSBT", () => {
 
   it("should decode UR into PSBT object", () => {
     // Create UR object
-    const ur = Ur.fromString(expectedUR);
+    const ur = UR.fromString(expectedUR);
 
     // Decode UR object
     const psbt = ur.decode() as PSBT;

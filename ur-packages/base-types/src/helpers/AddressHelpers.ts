@@ -18,6 +18,7 @@ import { keccak_256 } from '@noble/hashes/sha3'
  */
 
 interface DecodedAddress {
+  // TODO: extend coin support
   type: 0 | 60 // BIP44 coin type integers for Bitcoin and Ethereum
   scriptType?: string
   network?: 'mainnet' | 'testnet'
@@ -134,7 +135,7 @@ export function decodeAddress(address: string, network?: 'mainnet' | 'testnet'):
       checksum: calculateEthereumChecksum(checksummedAddress),
     }
   } else {
-    throw new Error('Unsupported address format')
+    throw new Error(`Unsupported address format ${address}`)
   }
 }
 
@@ -146,7 +147,7 @@ export function decodeAddress(address: string, network?: 'mainnet' | 'testnet'):
  * @param payload - The payload to encode.
  * @returns The encoded address.
  */
-export function encodeAddress(type: 0 | 60, scriptType: string | undefined, network: 'mainnet' | 'testnet', payload: Uint8Array): string {
+export function encodeAddress(type: number, scriptType: string | undefined, network: 'mainnet' | 'testnet', payload: Uint8Array): string {
   if (type === 0) {
     // Bitcoin address encoding
     let version: number
@@ -174,7 +175,7 @@ export function encodeAddress(type: 0 | 60, scriptType: string | undefined, netw
     // Ethereum address encoding
     return toChecksumAddress(`0x${base16.encode(payload)}`)
   } else {
-    throw new Error('Unsupported coin type')
+    throw new Error(`Unsupported coin type: ${type}`)
   }
 }
 

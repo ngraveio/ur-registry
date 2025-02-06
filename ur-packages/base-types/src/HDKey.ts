@@ -3,7 +3,7 @@ import { Keypath } from './Keypath'
 import { CoinInfo } from './CoinInfo'
 import { base58 } from '@scure/base'
 
-interface HDKeyConstructorArgs {
+interface HDKeyArgs {
   isMaster?: boolean
   keyData: Buffer
   chainCode?: Buffer
@@ -109,14 +109,13 @@ export class HDKey extends registryItemFactory({
       chain-code-bytes = bytes .size 32
   `,
 }) {
-  data: MasterKeyProps | DeriveKeyProps
+  data: HDKeyArgs
 
-  constructor(input: HDKeyConstructorArgs) {
+  constructor(input: HDKeyArgs) {
     super(input)
 
     // Check if this is a master key key or a derived key
     if (input.isMaster) {
-      //@ts-ignore
       this.data = {
         isMaster: true,
         keyData: input.keyData,
@@ -152,14 +151,20 @@ export class HDKey extends registryItemFactory({
   public getName = () => (this.data as DeriveKeyProps).name
   public getNote = () => (this.data as DeriveKeyProps).note
 
-  override preCBOR() {
+  override preCBOR(): any {
     const { valid, reasons } = this.verifyInput(this.data)
     if (!valid) {
-      throw new Error(`Invalid HDKey: ${reasons?.map(r => r.message).join(', ')}`)
+      if (reasons && reasons.length > 0) {
+        const reasonMessages = reasons
+          .map(r => r.message ?? '')
+          .filter(Boolean)
+          .join(', ')
+        throw new Error(`Invalid HDKey: ${reasonMessages}`)
+      }
     }
     return super.preCBOR()
   }
-  override verifyInput(input: HDKeyConstructorArgs): { valid: boolean; reasons?: Error[] } {
+  override verifyInput(input: HDKeyArgs): { valid: boolean; reasons?: Error[] } {
     const errors: Error[] = []
 
     if (input.isMaster !== undefined && typeof input.isMaster !== 'boolean') {
@@ -197,7 +202,7 @@ export class HDKey extends registryItemFactory({
         errors.push(new Error('Master key cannot contain a parent fingerprint'))
       }
     }
-    if (input.origin && (input.origin as Keypath).getComponents().length === 1 && input.origin.getSourceFingerprint() !== undefined) {
+    if (input.origin && input.origin.getComponents().length === 1 && input.origin.getSourceFingerprint() !== undefined) {
       if (input.parentFingerprint !== input.origin.getSourceFingerprint()) {
         errors.push(new Error('Parent fingerprint for single derivation path should match the source fingerprint of the origin keypath.'))
       }

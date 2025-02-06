@@ -1,6 +1,6 @@
 import { CryptoCoinIdentity } from '../src'
 import { ComparisonMethod, EllipticCurve } from '../src/CoinIdentity'
-import { Ur } from '@ngraveio/bc-ur'
+import { UR } from '@ngraveio/bc-ur'
 
 // Uint8Array to hex
 const toHex = (bytes: Uint8Array) => Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("")
@@ -26,7 +26,7 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual([])
 
-    const urEncoded = new Ur(coinIdentity)
+    const urEncoded = new UR(coinIdentity)
     const coinIdentityRead = urEncoded.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
@@ -43,7 +43,7 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
-    const urData = new Ur(coinIdentity);
+    const urData = new UR(coinIdentity);
     const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
@@ -75,7 +75,7 @@ describe('CoinIdentity', () => {
     // @ts-ignore
     expect((toHex(coinIdentity.getSubType()?.[0]))).toStrictEqual(subTypeValue)
 
-    const urData = new Ur(coinIdentity);
+    const urData = new UR(coinIdentity);
     const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
@@ -101,7 +101,7 @@ describe('CoinIdentity', () => {
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
-    const urData = new Ur(coinIdentity);
+    const urData = new UR(coinIdentity);
     const coinIdentityRead = urData.decode() as CryptoCoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)

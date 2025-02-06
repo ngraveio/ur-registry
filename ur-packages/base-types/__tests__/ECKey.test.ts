@@ -1,5 +1,5 @@
 import { ECKey } from "../src";
-import { Ur } from "@ngraveio/bc-ur";
+import { UR } from "@ngraveio/bc-ur";
 
 describe("ECKey", () => {
   it("should create an instance with default values", () => {
@@ -37,11 +37,11 @@ describe("ECKey", () => {
 
   it("should handle invalid UR gracefully", () => {
     const invalidUr = "ur:eckey/invalid";
-    expect(() => Ur.fromString(invalidUr).decode()).toThrow();
+    expect(() => UR.fromString(invalidUr).decode()).toThrow();
   });
 
   it("should handle empty CBOR data", () => {
     const emptyCbor = Buffer.from("", "hex");
-    expect(() => Ur.fromCbor({ type: 'eckey', payload: emptyCbor }).decode()).toThrow();
+    expect(() => UR.fromCbor({ type: 'eckey', payload: emptyCbor }).decode()).toThrow();
   });
 });

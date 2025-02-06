@@ -1,6 +1,5 @@
 module.exports = {
   preset: 'ts-jest',
-  testTimeout: 20000,
   testEnvironment: 'node',
   testPathIgnorePatterns: ['.*/node_modules/'],
   modulePathIgnorePatterns: ['./dist'],
