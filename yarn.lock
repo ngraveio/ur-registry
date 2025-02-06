@@ -773,6 +773,16 @@
     sha.js "^2.4.11"
     uint8array-extras "^1.4.0"
 
+"@ngraveio/bc-ur@2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur/-/bc-ur-2.0.0-beta.4.tgz#47d2e37afe883471ab1638c5bd4d164da6ebc939"
+  integrity sha512-aW/aP/1YVH62Wx/boowidPdnsfKQqb6mAy9XVNj5Rrvj3x43/IZVqZ9D6jE95KfzNDZgg9YLX5NQGaMQWA2AWg==
+  dependencies:
+    "@bacons/text-decoder" "0.0.0"
+    cbor2 "^1.8.0"
+    crc "^4.3.2"
+    sha.js "^2.4.11"
+
 "@ngraveio/bc-ur@^1.1.5":
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur/-/bc-ur-1.1.13.tgz#27719fd3e745ccdbe97a7950905edcd1fed4844b"
@@ -784,15 +794,6 @@
     cbor-sync "^1.0.4"
     crc "^3.8.0"
     jsbi "^3.1.5"
-    sha.js "^2.4.11"
-
-"@ngraveio/bc-ur@file:../../backend/bc-ur/ngraveio-bc-ur-v2.0.0-beta.4.tgz":
-  version "2.0.0-beta.4"
-  resolved "file:../../backend/bc-ur/ngraveio-bc-ur-v2.0.0-beta.4.tgz#8fd87b640f58fd1890e4077384bd1624c2bfe528"
-  dependencies:
-    "@bacons/text-decoder" "0.0.0"
-    cbor2 "^1.8.0"
-    crc "^4.3.2"
     sha.js "^2.4.11"
 
 "@noble/hashes@^1.7.1":
