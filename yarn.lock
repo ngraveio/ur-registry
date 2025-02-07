@@ -798,7 +798,7 @@
 
 "@ngraveio/bc-ur@file:../../backend/bc-ur/ngraveio-bc-ur-v2.0.0-beta.5.tgz":
   version "2.0.0-beta.5"
-  resolved "file:../../backend/bc-ur/ngraveio-bc-ur-v2.0.0-beta.5.tgz#331915b179795069e5225f50cbdaea2e7b2489c8"
+  resolved "file:../../backend/bc-ur/ngraveio-bc-ur-v2.0.0-beta.5.tgz#27633c9e3720abc819ea3d96885ea8d3ac7badfe"
   dependencies:
     "@bacons/text-decoder" "0.0.0"
     cbor2 "^1.8.0"

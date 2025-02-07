@@ -18,69 +18,66 @@ npm install --save @ngraveio/bc-ur-registry-crypto-portfolio-metadata
 
 Note: **Language code** must be a valid *iso-639* code.
 
-### [CryptoPortfolioMetadata] Construct the crypto sync metadata.
+### [PortfolioMetadata] Construct the crypto sync metadata.
 
 ```js
 // Create sync id
 const sync_id = Buffer.from('babe0000babe00112233445566778899', 'hex')
 
 // Create metadata
-const metadata = new CryptoPortfolioMetadata({ sync_id: sync_id, device: 'my-device', language_code: 'en', fw_version: '1.0.0' })
+const metadata = new PortfolioMetadata({ synId: sync_id, device: 'my-device', language: 'en', firmwareVersion: '1.0.0' })
 
-const cbor = metadata.toCBOR().toString('hex')
+const cbor = metadata.toHex()
 console.log(cbor)
 // a40150babe0000babe001122334455667788990262656e0365312e302e3004696d792d646576696365
 
-const ur = metadata.toUREncoder(1000).nextPart()
+const ur = metadata.toUr()
 console.log(ur)
-// ur:crypto-portfolio-metadata/oxadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoidihjtaxihehdmdydmdyaainjnkkdpieihkoiniaihfrzmytvl
+// ur:portfolio-metadata/oxadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoidihjtaxihehdmdydmdyaainjnkkdpieihkoiniaihfrzmytvl
 ```
 
-### [CryptoPortfolioMetadata] Construct the crypto sync metadata with additional properties.
+### [PortfolioMetadata] Construct the crypto sync metadata with additional properties.
 
 ```js
 // Create sync id
 const sync_id = Buffer.from('babe0000babe00112233445566778899', 'hex')
 
 // Create metadata
-const metadata = new CryptoPortfolioMetadata({
-  sync_id: sync_id,
+const metadata = new PortfolioMetadata({
+  syncId: sync_id,
   device: 'my-device',
-  language_code: 'en',
-  fw_version: '1.0.0',
+  language: 'en',
+  firmwareVersion: '1.0.0',
   string: 'hello world',
   number: 123,
   boolean: true,
   array: [1, 2, 3],
   object: { a: 1, b: 2 },
   null: null,
-  date: new Date('2021-01-01T00:00:00.000Z'),
 });
 
-const cbor = metadata.toCBOR().toString('hex')
+const cbor = metadata.toHex()
 console.log(cbor)
-// ab0150babe0000babe001122334455667788990262656e0365312e302e3004696d792d64657669636566737472696e676b68656c6c6f20776f726c64666e756d626572187b67626f6f6c65616ef565617272617983010203666f626a656374a2616101616202646e756c6cf66464617465c07818323032312d30312d30315430303a30303a30302e3030305a
+// ab0150babe0000babe001122334455667788990262656e0365312e302e3004696d792d64657669636566737472696e676b68656c6c6f20776f726c64666e756d626572187b67626f6f6c65616ef565617272617983010203666f626a656374a2616101616202646e756c6cf66464617465c11a5fee6600
 
-const ur = metadata.toUREncoder(1000).nextPart()
+const ur = metadata.toUr()
 console.log(ur)
-````
+// ur:portfolio-metadata/pyadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoidihjtaxihehdmdydmdyaainjnkkdpieihkoiniaihiyjkjyjpinjtiojeisihjzjzjlcxktjljpjzieiyjtkpjnidihjpcskgioidjljljzihhsjtykihhsjpjphskklsadaoaxiyjlidimihiajyoehshsadhsidaoiejtkpjzjzynieiehsjyihsecyhewyiyaeahhngoeo
+```
 
 
-### [CryptoPortfolioMetadata] Decode crypto sync metadata.
+### [PortfolioMetadata] Decode crypto sync metadata.
 
 ```js
 // read ur
-const ur = metadata.toUREncoder(1000).nextPart()
+const ur = Ur.fromString("ur:portfolio-metadata/pyadgdrdrnaeaerdrnaebycpeofygoiyktlonlaoidihjtaxihehdmdydmdyaainjnkkdpieihkoiniaihiyjkjyjpinjtiojeisihjzjzjlcxktjljpjzieiyjtkpjnidihjpcskgioidjljljzihhsjtykihhsjpjphskklsadaoaxiyjlidimihiajyoehshsadhsidaoiejtkpjzjzynieiehsjyihsecyhewyiyaeahhngoeo")
 
-// decoded ur
-const ur = URRegistryDecoder.decode(urData)
-
-// get the class from the cbor data
-const cryptoPortfolioMetadata = CryptoPortfolioMetadata.fromCBOR(ur.cbor)
+// Decode the class
+const PortfolioMetadata = ur.decode()
 
 // read its properties
-cryptoPortfolioMetadata.getSyncId() // babe0000babe00112233445566778899
-cryptoPortfolioMetadata.getLanguageCode() // en
-cryptoPortfolioMetadata.getDevice() // my-device
-cryptoPortfolioMetadata.getFirmwareVersion() // 1.0.0
+PortfolioMetadata.getSyncId() // babe0000babe00112233445566778899
+PortfolioMetadata.getLanguageCode() // en
+PortfolioMetadata.getDevice() // my-device
+PortfolioMetadata.getFirmwareVersion() // 1.0.0
 ```
