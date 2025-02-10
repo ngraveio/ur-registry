@@ -43,9 +43,12 @@ export class OutputDescriptor extends registryItemFactory({
       )
   `,
 }) {
+  data: IOutputDescriptorInput
+
   constructor(input: IOutputDescriptorInput) {
     // Pass a data object
     super(input)
+    this.data = input
   }
 }
 

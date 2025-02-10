@@ -1,13 +1,5 @@
-import { patchTags } from "@keystonehq/bc-ur-registry";
-import { ExtendedRegistryTypes } from "./RegistryType";
-export * from "@keystonehq/bc-ur-registry";
+import './addToRegistry'
 
-patchTags(
-  Object.values(ExtendedRegistryTypes)
-    .filter(rt => !!rt.getTag())
-    .map(rt => rt.getTag()) as number[]
-);
-
-export { CryptoPortfolioCoin } from "./CryptoPortfolioCoin";
-export { CryptoPortfolio } from "./CryptoPortfolio";
-export { CryptoDetailedAccount } from "./CryptoDetailedAccount";
+export * from './DetailedAccount'
+export * from './PortfolioCoin'
+export * from './Portfolio'

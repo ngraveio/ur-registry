@@ -33,7 +33,7 @@ interface ICryptoPortfolioMetadata {
 }
 
 export class PortfolioMetadata extends registryItemFactory({
-  tag: 1404,
+  tag: 41404,
   URType: 'portfolio-metadata',
   keyMap: {
     syncId: 1,

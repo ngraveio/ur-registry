@@ -1,7 +1,6 @@
+import { registryItemFactory } from '@ngraveio/bc-ur'
 import { HDKey, OutputDescriptor } from '@ngraveio/bc-ur-registry'
 import { HexString } from '@ngraveio/bc-ur-registry-hex-string'
-
-import { registryItemFactory } from '@ngraveio/bc-ur'
 
 type account_exp = HDKey | OutputDescriptor
 type tokenId = string | HexString
@@ -11,7 +10,7 @@ interface IDetailAccountInput {
 }
 
 export class DetailedAccount extends registryItemFactory({
-  tag: 1402,
+  tag: 41402,
   URType: 'detailed-account',
   keyMap: {
     account: 1,

@@ -762,6 +762,21 @@
     write-pkg "4.0.0"
     yargs "16.2.0"
 
+"@ngraveio/bc-ur-registry-crypto-coin-identity@0.3.2-beta.0":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur-registry-crypto-coin-identity/-/bc-ur-registry-crypto-coin-identity-0.3.1.tgz#7a734e50693a8a60f1eb1b858fe19eff62bf65d8"
+  integrity sha512-nUmKGHOtiY1YjJg9RhaZDHgMfzHA4WifY/XjgfLdi2ZO5OcWrpJ+Z4BfNVPPa3BIaxgc+QOX4HeGpZHztJk/Xw==
+  dependencies:
+    "@keystonehq/bc-ur-registry" "0.5.4"
+    uuid "^9.0.0"
+
+"@ngraveio/bc-ur-registry-crypto-portfolio-metadata@0.1.2-beta.0":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur-registry-crypto-portfolio-metadata/-/bc-ur-registry-crypto-portfolio-metadata-0.1.1.tgz#f74f7ce41a8ce73a3b2575778730a95bd11b1907"
+  integrity sha512-fi+iuiM848ShzV4HZSHfd7v5DejLjgVxrtpyN411aKBBKMimMdTm2DHpd+LOywtMEjyjXv4gXzn59fLt/KxDXQ==
+  dependencies:
+    "@keystonehq/bc-ur-registry" "0.5.4"
+
 "@ngraveio/bc-ur@2.0.0-beta.5":
   version "2.0.0-beta.5"
   resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur/-/bc-ur-2.0.0-beta.5.tgz#bf7d4c3c0599113feab895147236bc2d6ab04cff"
