@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "uuid": "^9.0.0",
-    "@ngraveio/bc-ur": "2.0.0-beta.4"
+    "@ngraveio/bc-ur": "2.0.0-beta.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
