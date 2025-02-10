@@ -38,10 +38,10 @@
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "@keystonehq/bc-ur-registry": "0.5.4",
-    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.3.2-beta.0",
-    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.1.2-beta.0",
-    "@ngraveio/bc-ur-registry-hex-string": "0.3.2-beta.0"
+    "@ngraveio/bc-ur": "2.0.0-beta.5",
+    "@ngraveio/bc-ur-registry-crypto-coin-identity": "1.0.0-beta.0",
+    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "1.0.0-beta.0",
+    "@ngraveio/bc-ur-registry-hex-string": "1.0.0-beta.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
