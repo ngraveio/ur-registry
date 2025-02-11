@@ -2,13 +2,13 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 import { UUID } from '@ngraveio/bc-ur-registry-uuid'
 import { Buffer } from 'buffer/'
 
-interface SignResponseInput {
+export interface SignResponseInput {
   requestId?: UUID | string | Uint8Array // Accept UUID, string, or Uint8Array
   signature: Buffer
   origin?: string
 }
 
-interface SignResponseData {
+export interface SignResponseData {
   requestId?: UUID // Changed to UUID
   signature: Buffer
   origin?: string
@@ -41,7 +41,7 @@ export class SignResponse extends registryItemFactory({
   data: SignResponseData
 
   constructor(data: SignResponseInput) {
-    super()
+    super(data)
     //@ts-ignore
     this.data = data
 
@@ -62,10 +62,22 @@ export class SignResponse extends registryItemFactory({
   override verifyInput(input: any): { valid: boolean; reasons?: Error[] } {
     const reasons = []
 
+    if (!input) {
+      reasons.push(new Error('Input is undefined'))
+      return { valid: false, reasons }
+    }
+
     // If request id is present it must be a valid UUID
     if (input.requestId !== undefined) {
       try {
-        new UUID(input.requestId)
+        if (Buffer.isBuffer(input.requestId)) {
+          // convert buffer to uint8array
+          const requestId = Buffer.from(input.requestId).
+          new UUID(input.requestId.toString('hex'))
+        }
+        else {
+          new UUID(input.requestId)
+        }
       } catch (error) {
         reasons.push(new Error('Invalid requestId: ' + (error as Error).message))
       }
