@@ -3,10 +3,11 @@
   "include": ["src/*"],
   "compilerOptions": {
     "sourceMap": true,
-    "composite": true,    
+    "composite": true,
     "rootDir": "./src",
     "outDir": "./dist",
     "sourceRoot": "",
+    "declaration": true
   },
   "references": [],
 }

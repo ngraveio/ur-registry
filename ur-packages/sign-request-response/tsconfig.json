@@ -1,12 +1,18 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["src/**/*"],
+  "include": ["src/*"],
   "compilerOptions": {
+    "sourceMap": true,
+    "composite": true,
     "rootDir": "./src",
     "outDir": "./dist",
     "sourceRoot": "",
+    "declaration": true
   },
   "references": [
+    {
+      "path": "../base-types"
+    },    
     {
       "path": "../crypto-coin-identity"
     }

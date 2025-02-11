@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "sourceMap": true,
-    "composite": true,    
+    "composite": true,
     "rootDir": "./src",
     "outDir": "./dist",
-    "sourceRoot": ""
+    "sourceRoot": "",
+    "declaration": true
   },
   "references": []
 }

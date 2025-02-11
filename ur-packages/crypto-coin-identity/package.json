@@ -23,7 +23,8 @@
   "homepage": "https://github.com/ngraveio/ur-registry",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ngraveio/ur-registry.git"
+    "url": "git+https://github.com/ngraveio/ur-registry.git",
+    "directory": "ur-packages/crypto-coin-identity"
   },
   "keywords": [
     "bc-ur",

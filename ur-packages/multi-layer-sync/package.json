@@ -22,7 +22,8 @@
   "homepage": "https://github.com/ngraveio/ur-registry",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ngraveio/ur-registry.git"
+    "url": "git+https://github.com/ngraveio/ur-registry.git",
+    "directory": "ur-packages/multi-layer-sync"
   },
   "keywords": [
     "bc-ur",
@@ -39,6 +40,7 @@
   },
   "dependencies": {
     "@ngraveio/bc-ur": "2.0.0-beta.5",
+    "@ngraveio/bc-ur-registry": "1.0.0-beta.0",
     "@ngraveio/bc-ur-registry-crypto-coin-identity": "1.0.0-beta.0",
     "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "1.0.0-beta.0",
     "@ngraveio/bc-ur-registry-hex-string": "1.0.0-beta.0"

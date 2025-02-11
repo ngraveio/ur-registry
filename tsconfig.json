@@ -3,10 +3,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-        "@ngraveio/*": [
-            "*",
-            "ur-packages/*/src",
-        ]
+      "@ngraveio/*": [
+        "*",
+        "ur-packages/*/src"
+      ]
     }
   },
   "references": [
@@ -22,6 +22,9 @@
     {
       "path": "./ur-packages/multi-layer-sync"
     },
+    {
+      "path": "./ur-packages/sign-request-response"
+    }
   ]
 }
 
