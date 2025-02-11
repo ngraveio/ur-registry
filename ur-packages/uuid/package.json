@@ -1,5 +1,5 @@
 {
-  "name": "@ngraveio/bc-ur-uuid",
+  "name": "@ngraveio/bc-ur-registry-uuid",
   "version": "1.0.0-beta.0",
   "description": "Provides BC UR type for uuid.",
   "main": "dist/index.js",

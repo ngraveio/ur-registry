@@ -1,11 +1,12 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { Keypath } from '@ngraveio/bc-ur-registry'
+import { UUID } from '@ngraveio/bc-ur-registry-uuid'
 import { CryptoCoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
 import { Buffer } from 'buffer/'
 
 interface ISignRequestInput {
   /** Identifier of the signing request */
-  requestId?: Buffer // Size 16 // TODO: convert UUID tagged item
+  requestId?: UUID | string | Uint8Array // Accept UUID, string, or Uint8Array
   /** Provides information on the elliptic curve and the blockchain/coin */
   coinId: CryptoCoinIdentity
   /** Key path for signing this request */
@@ -22,7 +23,7 @@ interface ISignRequestInput {
 
 interface ISignRequestData {
   /** Identifier of the signing request */
-  requestId?: Buffer // Size 16 // TODO: convert UUID tagged item
+  requestId: UUID // Changed to UUID
   /** Provides information on the elliptic curve and the blockchain/coin */
   coinId: CryptoCoinIdentity
   /** Key path for signing this request */
@@ -80,7 +81,14 @@ export class SignRequest extends registryItemFactory({
 
     // If no request id is provided, generate a random one
     if (data.requestId === undefined) {
-      this.data.requestId = this.generateRandomRequestId()
+      this.data.requestId = UUID.generate()
+    } else {
+      // Convert requestId to UUID if it is not already an instance of UUID
+      if (typeof data.requestId === 'string' || data.requestId instanceof Uint8Array) {
+        this.data.requestId = new UUID(data.requestId)
+      } else if (!(data.requestId instanceof UUID)) {
+        throw new Error('Invalid requestId. Expected a UUID, string, or Uint8Array.')
+      }
     }
 
     // If given keypath is a string, convert it to Keypath
@@ -101,20 +109,17 @@ export class SignRequest extends registryItemFactory({
     }
   }
 
-  generateRandomRequestId = (): Buffer => {
-    return Buffer.from(require('crypto').randomBytes(16))
-  }
-
   override verifyInput = (input: ISignRequestInput): { valid: boolean; reasons?: Error[] } => {
     const reasons: Error[] = []
     const response = () => ({ valid: reasons.length === 0, reasons: reasons.length > 0 ? reasons : undefined })
 
-    // If request id is provided check if it is not longer than 16 bytes and type of buffer
+    // If request id is provided check if it is a valid UUID
     if (input.requestId !== undefined) {
-      if (!Buffer.isBuffer(input.requestId)) {
-        reasons.push(new Error('Request id should be of type Buffer'))
-      } else if (input.requestId.length > 16) {
-        reasons.push(new Error('Request id should not be longer than 16 bytes'))
+      try {
+        //@ts-ignore
+        new UUID(input.requestId)
+      } catch (error) {
+        reasons.push(new Error('Invalid requestId: ' + (error as Error).message))
       }
     }
 

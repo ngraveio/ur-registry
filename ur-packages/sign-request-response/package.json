@@ -43,11 +43,11 @@
   "dependencies": {
     "@ngraveio/bc-ur": "2.0.0-beta.5",
     "@ngraveio/bc-ur-registry": "1.0.0-beta.0",
+    "@ngraveio/bc-ur-registry-uuid": "1.0.0-beta.0",
     "@ngraveio/bc-ur-registry-crypto-coin-identity": "1.0.0-beta.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
-    "@types/uuid": "^9.0.0",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
     "typescript": "^5.6.2"
