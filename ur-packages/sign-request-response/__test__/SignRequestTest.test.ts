@@ -5,9 +5,9 @@ import {
   PathComponent,
 } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
 import { CryptoSignRequest } from '../src';
-import { SolSignRequestMeta, SolSignType, TezosDataType, TezosKeyType, TezosSignRequestMeta } from '../src/metadatas';
-import { EthDataType, EthSignRequestMeta, IrfanSignRequestMeta, PolygonMeta } from '../src/metadatas/ethereum.metadata';
-import { SignRequestMeta } from '../src/SignRequestMetadata';
+import { SolSignRequestMeta, SolSignType, TezosDataType, TezosKeyType, TezosSignRequestMeta } from '../oldFiles/metadatas';
+import { EthDataType, EthSignRequestMeta, IrfanSignRequestMeta, PolygonMeta } from '../oldFiles/metadatas/ethereum.metadata';
+import { SignRequestMeta } from '../oldFiles/SignRequestMetadata';
 
 describe('CryptoSignRequest checks', () => {
   // Initialize some values
