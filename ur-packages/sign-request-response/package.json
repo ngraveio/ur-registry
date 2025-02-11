@@ -1,6 +1,6 @@
 {
   "name": "@ngraveio/bc-ur-sign-request-response",
-  "version": "0.2.2-beta.0",
+  "version": "1.0.0-beta.0",
   "description": "Provides BC-UR types for signature request and response from cold wallets to hot wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,6 +11,7 @@
   "files": [
     "dist"
   ],
+  "sideEffects": ["dist/addToRegistry.js"],
   "scripts": {
     "clean": "rm -rf ./dist",
     "watch": "tsc --build --watch",
@@ -39,9 +40,8 @@
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "@keystonehq/bc-ur-registry": "0.5.4",
-    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.3.2-beta.0",
-    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.1.2-beta.0"
+    "@ngraveio/bc-ur": "2.0.0-beta.5",
+    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.3.2-beta.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
