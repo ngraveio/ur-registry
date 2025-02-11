@@ -116,7 +116,7 @@ export class PortfolioCoin extends registryItemFactory({
           // Check if HDKey has origin and all paths are hardened
           const hdKey = account.getAccount() as HDKey
           const origin = hdKey.getOrigin()
-          if (!origin.isOnlyHardened()) {
+          if (!origin?.isOnlyHardened()) {
             return { valid: false, reasons: [new Error('Ed25519 coin must have all hardened paths')] }
           }
         })
