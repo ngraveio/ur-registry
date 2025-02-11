@@ -107,6 +107,7 @@ export class SignRequest extends registryItemFactory({
 
   override verifyInput = (input: ISignRequestInput): { valid: boolean; reasons?: Error[] } => {
     const reasons: Error[] = []
+    const response = () => ({ valid: reasons.length === 0, reasons: reasons.length > 0 ? reasons : undefined })
 
     // If request id is provided check if it is not longer than 16 bytes and type of buffer
     if (input.requestId !== undefined) {
@@ -126,25 +127,22 @@ export class SignRequest extends registryItemFactory({
     if (input.derivationPath !== undefined) {
       if (typeof input.derivationPath !== 'string' && !(input.derivationPath instanceof Keypath)) {
         reasons.push(new Error('Derivation path should be a string or instance of Keypath'))
+        return response()
       }
 
-      let derivationPath: Keypath
-      if (typeof input.derivationPath === 'string') {
-        try {
-          derivationPath = new Keypath({ path: input.derivationPath })
-        } catch (error) {
-          reasons.push(new Error('Invalid derivation path: ' + (error as Error).toString()))
+      // If derivation path is a string, try to create a Keypath instance
+      try {
+        const derivationPath: Keypath = typeof input.derivationPath == 'string' ? new Keypath({ path: input.derivationPath }) : input.derivationPath
+
+        if (derivationPath.getComponents().length === 0) {
+          reasons.push(new Error('Derivation path should not be empty'))
         }
-      } else {
-        derivationPath = input.derivationPath
-      }
 
-      if (derivationPath.getComponents().length === 0) {
-        reasons.push(new Error('Derivation path should not be empty'))
-      }
-
-      if (!derivationPath.isOnlySimple()) {
-        reasons.push(new Error('Derivation path mush only contain simple index components'))
+        if (!derivationPath.isOnlySimple()) {
+          reasons.push(new Error('Derivation path mush only contain simple index components'))
+        }
+      } catch (error) {
+        reasons.push(new Error('Invalid derivation path: ' + (error as Error).toString()))
       }
     }
 
@@ -172,10 +170,7 @@ export class SignRequest extends registryItemFactory({
       reasons.push(new Error('Address should be a string or a buffer'))
     }
 
-    return {
-      valid: reasons.length === 0,
-      reasons: reasons.length > 0 ? reasons : undefined,
-    }
+    return response()
   }
 
   // Getters
