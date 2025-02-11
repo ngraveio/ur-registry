@@ -148,6 +148,22 @@ export class Keypath extends registryItemFactory({
   }
 
   /**
+   * Check if all the paths are hardened
+   * TODO: add tests
+   */
+  public isOnlyHardened(): boolean {
+    return this.data.components.every(component => component.isHardened())
+  }
+
+  /**
+   * Check if all the paths are simple
+   * TODO: add tests
+   */
+  public isOnlySimple(): boolean {
+    return this.data.components.every(component => component.isIndexComponent())
+  }
+
+  /**
    * Parses a path string into an array of PathComponent objects.
    * @param path The path string to parse.
    * @returns {PathComponent[]} Array of PathComponent objects.

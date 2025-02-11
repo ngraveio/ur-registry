@@ -66,7 +66,7 @@ export class DetailedAccount extends registryItemFactory({
       // Try to parse them into hex strings
       tokenIds = tokenIds.map(tokenId => {
         // If its already hexstring, return it
-        if (tokenId instanceof HexString) return tokenId as HexString;
+        if (tokenId instanceof HexString) return tokenId as HexString
         // If its buffer or a string try to parse as HexString
         try {
           return new HexString(tokenId)
@@ -173,10 +173,8 @@ export class DetailedAccount extends registryItemFactory({
     // Eg: m/44'/60'/0
     // The other path components are not allowed
     // Eg: m/44/*/1-5
-    origin.getComponents().forEach(path => {
-      if (!path.isIndexComponent()) {
-        throw new Error('Detailed account path can only contain index components')
-      }
-    })
+    if (!origin.isOnlySimple()) {
+      throw new Error('Detailed account path can only contain index components')
+    }
   }
 }
