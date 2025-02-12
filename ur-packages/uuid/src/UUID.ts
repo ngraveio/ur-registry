@@ -34,7 +34,7 @@ export class UUID extends UUIDBase {
       if (data.length !== 16) {
         throw new Error('Invalid UUID byte length. Expected 16 bytes.')
       }
-      this.data = new Uint8Array(data);
+      this.data = new Uint8Array(data)
     } else if (typeof data === 'string') {
       this.data = parse(data)
     } else {
@@ -47,7 +47,9 @@ export class UUID extends UUIDBase {
   }
 
   verifyInput(input: UUIDInput): { valid: boolean; reasons?: Error[] } {
-    if (typeof input === 'string') {
+    if (input instanceof UUID) {
+      // Already a UUID instance
+    } else if (typeof input === 'string') {
       try {
         parse(input)
       } catch (error) {

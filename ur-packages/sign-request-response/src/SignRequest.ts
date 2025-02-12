@@ -12,7 +12,7 @@ interface ISignRequestInput {
   /** Key path for signing this request */
   derivationPath?: Keypath | string
   /** Transaction to be decoded by the offline signer */
-  signData: Buffer
+  signData: Buffer | Uint8Array
   /** Origin of this sign request, e.g. wallet name */
   origin?: string
   /** Specify type of transaction required for some blockchains */
@@ -76,8 +76,19 @@ export class SignRequest extends registryItemFactory({
   constructor(data: ISignRequestInput) {
     super(data)
 
+    // Verify input
+    const { valid, reasons } = this.verifyInput(data)
+    if (!valid) {
+      throw new Error(`#SignRequest Invalid input: ${reasons?.map(r => r.message).join(', ')}`)
+    }
+
     //@ts-ignore
     this.data = data
+
+    // Convert signData to Buffer
+    if (!(data.signData instanceof Buffer)) {
+      this.data.signData = Buffer.from(data.signData)
+    }
 
     // If no request id is provided, generate a random one
     if (data.requestId === undefined) {
@@ -124,7 +135,7 @@ export class SignRequest extends registryItemFactory({
     }
 
     // Check if coin id is provided
-    if (input.coinId === undefined || !(input.coinId instanceof CryptoCoinIdentity)) {
+    if (input.coinId == undefined || !(input.coinId instanceof CryptoCoinIdentity)) {
       reasons.push(new Error('Coin id is required and should be of type CoinIdentity'))
     }
 
@@ -152,7 +163,7 @@ export class SignRequest extends registryItemFactory({
     }
 
     // Check if sign data is provided and is of type Buffer
-    if (input.signData === undefined || !Buffer.isBuffer(input.signData)) {
+    if (input.signData === undefined || !(input.signData instanceof Uint8Array)) {
       reasons.push(new Error('Sign data is required and should be of type Buffer'))
     } else {
       if (input.signData.length === 0) {
