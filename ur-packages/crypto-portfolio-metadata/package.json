@@ -38,7 +38,7 @@
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "@ngraveio/bc-ur": "2.0.0-beta.5",
+    "@ngraveio/bc-ur": "2.0.0-beta.6",
     "buffer": "^6.0.3"
   },
   "devDependencies": {
