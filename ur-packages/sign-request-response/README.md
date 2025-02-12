@@ -38,9 +38,9 @@ A MultiversX transaction is uniquely identified through the URI format bc-coin:/
 const nativeTx =
   'f849808609184e72a00082271094000000000000000000000000000000000000000080a47f7465737432000000000000000000000000000000000000000000000000000000600057808080'
 
-// Create the CryptoSignRequest object. The CryptoCoinIdentity identifies this signRequest as a MultiversX sign request.
+// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a MultiversX sign request.
 const egldSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.Ed25519, 508),
+  coinId: new CoinIdentity(EllipticCurve.Ed25519, 508),
   derivationPath: "m/44'/508'/0'/0'/0'",
   signData: Buffer.from(nativeTx, 'hex'),
 })
@@ -62,9 +62,9 @@ A Solana transaction is uniquely identified through the URI format bc-coin://ed2
 const nativeTx =
   '01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100020420771c01ee4ef0cd64de8aca6761ec53d81f2af4d82a6f901875b3eb6656aca1f71cd55949eaf3eb16b17a2760e5bc2141f45583263996a513788ce66ba3ed1c0000000000000000000000000000000000000000000000000000000000000000054a535a992921064d24e87160da387c7c35b5ddbc92bb81e41fa8404105448d4ab54ac2b31a0eacb2d4d88715857164550b21b55a69e7f326a5392230b41c9e02020200010c02000000002d3101000000000301000b48656c6c6f20576f726c64'
 
-// Create the CryptoSignRequest object. The CryptoCoinIdentity identifies this signRequest as a Solana sign request.
+// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Solana sign request.
 const solSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.Ed25519, 501),
+  coinId: new CoinIdentity(EllipticCurve.Ed25519, 501),
   derivationPath: "44'/501'/0'/0'",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new SolSignRequestMeta({
@@ -89,9 +89,9 @@ A Stellar transaction is identified by bc-coin://ed25519/148. This information i
 // get the native transaction
 const nativeTx = 'thisIsAMockTransaction'
 
-// Create the CryptoSignRequest object. The CryptoCoinIdentity identifies this signRequest as a Stellar sign request.
+// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Stellar sign request.
 const xrpSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.Ed25519, 148),
+  coinId: new CoinIdentity(EllipticCurve.Ed25519, 148),
   derivationPath: "m/44'/148'/0'",
   signData: Buffer.from(nativeTx, 'hex'),
 })
@@ -113,9 +113,9 @@ A Tezos transaction is uniquely identified through the URI format bc-coin://ed25
 const nativeTx =
   '4478f49a92c565e944b6021ea10d78e4d357217f07d7b04120ee8089a5df75566c004c740575091c360d45d820711afef7be6f30b972904ec0a9a312f90a84020a000036a21afaa10f9470af5db383080017a46a459edd00'
 
-// Create the CryptoSignRequest object. The CryptoCoinIdentity identifies this signRequest as a Tezos sign request.
+// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Tezos sign request.
 const tezSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.Ed25519, 1729),
+  coinId: new CoinIdentity(EllipticCurve.Ed25519, 1729),
   derivationPath: "m/44'/1729'/0'/0'/0'",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new TezosSignRequestMeta({
@@ -142,10 +142,10 @@ An Ethereum transaction is uniquely identified through the URI format bc-coin://
 const nativeTx =
   'e906850963bf08ed8252589442cda393bbe6d079501b98cc9ccf1906901b10bf80856e61626572808080'
 
-// Create the CryptoSignRequest object. The CryptoCoinIdentity identifies this signRequest as a Ethereum sign request.
+// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Ethereum sign request.
 
 const ethSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
   derivationPath: "m/44'/60'/0'/0/0",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new EthSignRequestMeta({
@@ -177,9 +177,9 @@ const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'
 const nativeTx = 'f869068505d90661eb82a31d9427054b13b1b798b345b591a4d22e6562d47ea75a80b844a9059cbb00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf0000000000000000000000000000000000000000000000000000000000000001808080';
 
 
-// Create the CryptoSignRequest object. The CryptoCoinIdentity identifies this signRequest as a Ethereum sign request.
+// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Ethereum sign request.
 const ethSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
   derivationPath: "m/44'/60'/0'/0/1",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new EthSignRequestMeta({
@@ -211,7 +211,7 @@ const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'
 const nativeTx = '02F87081890E8507D4E0A5E485220C87BE3883017AD0946F8A06447FF6FCF75D803135A7DE15CE88C1D4EC80B844A9059CBB0000000000000000000000009E9B5D5151B0F6BEEF3D90EEB36B12365C09BBB40000000000000000000000000000000000000000000000008AC7230489E80000C0';
 
 const maticSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60, [137]),
+  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60, [137]),
   derivationPath: "m/44'/60'/0'/0/0",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new PolygonMeta({
@@ -242,7 +242,7 @@ const decodedMaticSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'he
 const nativeTx = 'f88a068506275583f48301281c94c9154424b823b10579895ccbe442d41b9abd96ed80b86442842e0e000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000002808080';
 
 const ethSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
   derivationPath: "m/44'/60'/0'/0/1",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new EthSignRequestMeta({
@@ -276,7 +276,7 @@ const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'
 const nativeTx = '02f89081890e8506fc23ac008515a6cd9ad88304a35c94b6432d111bc2a022048b9aea7c11b2d627184bdd80b86423b872dd000000000000000000000000371398af172609f57f0f13be4c1aaf48acceb59d0000000000000000000000009e9b5d5151b0f6beef3d90eeb36b12365c09bbb4000000040000000000000000000000000000000000000000000000000003b568c0';
 
 const ethSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
   derivationPath: "m/44'/60'/0'/0/0",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new EthSignRequestMeta({
@@ -308,7 +308,7 @@ const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'
 const nativeTx = 'f8e906850666b5ee5582ba8c94b66a603f4cfe17e3d27b87a8bfcad319856518b880b8c4f242432a000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000007000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000808080';
 
 const ethSignRequest = new CryptoSignRequest({
-  coinId: new CryptoCoinIdentity(EllipticCurve.secp256k1, 60),
+  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
   derivationPath: "m/44'/60'/0'/0/1",
   signData: Buffer.from(nativeTx, 'hex'),
   metadata: new EthSignRequestMeta({
