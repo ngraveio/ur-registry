@@ -26,7 +26,6 @@ describe('SignResponse', () => {
     expect(decodedSignResponse.getOrigin()).toBe(origin)
   })
 
-  // Add more test cases for other examples from the provided link
   it('should encode and decode a Bitcoin signature response', () => {
     const requestId = new UUID(Buffer.from('3b5414375e3a450b8fe1251cbc2b3fb5', 'hex'))
     const signature = Buffer.from('70736274ff01009a020000000258e87a21b56daf0c23be8e7070456c336f7cbaa5c8757924f545887bb2abdd750000000000ffffffff838d0427d0ec650a68aa46bb0b098aea4422c071b2ca78352a077959d07cea1d0100000000ffffffff0270aaf00800000000160014d85c2b71d0060b09c9886aeb815e50991dda124d00e1f5050000000016001400aea9a2e5f0f876a588df5546e8742d1d87008f000000000000000000', 'hex')
@@ -156,10 +155,7 @@ describe('SignResponse', () => {
         signature: Buffer.from('d4f0a7bcd95bba1fbb1051885054730e3f47064288575aacc102fbbf6a9a14daa066991e360d3e3406c20c00a40973eff37c7d641e5b351ec4a99bfe86f335f7', 'hex'),
         origin: "NGRAVE ZERO"
       }
-      const signResponse = new SignResponse(input)
-      const result = signResponse.verifyInput(input)
-      expect(result.valid).toBe(false)
-      expect(result.reasons?.[0].message).toContain('Invalid requestId')
+      expect(() => new SignResponse(input)).toThrow('Invalid requestId')
     })
 
     it('should return invalid for missing signature', () => {
@@ -167,10 +163,7 @@ describe('SignResponse', () => {
         requestId: new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex')),
         origin: "NGRAVE ZERO"
       } as SignResponseInput
-      const signResponse = new SignResponse(input)
-      const result = signResponse.verifyInput(input)
-      expect(result.valid).toBe(false)
-      expect(result.reasons?.[0].message).toBe('Signature must be a buffer')
+      expect(() => new SignResponse(input)).toThrow('Signature must be a buffer')
     })
 
     it('should return invalid for incorrect origin type', () => {
@@ -179,10 +172,7 @@ describe('SignResponse', () => {
         signature: Buffer.from('d4f0a7bcd95bba1fbb1051885054730e3f47064288575aacc102fbbf6a9a14daa066991e360d3e3406c20c00a40973eff37c7d641e5b351ec4a99bfe86f335f7', 'hex'),
         origin: 12345 as unknown as string
       }
-      const signResponse = new SignResponse(input)
-      const result = signResponse.verifyInput(input)
-      expect(result.valid).toBe(false)
-      expect(result.reasons?.[0].message).toBe('Origin must be a string')
+      expect(() => new SignResponse(input)).toThrow('Origin must be a string')
     })
   })
 })

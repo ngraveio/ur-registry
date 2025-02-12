@@ -1,10 +1,10 @@
-import { registryItemFactory } from '@ngraveio/bc-ur'
+import { registryItemFactory, UrRegistry } from '@ngraveio/bc-ur'
 import { UUID } from '@ngraveio/bc-ur-registry-uuid'
 import { Buffer } from 'buffer/'
 
 export interface SignResponseInput {
   requestId?: UUID | string | Uint8Array // Accept UUID, string, or Uint8Array
-  signature: Buffer
+  signature: Buffer | Uint8Array
   origin?: string
 }
 
@@ -36,7 +36,7 @@ export class SignResponse extends registryItemFactory({
     request-id = 1
     signature = 2
     origin = 3
-  `
+  `,
 }) {
   data: SignResponseData
 
@@ -52,6 +52,11 @@ export class SignResponse extends registryItemFactory({
       } else if (!(data.requestId instanceof UUID)) {
         throw new Error('Invalid requestId. Expected a UUID, string, or Uint8Array.')
       }
+    }
+
+    // Convert signature to Buffer
+    if (!(data.signature instanceof Buffer)) {
+      this.data.signature = Buffer.from(data.signature)
     }
   }
 
@@ -69,22 +74,17 @@ export class SignResponse extends registryItemFactory({
 
     // If request id is present it must be a valid UUID
     if (input.requestId !== undefined) {
-      try {
-        if (Buffer.isBuffer(input.requestId)) {
-          // convert buffer to uint8array
-          const requestId = Buffer.from(input.requestId).
-          new UUID(input.requestId.toString('hex'))
-        }
-        else {
+      if (!(input.requestId instanceof UUID)) {
+        try {
           new UUID(input.requestId)
+        } catch (error) {
+          reasons.push(new Error('Invalid requestId: ' + (error as Error).message))
         }
-      } catch (error) {
-        reasons.push(new Error('Invalid requestId: ' + (error as Error).message))
       }
     }
 
     // Signature must be present and must be a buffer
-    if (input.signature === undefined || !Buffer.isBuffer(input.signature)) {
+    if (input.signature === undefined || !(input.signature instanceof Uint8Array)) {
       reasons.push(new Error('Signature must be a buffer'))
     }
 
@@ -99,3 +99,6 @@ export class SignResponse extends registryItemFactory({
     }
   }
 }
+
+
+UrRegistry.addItemOnce(SignResponse);
