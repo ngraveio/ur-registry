@@ -1,4 +1,4 @@
-import { CryptoCoinIdentity } from '../src'
+import { CoinIdentity } from '../src'
 import { ComparisonMethod, EllipticCurve } from '../src/CoinIdentity'
 import { UR } from '@ngraveio/bc-ur'
 
@@ -10,7 +10,7 @@ describe('CoinIdentity', () => {
     const curve = EllipticCurve.secp256k1
     const type = 0
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type)
+    const coinIdentity = new CoinIdentity(curve, type)
 
     const RegistryType = coinIdentity.type
     expect(RegistryType.tag).toBe(1401)
@@ -20,14 +20,14 @@ describe('CoinIdentity', () => {
     const curve = EllipticCurve.secp256k1
     const type = 0
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type)
+    const coinIdentity = new CoinIdentity(curve, type)
 
     expect(coinIdentity.getCurve()).toBe(curve)
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual([])
 
     const urEncoded = new UR(coinIdentity)
-    const coinIdentityRead = urEncoded.decode() as CryptoCoinIdentity
+    const coinIdentityRead = urEncoded.decode() as CoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -37,14 +37,14 @@ describe('CoinIdentity', () => {
     const curve = EllipticCurve.secp256k1
     const type = 0
     const subType = ['segwit', 123]
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
 
     expect(coinIdentity.getCurve()).toBe(curve)
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
     const urData = new UR(coinIdentity);
-    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
+    const coinIdentityRead = urData.decode() as CoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -67,7 +67,7 @@ describe('CoinIdentity', () => {
      *       50                                # bytes(16)
      * BABE0000BABE00112233445566778899 # "\xBA\xBE\u0000\u0000\xBA\xBE\u0000\u0011\"3DUfw\x88\x99"
     */
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
 
     expect(coinIdentity.getCurve()).toBe(curve)
     expect(coinIdentity.getType()).toBe(type)
@@ -76,7 +76,7 @@ describe('CoinIdentity', () => {
     expect((toHex(coinIdentity.getSubType()?.[0]))).toStrictEqual(subTypeValue)
 
     const urData = new UR(coinIdentity);
-    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
+    const coinIdentityRead = urData.decode() as CoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -95,14 +95,14 @@ describe('CoinIdentity', () => {
       123,
     ]
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
 
     expect(coinIdentity.getCurve()).toBe(curve)
     expect(coinIdentity.getType()).toBe(type)
     expect(coinIdentity.getSubType()).toStrictEqual(subType)
 
     const urData = new UR(coinIdentity);
-    const coinIdentityRead = urData.decode() as CryptoCoinIdentity
+    const coinIdentityRead = urData.decode() as CoinIdentity
 
     expect(coinIdentityRead.getCurve()).toBe(curve)
     expect(coinIdentityRead.getType()).toBe(type)
@@ -117,7 +117,7 @@ describe('toURL', () => {
 
     const expectedResult = `bc-coin://${Object.values(EllipticCurve)[curve - 1]}/${type}`
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type)
+    const coinIdentity = new CoinIdentity(curve, type)
     const url = coinIdentity.toURL()
     expect(url).toBe(expectedResult)
   })
@@ -129,27 +129,27 @@ describe('toURL', () => {
 
     const expectedResult = `bc-coin://${chainId}.${'secp256k1'}/${type}`
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subTypes)
+    const coinIdentity = new CoinIdentity(curve, type, subTypes)
     const url = coinIdentity.toURL()
     expect(url).toBe(expectedResult)
   })
   it('creates coinIdentity from a url with subtypes', () => {
     const uri = 'bc-coin://blabla.137.secp256k1/60'
-    const coinID = CryptoCoinIdentity.fromUrl(uri)
+    const coinID = CoinIdentity.fromUrl(uri)
     expect(coinID.getCurve()).toBe('secp256k1')
     expect(coinID.getType()).toBe(60)
     expect(coinID.getSubType()).toStrictEqual(['blabla', '137'])
   })
   it('creates coinIdentity from a url with multiple subtypes', () => {
     const uri = 'bc-coin://137.secp256k1/60'
-    const coinID = CryptoCoinIdentity.fromUrl(uri)
+    const coinID = CoinIdentity.fromUrl(uri)
     expect(coinID.getCurve()).toBe('secp256k1')
     expect(coinID.getType()).toBe(60)
     expect(coinID.getSubType()).toStrictEqual(['137'])
   })
   it('creates coinIdentity from a url without subtypes', () => {
     const uri = 'bc-coin://secp256k1/60'
-    const coinID = CryptoCoinIdentity.fromUrl(uri)
+    const coinID = CoinIdentity.fromUrl(uri)
     expect(coinID.getCurve()).toBe('secp256k1')
     expect(coinID.getType()).toBe(60)
     expect(coinID.getSubType()).toStrictEqual([])
@@ -158,32 +158,32 @@ describe('toURL', () => {
 
 describe('compareCoinIds', () => {
   it('should return true for identical coinIds', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('seckp256/60', 'seckp256/60', ComparisonMethod.ExactMatch)
+    const result = CoinIdentity.compareCoinIds('seckp256/60', 'seckp256/60', ComparisonMethod.ExactMatch)
     expect(result).toBe(true)
   })
 
   it('should return true when url is parent of urlToCompare', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('bc-coin://seckp256/60', 'bc-coin://child.seckp256/60', ComparisonMethod.Parent)
+    const result = CoinIdentity.compareCoinIds('bc-coin://seckp256/60', 'bc-coin://child.seckp256/60', ComparisonMethod.Parent)
     expect(result).toBe(true)
   })
 
   it('should return true when urlToCompare is children of url', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('bc-coin://child.seckp256/60', 'bc-coin://seckp256/60', ComparisonMethod.Child)
+    const result = CoinIdentity.compareCoinIds('bc-coin://child.seckp256/60', 'bc-coin://seckp256/60', ComparisonMethod.Child)
     expect(result).toBe(true)
   })
 
   it('should return true when urlToCompare is grand-child of url', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('bc-coin://child.parent.seckp256/60', 'bc-coin://seckp256/60', ComparisonMethod.Child)
+    const result = CoinIdentity.compareCoinIds('bc-coin://child.parent.seckp256/60', 'bc-coin://seckp256/60', ComparisonMethod.Child)
     expect(result).toBe(true)
   })
 
   it('should return true when urlToCompare is grand-child of child of url', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('bc-coin://child.parent.seckp256/60', 'bc-coin://parent.seckp256/60', ComparisonMethod.Child)
+    const result = CoinIdentity.compareCoinIds('bc-coin://child.parent.seckp256/60', 'bc-coin://parent.seckp256/60', ComparisonMethod.Child)
     expect(result).toBe(true)
   })
 
   it('should return true for different coinIds', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('bc-coin://seckp256/60', 'bc-coin://seckp256/0', ComparisonMethod.NotEqual)
+    const result = CoinIdentity.compareCoinIds('bc-coin://seckp256/60', 'bc-coin://seckp256/0', ComparisonMethod.NotEqual)
     expect(result).toBe(true)
   })
 
@@ -191,7 +191,7 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'child.seckp256/60'
     const coinUrl2 = 'seckp256/60'
     const comparison = ComparisonMethod.LessThanOrEqual
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(true)
   })
 
@@ -199,7 +199,7 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'seckp256/60'
     const coinUrl2 = 'child.seckp256/60'
     const comparison = ComparisonMethod.GreaterThanOrEqual
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(true)
   })
 
@@ -207,7 +207,7 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'seckp256/60'
     const coinUrl2 = 'seckp256/0'
     const comparison = ComparisonMethod.ExactMatch
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(false)
   })
 
@@ -215,7 +215,7 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'seckp256/60'
     const coinUrl2 = 'child.seckp256/60'
     const comparison = ComparisonMethod.Child
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(false)
   })
 
@@ -223,17 +223,17 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'child.seckp256/60'
     const coinUrl2 = 'seckp256/60'
     const comparison = ComparisonMethod.Parent
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(false)
   })
 
   it('should return false when urlToCompare is not grand-child of url', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('bc-coin://child.parent.ed256/60', 'bc-coin://seckp256/60', ComparisonMethod.Child)
+    const result = CoinIdentity.compareCoinIds('bc-coin://child.parent.ed256/60', 'bc-coin://seckp256/60', ComparisonMethod.Child)
     expect(result).toBe(false)
   })
 
   it('should return false when urlToCompare is grand-child of child of url', () => {
-    const result = CryptoCoinIdentity.compareCoinIds('bc-coin://child.parent.seckp256/60', 'bc-coin://child.seckp256/60', ComparisonMethod.Child)
+    const result = CoinIdentity.compareCoinIds('bc-coin://child.parent.seckp256/60', 'bc-coin://child.seckp256/60', ComparisonMethod.Child)
     expect(result).toBe(false)
   })
 
@@ -241,7 +241,7 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'seckp256/60'
     const coinUrl2 = 'seckp256/60'
     const comparison = ComparisonMethod.NotEqual
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(false)
   })
 
@@ -249,7 +249,7 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'seckp256/60'
     const coinUrl2 = 'seckp256/0'
     const comparison = ComparisonMethod.LessThanOrEqual
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(false)
   })
 
@@ -257,7 +257,7 @@ describe('compareCoinIds', () => {
     const coinUrl1 = 'seckp256/60'
     const coinUrl2 = 'seckp256/0'
     const comparison = ComparisonMethod.GreaterThanOrEqual
-    const result = CryptoCoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
+    const result = CoinIdentity.compareCoinIds(coinUrl1, coinUrl2, comparison)
     expect(result).toBe(false)
   })
 })
@@ -268,7 +268,7 @@ describe('parent', () => {
     const type = 60
     const subType = [137]
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
     const parent = coinIdentity.getParent()
 
     expect(parent?.getCurve()).toBe(curve)
@@ -281,7 +281,7 @@ describe('parent', () => {
     const type = 60
     const subType = ['blabla', 137]
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
     const parent = coinIdentity.getParent()
 
     expect(parent?.getCurve()).toBe(curve)
@@ -302,7 +302,7 @@ describe('parent', () => {
     const type = 60
     const subType = ['blabla', 137]
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
     let i = 2
 
     // Total of 6 expect statements should be called
@@ -329,7 +329,7 @@ describe('parent', () => {
     const type = 60
     const subType = [137]
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
     const parent = coinIdentity.getParent()
 
     expect(parent?.getCurve()).toBe(curve)
@@ -342,7 +342,7 @@ describe('parent', () => {
     const type = 60
     const subType = ['blabla', 137]
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
     const parent = coinIdentity.getParent()
 
     expect(parent?.getCurve()).toBe(curve)
@@ -363,7 +363,7 @@ describe('parent', () => {
     const type = 60
     const subType = ['blabla', 137]
 
-    const coinIdentity = new CryptoCoinIdentity(curve, type, subType)
+    const coinIdentity = new CoinIdentity(curve, type, subType)
     let i = 2
 
     // Total of 6 expect statements should be called

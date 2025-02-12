@@ -38,15 +38,15 @@ export enum ComparisonMethod {
 
 type hex_string = Uint8Array | string
 type sub_type_exp = number | string | hex_string
-interface CryptoCoinIdentityData {
+interface CoinIdentityData {
   curve: EllipticCurve // elliptic curve
   type: number // values from [SLIP44] with high bit turned off,
   subtype?: sub_type_exp[]
 }
 
-const CryptoCoinIdentityBase: RegistryItemClass = registryItemFactory({
-  tag: 1401,
-  URType: 'crypto-coin-identity',
+const CoinIdentityBase: RegistryItemClass = registryItemFactory({
+  tag: 41401,
+  URType: 'coin-identity',
   keyMap: {
     curve: 1,
     type: 2,
@@ -116,11 +116,11 @@ const CryptoCoinIdentityBase: RegistryItemClass = registryItemFactory({
  * type = 2  
  * subtype = 3  
  */
-export class CryptoCoinIdentity extends CryptoCoinIdentityBase {
-  public data: CryptoCoinIdentityData
+export class CoinIdentity extends CoinIdentityBase {
+  public data: CoinIdentityData
 
-  constructor(curve: EllipticCurve, type: number, subtype: sub_type_exp[] = []) {
-    super({ curve, type, subtype }, CryptoCoinIdentityBase.keyMap)
+  constructor(curve: EllipticCurve, type: number, subtype?: sub_type_exp[]) {
+    super({ curve, type, subtype }, CoinIdentityBase.keyMap)
     this.data = { curve, type, subtype }
   }
 
@@ -143,30 +143,30 @@ export class CryptoCoinIdentity extends CryptoCoinIdentityBase {
 
   /**
    * Get the parent CoinIdentity of the current CoinIdentity
-   * @returns {CryptoCoinIdentity} a new instance of CryptoCoinIdentity for the parent if it exists or null if it does not.
+   * @returns {CoinIdentity} a new instance of CoinIdentity for the parent if it exists or null if it does not.
    */
   public getParent = () => {
     // If we dont have any subtypes, return null
     if (!this.data.subtype?.length) return null
 
-    // Otherwise remove the last subtype and return a new CryptoCoinIdentity
+    // Otherwise remove the last subtype and return a new CoinIdentity
     const subtypes = this.data.subtype.slice(1, this.data.subtype.length)
-    return new CryptoCoinIdentity(this.data.curve, this.data.type, subtypes)
+    return new CoinIdentity(this.data.curve, this.data.type, subtypes)
   }
 
   /**
-   * Create an Iterator that returns all the parents of this CryptoCoinIdentity
-   * @returns {Iterable<CryptoCoinIdentity>} An iterator for all the parent CoinIdentities of the current CoinIdentity
+   * Create an Iterator that returns all the parents of this CoinIdentity
+   * @returns {Iterable<CoinIdentity>} An iterator for all the parent CoinIdentities of the current CoinIdentity
    */
-  getAllParents(): Iterable<CryptoCoinIdentity> {
+  getAllParents(): Iterable<CoinIdentity> {
     let currentParent = this.getParent()
 
     const parentIterator = {
-      [Symbol.iterator](): Iterator<CryptoCoinIdentity> {
+      [Symbol.iterator](): Iterator<CoinIdentity> {
         return {
-          next(): IteratorResult<CryptoCoinIdentity> {
+          next(): IteratorResult<CoinIdentity> {
             if (currentParent) {
-              const returnParent = new CryptoCoinIdentity(currentParent.getCurve(), currentParent.getType(), currentParent.getSubType())
+              const returnParent = new CoinIdentity(currentParent.getCurve(), currentParent.getType(), currentParent.getSubType())
               currentParent = currentParent.getParent()
 
               return {
@@ -184,8 +184,8 @@ export class CryptoCoinIdentity extends CryptoCoinIdentityBase {
   }
 
   /**
-   * Create a url from ths CryptoCoinIdentity. The subtypes should be in the correct order.
-   * @returns {string} url representation of the CryptoCoinIdentity
+   * Create a url from ths CoinIdentity. The subtypes should be in the correct order.
+   * @returns {string} url representation of the CoinIdentity
    */
   public toURL = (): string => {
     const curve = Object.values(EllipticCurve)[this.data.curve - 1]
@@ -199,9 +199,9 @@ export class CryptoCoinIdentity extends CryptoCoinIdentityBase {
   }
 
   /**
-   * Convert a url into a CryptoCoinIdentity
-   * @param url url representation of a CryptoCoinIdentity
-   * @returns {CryptoCoinIdentity} created from the passed url.
+   * Convert a url into a CoinIdentity
+   * @param url url representation of a CoinIdentity
+   * @returns {CoinIdentity} created from the passed url.
    */
   public static fromUrl = (url: string) => {
     const parts = url.split('://')[1].split('/')
@@ -210,11 +210,11 @@ export class CryptoCoinIdentity extends CryptoCoinIdentityBase {
       const curve = subtypeParts[subtypeParts.length - 1] as unknown as EllipticCurve
       const type = +parts[1]
       const subTypes = subtypeParts.slice(0, subtypeParts.length - 1)
-      return new CryptoCoinIdentity(curve, type, subTypes)
+      return new CoinIdentity(curve, type, subTypes)
     }
     const curve = parts[0] as unknown as EllipticCurve
     const type = +parts[1]
-    return new CryptoCoinIdentity(curve, type)
+    return new CoinIdentity(curve, type)
   }
 
   /**
@@ -223,11 +223,11 @@ export class CryptoCoinIdentity extends CryptoCoinIdentityBase {
    * @param comparison comparison method to check
    * @returns boolean indicating if the comparison is valid
    */
-  public compare = (coinIdentity: CryptoCoinIdentity, comparison: ComparisonMethod): boolean => {
+  public compare = (coinIdentity: CoinIdentity, comparison: ComparisonMethod): boolean => {
     const url = this.toURL().replace('bc-coin://', '')
     const urlToCompare = coinIdentity.toURL().replace('bc-coin://', '')
 
-    return CryptoCoinIdentity.compareCoinIds(url, urlToCompare, comparison)
+    return CoinIdentity.compareCoinIds(url, urlToCompare, comparison)
   }
 
   /**
@@ -238,7 +238,7 @@ export class CryptoCoinIdentity extends CryptoCoinIdentityBase {
    * @returns boolean indicating if the comparison is valid
    */
   static compareCoinIds(coinUrl1: string, coinUrl2: string, comparison: ComparisonMethod): boolean {
-    const dict = CryptoCoinIdentity.compareCoinIdsDict(coinUrl1, coinUrl2)
+    const dict = CoinIdentity.compareCoinIdsDict(coinUrl1, coinUrl2)
     return dict[comparison]
   }
 

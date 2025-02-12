@@ -122,7 +122,7 @@ console.log(ur)
 
 ```js
 // Create a coin identity
-const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60)
+const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60)
 
 const cryptoHDKey = new CryptoHDKey({
   isMaster: false,
@@ -177,10 +177,10 @@ const accounts = cryptoPortfolioCoin.getAccounts()
 
 ```js
 // Create the coin identities of the 4 desired coins.
-const coinIdEth = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60)
-const coinIdSol = new CryptoCoinIdentity(EllipticCurve.secp256k1, 501)
-const coinIdMatic = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60, [137])
-const coinIdBtc = new CryptoCoinIdentity(EllipticCurve.secp256k1, 0)
+const coinIdEth = new CoinIdentity(EllipticCurve.secp256k1, 60)
+const coinIdSol = new CoinIdentity(EllipticCurve.secp256k1, 501)
+const coinIdMatic = new CoinIdentity(EllipticCurve.secp256k1, 60, [137])
+const coinIdBtc = new CoinIdentity(EllipticCurve.secp256k1, 0)
 
 /**
  * Create the accounts that will be included in the coins.

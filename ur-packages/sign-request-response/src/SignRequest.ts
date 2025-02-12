@@ -1,14 +1,14 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { Keypath } from '@ngraveio/bc-ur-registry'
 import { UUID } from '@ngraveio/bc-ur-registry-uuid'
-import { CryptoCoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
+import { CoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
 import { Buffer } from 'buffer/'
 
 interface ISignRequestInput {
   /** Identifier of the signing request */
   requestId?: UUID | string | Uint8Array // Accept UUID, string, or Uint8Array
   /** Provides information on the elliptic curve and the blockchain/coin */
-  coinId: CryptoCoinIdentity
+  coinId: CoinIdentity
   /** Key path for signing this request */
   derivationPath?: Keypath | string
   /** Transaction to be decoded by the offline signer */
@@ -25,7 +25,7 @@ interface ISignRequestData {
   /** Identifier of the signing request */
   requestId: UUID // Changed to UUID
   /** Provides information on the elliptic curve and the blockchain/coin */
-  coinId: CryptoCoinIdentity
+  coinId: CoinIdentity
   /** Key path for signing this request */
   derivationPath?: Keypath
   /** Transaction to be decoded by the offline signer */
@@ -135,7 +135,7 @@ export class SignRequest extends registryItemFactory({
     }
 
     // Check if coin id is provided
-    if (input.coinId == undefined || !(input.coinId instanceof CryptoCoinIdentity)) {
+    if (input.coinId == undefined || !(input.coinId instanceof CoinIdentity)) {
       reasons.push(new Error('Coin id is required and should be of type CoinIdentity'))
     }
 

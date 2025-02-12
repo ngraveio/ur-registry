@@ -1,5 +1,5 @@
 import { extend, DataItem, RegistryItem, DataItemMap, CryptoKeypath, PathComponent } from '@keystonehq/bc-ur-registry';
-import { CryptoCoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
+import { CoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
 import { ExtendedRegistryTypes } from './RegistryType';
 import { signMetaMap } from './metadatas';
 import { SignRequestMeta } from './SignRequestMetadata';
@@ -27,7 +27,7 @@ enum Keys {
 
 interface ICryptoSignRequestProps {
   requestId?: Buffer; // Size 16
-  coinId: CryptoCoinIdentity;
+  coinId: CoinIdentity;
   derivationPath: CryptoKeypath | string;
   signData: Buffer;
   masterFingerprint?: Buffer; // Size 4
@@ -37,7 +37,7 @@ interface ICryptoSignRequestProps {
 
 export class CryptoSignRequest extends RegistryItem {
   private _requestId!: Buffer; // Size 16
-  private coinId: CryptoCoinIdentity;
+  private coinId: CoinIdentity;
   private _derivationPath!: CryptoKeypath;
   private signData: Buffer;
   private masterFingerprint?: Buffer; // Size 4
@@ -169,9 +169,9 @@ export class CryptoSignRequest extends RegistryItem {
       if (requestId.length > 16) throw new Error('Request id should not be longer than 16 bytes');
     }
 
-    // Make sure coin id is provided and is type of CryptoCoinIdentity
-    if (!coinId || !(coinId instanceof CryptoCoinIdentity))
-      throw new Error('Coin id is required and should be of type CryptoCoinIdentity');
+    // Make sure coin id is provided and is type of CoinIdentity
+    if (!coinId || !(coinId instanceof CoinIdentity))
+      throw new Error('Coin id is required and should be of type CoinIdentity');
 
     // // Make sure derivation path is provided and is type of CryptoHDKey and has origin and a valid path
     // if (!derivationPath || !(derivationPath instanceof CryptoKeypath) || !derivationPath.getPath())
@@ -238,7 +238,7 @@ export class CryptoSignRequest extends RegistryItem {
    * @param coinId
    * @returns
    */
-  public static findMetadataType(coinId: CryptoCoinIdentity): typeof SignRequestMeta {
+  public static findMetadataType(coinId: CoinIdentity): typeof SignRequestMeta {
     // Try to find exact metadata from metadata list
     if (signMetaMap.has(coinId.toURL())) {
       return signMetaMap.get(coinId.toURL())!;
@@ -267,7 +267,7 @@ export class CryptoSignRequest extends RegistryItem {
     const map = dataItem.getData();
 
     const requestId = map[Keys.requestId].getData();
-    const coinId = CryptoCoinIdentity.fromDataItem(map[Keys.coinId]);
+    const coinId = CoinIdentity.fromDataItem(map[Keys.coinId]);
     const derivationPath = CryptoKeypath.fromDataItem(map[Keys.derivationPath]);
     const signData = map[Keys.signData];
     const masterFingerprint = map[Keys.masterFingerprint];

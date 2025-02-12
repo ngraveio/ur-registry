@@ -1,4 +1,4 @@
 import { UrRegistry } from '@ngraveio/bc-ur'
-import { CryptoCoinIdentity } from './CoinIdentity';
+import { CoinIdentity } from './CoinIdentity'
 
-UrRegistry.addItem(CryptoCoinIdentity)
+UrRegistry.addItem(CoinIdentity)

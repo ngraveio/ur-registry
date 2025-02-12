@@ -1,7 +1,7 @@
 import { CryptoHDKey, CryptoOutput, URRegistryDecoder, CryptoKeypath, PathComponent, extend, ScriptExpressions } from '@keystonehq/bc-ur-registry';
 import {CryptoPortfolioMetadata } from "@ngraveio/bc-ur-registry-crypto-portfolio-metadata";
 import { CryptoDetailedAccount, CryptoPortfolioCoin, CryptoPortfolio} from '../src';
-import { CryptoCoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
+import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
 
 describe('Crypto Portfolio', () => {
   it('should generate / decode CryptoPortfolio with empty coin array', () => {
@@ -58,7 +58,7 @@ describe('Crypto Portfolio', () => {
 
   it('should generate / decode CryptoPortfolio with 1 coin', () => {
     // Create a coin identity
-    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
 
     // Sync Coin CBOR with 1 accounts
     const syncCoinCbor = 'a201d90579a2010802183c0281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a';
@@ -95,7 +95,7 @@ describe('Crypto Portfolio', () => {
 
   it('should generate / decode CryptoPortfolio with 2 coins', () => {
 
-    const coinIdentityEth = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentityEth = new CoinIdentity(EllipticCurve.secp256k1, 60);
 
     const cryptoHDKeyEth = new CryptoHDKey({
       isMaster: false,
@@ -130,7 +130,7 @@ describe('Crypto Portfolio', () => {
     /////// Solana
 
     // Create a coin identity (solana)
-    const coinIdentitySol = new CryptoCoinIdentity(EllipticCurve.secp256k1, 501);
+    const coinIdentitySol = new CoinIdentity(EllipticCurve.secp256k1, 501);
 
     // Create a HDKey
     const originKeypathSol = new CryptoKeypath(
@@ -199,10 +199,10 @@ describe('Crypto Portfolio', () => {
   });
 
   it('should encode / decode Crypto Portfolio with 4 coins and Metadata', () => {
-    const coinIdEth =   new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
-    const coinIdSol =   new CryptoCoinIdentity(EllipticCurve.secp256k1, 501);
-    const coinIdMatic = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60, [137]);
-    const coinIdBtc =   new CryptoCoinIdentity(EllipticCurve.secp256k1, 0);
+    const coinIdEth =   new CoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdSol =   new CoinIdentity(EllipticCurve.secp256k1, 501);
+    const coinIdMatic = new CoinIdentity(EllipticCurve.secp256k1, 60, [137]);
+    const coinIdBtc =   new CoinIdentity(EllipticCurve.secp256k1, 0);
 
     // Ethereum with USDC ERC20 token
     const accountEth = new CryptoDetailedAccount(

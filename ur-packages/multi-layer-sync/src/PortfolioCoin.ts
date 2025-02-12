@@ -1,6 +1,6 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { DetailedAccount } from './DetailedAccount'
-import { CryptoCoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
+import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
 import { HDKey } from '@ngraveio/bc-ur-registry'
 
 /** CDDL
@@ -36,7 +36,7 @@ type detailed_accounts = DetailedAccount[]
 type accounts_exp = detailed_accounts //| CryptoAccount | CryptoMultiAccounts;
 
 interface IPortfolioCoinInput {
-  coinId: CryptoCoinIdentity
+  coinId: CoinIdentity
   accounts: accounts_exp
   masterFingerprint?: number // uint32
 }
@@ -81,8 +81,8 @@ export class PortfolioCoin extends registryItemFactory({
     const errors: Error[] = []
 
     // Type check
-    if (input.coinId == undefined || !(input.coinId instanceof CryptoCoinIdentity)) {
-      errors.push(new Error('CoinId is not type of CryptoCoinIdentity'))
+    if (input.coinId == undefined || !(input.coinId instanceof CoinIdentity)) {
+      errors.push(new Error('CoinId is not type of CoinIdentity'))
     }
 
     // Be sure that accounts is correct type

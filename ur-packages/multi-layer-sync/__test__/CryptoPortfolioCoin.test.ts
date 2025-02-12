@@ -1,13 +1,13 @@
 import { CryptoHDKey, CryptoOutput, CryptoKeypath, PathComponent, ScriptExpressions } from '@keystonehq/bc-ur-registry';
 
 import { CryptoDetailedAccount, CryptoPortfolioCoin } from '../src';
-import { CryptoCoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
+import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
 
 describe('Crypto Sync Coin with DetailedAccount', () => {
 
   it('should generate / decode CryptoPortfolioCoin with only coinIdentity', () => {
     // Create a coin identity
-    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
 
     // Create a CryptoPortfolioCoin
     const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentity, []);
@@ -43,7 +43,7 @@ describe('Crypto Sync Coin with DetailedAccount', () => {
 
   it('should generate / decode CryptoPortfolioCoin with 1 detailed account with HDKEY', () => {
     // Create a coin identity
-    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
 
     // Create a HDKey
     const originKeypath = new CryptoKeypath(
@@ -101,7 +101,7 @@ describe('Crypto Sync Coin with DetailedAccount', () => {
 
   it('should generate / decode CryptoPortfolioCoin with 1 detailed account with CryptoOutput with HDKey', () => {
     // Create a coin identity
-    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
 
     // Create a HDKey
     const originKeypath = new CryptoKeypath(
@@ -161,7 +161,7 @@ describe('Crypto Sync Coin with DetailedAccount', () => {
 
   it('should generate CryptoPortfolioCoin with 2 detailed account', () => {
     // Create a coin identity
-    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
 
     const cryptoHDKey = new CryptoHDKey({
       isMaster: false,
@@ -241,7 +241,7 @@ describe('Crypto Sync Coin with DetailedAccount', () => {
 
   it('should generate CryptoPortfolioCoin with 2 detailed account with tokens', () => {
     // Create a coin identity
-    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
 
     const cryptoHDKey = new CryptoHDKey({
       isMaster: false,
@@ -316,7 +316,7 @@ describe('Crypto Sync Coin with DetailedAccount', () => {
   //it('should generate CryptoPortfolioCoin with different coin BIP44 path on coin identity and hdkey', () => {
   it('should allow diffent BIP44 coin ID on coin identity and HDKey Path Coin Id', () => {
     // Create a bitcoin coin identity
-    const coinIdentity = new CryptoCoinIdentity(EllipticCurve.secp256k1, 0);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 0);
 
     // Create an etherum path
     const cryptoHDKey = new CryptoHDKey({
