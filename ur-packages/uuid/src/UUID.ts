@@ -11,7 +11,7 @@ import { registryItemFactory, RegistryItemClass } from '@ngraveio/bc-ur'
  * Description of semantics: https://github.com/lucas-clemente/cbor-specs/blob/master/uuid.md
  */
 
-type UUIDInput = string | Uint8Array
+type UUIDInput = string | Uint8Array | UUID
 
 const UUIDBase: RegistryItemClass = registryItemFactory({
   tag: 37,
@@ -28,11 +28,13 @@ export class UUID extends UUIDBase {
   constructor(data: UUIDInput) {
     super(data)
 
-    if (data instanceof Uint8Array) {
+    if (data instanceof UUID) {
+      this.data = data.data
+    } else if (data instanceof Uint8Array) {
       if (data.length !== 16) {
         throw new Error('Invalid UUID byte length. Expected 16 bytes.')
       }
-      this.data = data
+      this.data = new Uint8Array(data);
     } else if (typeof data === 'string') {
       this.data = parse(data)
     } else {
