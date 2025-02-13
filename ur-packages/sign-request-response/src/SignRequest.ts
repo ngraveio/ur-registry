@@ -18,7 +18,7 @@ interface ISignRequestInput {
   /** Specify type of transaction required for some blockchains */
   txType?: number // Integer
   /** Specify sender address if not already specified in the sign-data and derivation-path */
-  address?: string | Buffer
+  address?: string | Uint8Array // Accept string or Uint8Array
 }
 
 interface ISignRequestData {
@@ -35,7 +35,7 @@ interface ISignRequestData {
   /** Specify type of transaction required for some blockchains */
   txType?: number
   /** Specify sender address if not already specified in the sign-data and derivation-path */
-  address?: string
+  address?: string | Uint8Array
 }
 
 export class SignRequest extends registryItemFactory({
@@ -105,11 +105,6 @@ export class SignRequest extends registryItemFactory({
     // If given keypath is a string, convert it to Keypath
     if (data.derivationPath !== undefined && typeof data.derivationPath === 'string') {
       this.data.derivationPath = new Keypath({ path: data.derivationPath })
-    }
-
-    // If address is provided as a buffer, convert it to string
-    if (data.address !== undefined && Buffer.isBuffer(data.address)) {
-      this.data.address = data.address.toString('hex')
     }
 
     // If coin is Ethereum and txType is not provided, set it to 1
@@ -182,7 +177,7 @@ export class SignRequest extends registryItemFactory({
     }
 
     // If address is provided, it should be a string or a buffer
-    if (input.address !== undefined && typeof input.address !== 'string' && !Buffer.isBuffer(input.address)) {
+    if (input.address !== undefined && typeof input.address !== 'string' && !(input.address instanceof Uint8Array)) {
       reasons.push(new Error('Address should be a string or a buffer'))
     }
 
@@ -196,5 +191,8 @@ export class SignRequest extends registryItemFactory({
   public getSignData = () => this.data.signData
   public getOrigin = () => this.data.origin
   public getTxType = () => this.data.txType
-  public getAddress = () => this.data.address
+  public getAddress = () => {
+    if (this.data.address instanceof Uint8Array) return Buffer.from(this.data.address).toString('hex')
+    return this.data.address
+  }
 }
