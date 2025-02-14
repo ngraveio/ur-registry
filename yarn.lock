@@ -748,10 +748,10 @@
     write-pkg "4.0.0"
     yargs "16.2.0"
 
-"@ngraveio/bc-ur@2.0.0-beta.6":
-  version "2.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur/-/bc-ur-2.0.0-beta.6.tgz#b6a2b4e17853c1e4e997afd0b032ad28ed3f0063"
-  integrity sha512-bEUB8Lg4faaBDNQ+gUsjeI3RAOFaFgQHddyQIaqVpRkHGRK9oaCta954KercfuI5ieDcjuZfX4awUfYUIYnGqw==
+"@ngraveio/bc-ur@2.0.0-beta.7":
+  version "2.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/@ngraveio/bc-ur/-/bc-ur-2.0.0-beta.7.tgz#aa68dac9a27686838638f34c12e5d67110816581"
+  integrity sha512-Xl87Cmkodj4Y8Um8l4tHdHJ4ne8CMOFYLsbD1i0TWLzG51/KK6Mydf1+EKdAHH6F+Ky7SIK+Va4qAU5eHjXRpw==
   dependencies:
     "@bacons/text-decoder" "0.0.0"
     buffer "^6.0.3"
