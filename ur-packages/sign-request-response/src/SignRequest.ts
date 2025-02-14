@@ -1,6 +1,6 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { Keypath } from '@ngraveio/ur-blockchain-commons'
-import { UUID } from '@ngraveio/bc-ur-registry-uuid'
+import { UUID } from '@ngraveio/ur-uuid'
 import { CoinIdentity } from '@ngraveio/ur-coin-identity'
 // Define Node.js Buffer type without importing `node:buffer`
 type NodeBuffer = typeof globalThis extends { Buffer: infer T } ? T : never;

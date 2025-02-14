@@ -7,11 +7,11 @@ This repository is the UUID extension of [bc-ur-registry](https://github.com/Key
 To install, run:
 
 ```bash
-yarn add @ngraveio/bc-ur-registry-uuid
+yarn add @ngraveio/ur-uuid
 ```
 
 ```bash
-npm install --save @ngraveio/bc-ur-registry-uuid
+npm install --save @ngraveio/ur-uuid
 ```
 
 **Source:** https://github.com/lucas-clemente/cbor-specs/blob/master/uuid.md
@@ -31,7 +31,7 @@ This document specifies a tag for UUID in Concise Binary Object Representation (
 ## Generating a UUID
 
 ```typescript
-import { UUID } from '@ngraveio/bc-ur-registry-uuid';
+import { UUID } from '@ngraveio/ur-uuid';
 
 const uuid = UUID.generate();
 console.log(uuid.toString()); // Prints the generated UUID as a string
@@ -40,7 +40,7 @@ console.log(uuid.toString()); // Prints the generated UUID as a string
 ## Creating a UUID from a string
 
 ```typescript
-import { UUID } from '@ngraveio/bc-ur-registry-uuid';
+import { UUID } from '@ngraveio/ur-uuid';
 
 const uuidString = '123e4567-e89b-12d3-a456-426614174000';
 const uuid = new UUID(uuidString);
@@ -50,7 +50,7 @@ console.log(uuid.toString()); // Prints the UUID as a string
 ## Creating a UUID from bytes
 
 ```typescript
-import { UUID } from '@ngraveio/bc-ur-registry-uuid';
+import { UUID } from '@ngraveio/ur-uuid';
 
 const uuidBytes = new Uint8Array([18, 62, 69, 103, 232, 155, 18, 211, 164, 86, 66, 20, 23, 64, 0]);
 const uuid = new UUID(uuidBytes);
@@ -60,7 +60,7 @@ console.log(uuid.toString()); // Prints the UUID as a string
 ## Verifying a UUID
 
 ```typescript
-import { UUID } from '@ngraveio/bc-ur-registry-uuid';
+import { UUID } from '@ngraveio/ur-uuid';
 
 const uuidString = '123e4567-e89b-12d3-a456-426614174000';
 const uuid = new UUID(uuidString);

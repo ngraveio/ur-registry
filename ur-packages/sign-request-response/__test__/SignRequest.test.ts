@@ -1,5 +1,5 @@
 import { SignRequest } from '../src/index'
-import { UUID } from '@ngraveio/bc-ur-registry-uuid'
+import { UUID } from '@ngraveio/ur-uuid'
 import { UR } from '@ngraveio/bc-ur'
 import { CoinIdentity } from '@ngraveio/ur-coin-identity'
 import { Keypath } from '@ngraveio/ur-blockchain-commons'

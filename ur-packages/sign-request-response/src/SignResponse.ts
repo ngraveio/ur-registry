@@ -1,5 +1,5 @@
 import { registryItemFactory, UrRegistry } from '@ngraveio/bc-ur'
-import { UUID } from '@ngraveio/bc-ur-registry-uuid'
+import { UUID } from '@ngraveio/ur-uuid'
 import { Buffer } from 'buffer/'
 // Define Node.js Buffer type without importing `node:buffer`
 type NodeBuffer = typeof globalThis extends { Buffer: infer T } ? T : never;
