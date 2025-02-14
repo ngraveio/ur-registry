@@ -6,7 +6,7 @@ This package adds support for the following ur types:
 
 | Type                  | [[CBOR Tag]](https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml) | Owner  | Description                                                                                               | Definition                                                                                            |
 | --------------------- | ------------------------------------------------------------------------ | ------ | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `crypto-sign-request` | 1411                                                                     | Ngrave | Blockchain-agnostic signature request type where type of the coin is identified by `crypto-coin-identity` | [[NBCR-2023-003]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-crypto-sign.md) |
+| `crypto-sign-request` | 1411                                                                     | Ngrave | Blockchain-agnostic signature request type where type of the coin is identified by `coin-identity` | [[NBCR-2023-003]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-crypto-sign.md) |
 | `crypto-signature`    | 1412                                                                     | Ngrave | Blockchain-agnostic signature response type                                                               | [[NBCR-2023-003]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-crypto-sign.md) |
 
 This repository is an extension of [bc-ur-registry](https://github.com/KeystoneHQ/ur-registry)
@@ -55,7 +55,7 @@ const decodedEgldSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex
 
 #### Solana (SOL)
 
-A Solana transaction is uniquely identified through the URI format bc-coin://ed25519/501, information shared in crypto-coin-identity UR type.
+A Solana transaction is uniquely identified through the URI format bc-coin://ed25519/501, information shared in coin-identity UR type.
 
 ```js
 // get the native transaction
@@ -83,7 +83,7 @@ const decodedSolSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'
 
 #### Stellar (XRP)
 
-A Stellar transaction is identified by bc-coin://ed25519/148. This information is shared in crypto-coin-identity UR type.
+A Stellar transaction is identified by bc-coin://ed25519/148. This information is shared in coin-identity UR type.
 
 ```js
 // get the native transaction
@@ -106,7 +106,7 @@ const decodedXrpSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'
 
 #### Tezos (XTZ)
 
-A Tezos transaction is uniquely identified through the URI format bc-coin://ed25519/1729, bc-coin://secp256k1/1729 or bc-coin://P256/1729 depending on the elliptic curves selected to sign the transaction.This information is shared in crypto-coin-identity UR type.
+A Tezos transaction is uniquely identified through the URI format bc-coin://ed25519/1729, bc-coin://secp256k1/1729 or bc-coin://P256/1729 depending on the elliptic curves selected to sign the transaction.This information is shared in coin-identity UR type.
 
 ```js
 // get the native Ed25519 tz1 transaction
@@ -133,7 +133,7 @@ const decodedTezSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'
 
 #### Ethereum (ETH)
 
-An Ethereum transaction is uniquely identified through the URI format bc-coin://secp256k1/60, information shared in crypto-coin-identity UR type.
+An Ethereum transaction is uniquely identified through the URI format bc-coin://secp256k1/60, information shared in coin-identity UR type.
 
 ##### Normal transaction
 

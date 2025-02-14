@@ -20,7 +20,7 @@ import { HDKey } from '@ngraveio/bc-ur-registry'
  * ; are however limited compared to #6.1402(crypto-detailed-account).
  *
  * coin = {
- * 	coin-id: #6.1401(crypto-coin-identity),
+ * 	coin-id: #6.1401(coin-identity),
  *   accounts: accounts_exp,
  *   ? master-fingerprint: uint32, ; Master fingerprint (fingerprint for the master public key as per BIP32)
  * }

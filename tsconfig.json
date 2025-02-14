@@ -20,7 +20,7 @@
       "path": "./ur-packages/uuid"
     },
     {
-      "path": "./ur-packages/crypto-coin-identity"
+      "path": "./ur-packages/coin-identity"
     },
     {
       "path": "./ur-packages/multi-layer-sync"

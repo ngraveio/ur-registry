@@ -10,7 +10,7 @@
       "path": "../blockchain-commons"
     },
     {
-      "path": "../crypto-coin-identity"
+      "path": "../coin-identity"
     },
     {
       "path": "../hex-string"
