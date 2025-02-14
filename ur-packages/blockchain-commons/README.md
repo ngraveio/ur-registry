@@ -23,11 +23,11 @@ It is refactored version of [Keystone bc-ur-registry](https://github.com/Keyston
 To install, run:
 
 ```bash
-yarn add @ngraveio/bc-ur-registry
+yarn add @ngraveio/ur-blockchain-commons
 ```
 
 ```bash
-npm install --save @ngraveio/bc-ur-registry
+npm install --save @ngraveio/ur-blockchain-commons
 ```
 
 
@@ -49,7 +49,7 @@ It encodes CBOR bytes type without any **tag**.
 **Usage:**
 
 ```typescript
-import { PSBT } from "@ngraveio/bc-ur-registry";
+import { PSBT } from "@ngraveio/ur-blockchain-commons";
 
 const psbtBytes = Buffer.from("70736274ff01009a020000000258e87a21b56daf0c23be8e7070456c336f7cbaa5c8757924f545887bb2abdd750000000000ffffffff838d0427d0ec650a68aa46bb0b098aea4422c071b2ca78352a077959d07cea1d0100000000ffffffff0270aaf00800000000160014d85c2b71d0060b09c9886aeb815e50991dda124d00e1f5050000000016001400aea9a2e5f0f876a588df5546e8742d1d87008f000000000000000000", "hex");
 
@@ -71,7 +71,7 @@ Has 2 parameters `type` BIP44 coin type and `network` that highlights testnet or
 Usage:
 
 ```typescript
-import { CoinInfo, Network } from "@ngraveio/bc-ur-registry";
+import { CoinInfo, Network } from "@ngraveio/ur-blockchain-commons";
 
 const bitcoinMainnet = new CoinInfo(); // Default is Bitcoin Mainnet
 const bitcoinTestnet = new CoinInfo(undefined, Network.Testnet);
@@ -107,7 +107,7 @@ Example path in string format:
 
 **Usage:**
 ```typescript
-import { KeyPath, PathComponent } from "@ngraveio/bc-ur-registry";
+import { KeyPath, PathComponent } from "@ngraveio/ur-blockchain-commons";
 
 // Create a KeyPath from a string
 // This path containes Simple index, Range, Wildcard, Pair
@@ -253,7 +253,7 @@ interface HDKeyConstructorArgs {
 A `master-key` is the root of an HDKey hierarchy, used as the starting point for generating derived keys.
 
 ```typescript
-import { HDKey } from '@ngraveio/bc-ur-registry';
+import { HDKey } from '@ngraveio/ur-blockchain-commons';
 
 // Example: Creating a master key
 const masterKey = new HDKey({
@@ -287,7 +287,7 @@ console.log(hdKey.getChainCode().toString('hex')); // Chain code
 - **`children`**: Specifies the derivation rules for child keys (e.g., `0/*` to derive all external addresses).
 
 ```typescript
-import { KeyPath } from '@ngraveio/bc-ur-registry';
+import { KeyPath } from '@ngraveio/ur-blockchain-commons';
 
 // Example: Derived key with metadata
 const keyWithMetadata = new HDKey({
@@ -403,7 +403,7 @@ interface IAddressInput {
 #### Usage
 
 ```typescript
-import { Address, CoinInfo, Network } from '@ngraveio/bc-ur-registry';
+import { Address, CoinInfo, Network } from '@ngraveio/ur-blockchain-commons';
 
 // Example: Creating an Ethereum testnet address
 const ethereumTestnet = new Address({
@@ -481,7 +481,7 @@ Output descriptors [[OD-IN-CORE]](https://github.com/bitcoin/bitcoin/blob/master
 **Usage:**
 
 ```typescript
-import { OutputDescriptor, HDKey, ECKey } from '@ngraveio/bc-ur-registry';
+import { OutputDescriptor, HDKey, ECKey } from '@ngraveio/ur-blockchain-commons';
 
 // pk(03e220e776d811c44075a4a260734445c8967865f5357ba98ead3bc6a6552c36f2)
 const text = "pk(@0)"
@@ -499,7 +499,7 @@ const outputDescriptor = new OutputDescriptor({
 More advanced example with HDKeys:
 
 ```typescript
-import { OutputDescriptor, HDKey, ECKey } from '@ngraveio/bc-ur-registry';
+import { OutputDescriptor, HDKey, ECKey } from '@ngraveio/ur-blockchain-commons';
 
 const text = 'wsh(sortedmulti(2,@0,@1,@2))'
 
@@ -568,7 +568,7 @@ interface IAccountDescriptorArgs {
 #### Usage
 
 ```typescript
-import { AccountDescriptor, OutputDescriptor } from '@ngraveio/bc-ur-registry';
+import { AccountDescriptor, OutputDescriptor } from '@ngraveio/ur-blockchain-commons';
 
 // Example: Creating an AccountDescriptor
 const outputDescriptor = new OutputDescriptor({

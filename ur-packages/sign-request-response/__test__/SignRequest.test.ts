@@ -2,7 +2,7 @@ import { SignRequest } from '../src/index'
 import { UUID } from '@ngraveio/bc-ur-registry-uuid'
 import { UR } from '@ngraveio/bc-ur'
 import { CoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
-import { Keypath } from '@ngraveio/bc-ur-registry'
+import { Keypath } from '@ngraveio/ur-blockchain-commons'
 import { Buffer } from 'buffer/'
 
 describe('SignRequest', () => {

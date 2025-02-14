@@ -65,7 +65,7 @@ The URI format is as follows: bc-coin://{subtype2.subtype1.subtype0}.{curve}/typ
 
 Below the coinIdentity of Polygon (MATIC) as an example: "bc-coin://137.secp256k1/60"
 ```js
-import {CryptoCoinIdentity, EllipticCurve } from from '@ngraveio/bc-ur-registry';
+import {CryptoCoinIdentity, EllipticCurve } from from '@ngraveio/ur-blockchain-commons';
 
 const curve = EllipticCurve.secp256k1 // 8
 const type = 60

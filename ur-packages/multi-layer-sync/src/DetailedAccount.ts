@@ -1,5 +1,5 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
-import { HDKey, OutputDescriptor } from '@ngraveio/bc-ur-registry'
+import { HDKey, OutputDescriptor } from '@ngraveio/ur-blockchain-commons'
 import { HexString } from '@ngraveio/bc-ur-registry-hex-string'
 
 type account_exp = HDKey | OutputDescriptor

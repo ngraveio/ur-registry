@@ -1,4 +1,4 @@
-import { HDKey, Keypath, PathComponent, OutputDescriptor } from '@ngraveio/bc-ur-registry'
+import { HDKey, Keypath, PathComponent, OutputDescriptor } from '@ngraveio/ur-blockchain-commons'
 import { DetailedAccount } from '../src'
 import { HexString } from '@ngraveio/bc-ur-registry-hex-string'
 

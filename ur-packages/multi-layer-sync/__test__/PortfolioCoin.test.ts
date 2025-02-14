@@ -1,4 +1,4 @@
-import { HDKey, Keypath, OutputDescriptor } from '@ngraveio/bc-ur-registry'
+import { HDKey, Keypath, OutputDescriptor } from '@ngraveio/ur-blockchain-commons'
 import { DetailedAccount, PortfolioCoin } from '../src'
 import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
 
