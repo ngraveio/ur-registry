@@ -1,6 +1,6 @@
 {
-  "name": "@ngraveio/bc-ur-multi-layer-sync",
-  "version": "0.3.2-beta.0",
+  "name": "@ngraveio/ur-sync",
+  "version": "1.0.0-beta.0",
   "description": "Provides BC-UR types for syncing multiple coins and accounts from cold wallets to watch only wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
