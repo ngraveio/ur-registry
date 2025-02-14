@@ -99,6 +99,10 @@ export class PathComponent {
 
   // Parses a string into a PathComponent
   public static fromString(component: string): PathComponent {
+    // Do regex check for valid component only allow numeric characters and 'h' or "'" or '[' ']' '-' ';' '<' '>' '*' and ','.
+    if (!/^[0-9h'\[\]\-;<>*]+$/g.test(component)) {
+      throw new Error(`Invalid character in component: ${component}`)
+    }
     if (component === '*' || component === "*'" || component === '*h') {
       const hardened = component.endsWith("'") || component.endsWith('h')
       return new PathComponent({ wildcard: true, hardened })

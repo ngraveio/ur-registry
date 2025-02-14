@@ -1,6 +1,9 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { languages } from './LanguageCodes'
 import { Buffer } from 'buffer/'
+// Define Node.js Buffer type without importing `node:buffer`
+type NodeBuffer = typeof globalThis extends { Buffer: infer T } ? T : never;
+type CompatibleBuffer = Buffer | InstanceType<NodeBuffer>
 
 /** CDDL
  
@@ -25,7 +28,7 @@ import { Buffer } from 'buffer/'
  */
 
 interface ICryptoPortfolioMetadata {
-  syncId?: Buffer // Size 16
+  syncId?: CompatibleBuffer // Size 16
   language?: keyof typeof languages // ISO 639-1 language codes
   firmwareVersion?: string
   device?: string

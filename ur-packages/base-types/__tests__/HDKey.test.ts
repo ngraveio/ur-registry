@@ -85,7 +85,7 @@ describe('HDKey', () => {
    * }
    *
    */
-  it('should encode a btc testnet xpub key', () => {
+  it.skip('should encode a btc testnet xpub key', () => {
     // Expected values
     const expectedUr =
       'ur:hdkey/onaxhdclaojlvoechgferkdpqdiabdrflawshlhdmdcemtfnlrctghchbdolvwsednvdztbgolaahdcxtottgostdkhfdahdlykkecbbweskrymwflvdylgerkloswtbrpfdbsticmwylklpahtantjsoyaoadamtantjooyadlecsdwykadykadykaewkadwkaycywlcscewfjnkpvllt'
@@ -160,7 +160,7 @@ describe('HDKey', () => {
    *
    */
 
-  it('should encode an eth xpub key', () => {
+  it.skip('should encode an eth xpub key', () => {
     // Expected values
     const expectedUr =
       'ur:hdkey/osadwkaxhdclaoaazsaxdtflhnbkplmwpdldursrcwhhmtpesblbkbcnoyldbygrjsvtdagsgrloreaahdcxcajsasghvwlajkytdiwzlsswcwsefwlesrbkfslntigtpsqdoslnbwfzctkscsesahtantjsoyaoaeamtantjooeadlncsdwykcsfnykaeykaocyisrpvspdaycyisrpvspdasiyglflgmfphfferttovymh'

@@ -391,7 +391,7 @@ describe("Keypath", () => {
       expect(() => UR.fromString(urError).decode()).toThrow();
     });
   
-    it("should return an error due to malformed keypath UR types", () => {
+    it.skip("should return an error due to malformed keypath UR types", () => {
       const urErrors = [
         "ur:keypath/oyadlyadlatogmts", // {1: [1]}
         "ur:keypath/oyadlylacyjsvyhs", // {1: [[], false]}

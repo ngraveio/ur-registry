@@ -1,6 +1,6 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { PortfolioCoin } from './PortfolioCoin'
-import { PortfolioMetadata } from '@ngraveio/bc-ur-registry-crypto-portfolio-metadata'
+import { PortfolioMetadata } from './PortfolioMetadata'
 
 interface IPortfolioInput {
   coins: PortfolioCoin[]

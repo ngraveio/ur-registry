@@ -1,8 +1,7 @@
-import { HDKey, Keypath, PathComponent, OutputDescriptor } from '@ngraveio/bc-ur-registry'
-import { DetailedAccount, PortfolioCoin, Portfolio } from '../src'
+import { HDKey, Keypath, OutputDescriptor } from '@ngraveio/bc-ur-registry'
+import { DetailedAccount, PortfolioCoin, Portfolio, PortfolioMetadata } from '../src'
 import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
-import { PortfolioMetadata } from '@ngraveio/bc-ur-registry-crypto-portfolio-metadata'
-import { Buffer } from 'buffer/'
+import { Buffer } from 'node:buffer'
 
 describe('Crypto Portfolio', () => {
   it('should generate / decode Portfolio with empty coin array', () => {

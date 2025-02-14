@@ -1,10 +1,13 @@
 import { registryItemFactory, UrRegistry } from '@ngraveio/bc-ur'
 import { UUID } from '@ngraveio/bc-ur-registry-uuid'
 import { Buffer } from 'buffer/'
+// Define Node.js Buffer type without importing `node:buffer`
+type NodeBuffer = typeof globalThis extends { Buffer: infer T } ? T : never;
+type CompatibleBuffer = Buffer | InstanceType<NodeBuffer>
 
 export interface SignResponseInput {
   requestId?: UUID | string | Uint8Array // Accept UUID, string, or Uint8Array
-  signature: Buffer | Uint8Array
+  signature: CompatibleBuffer | Uint8Array
   origin?: string
 }
 

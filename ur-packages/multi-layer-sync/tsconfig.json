@@ -13,9 +13,6 @@
       "path": "../crypto-coin-identity"
     },
     {
-      "path": "../crypto-portfolio-metadata"
-    },
-    {
       "path": "../hex-string"
     }    
   ]

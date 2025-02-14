@@ -2,7 +2,9 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 import { Keypath } from '@ngraveio/bc-ur-registry'
 import { UUID } from '@ngraveio/bc-ur-registry-uuid'
 import { CoinIdentity } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
-import { Buffer } from 'buffer/'
+// Define Node.js Buffer type without importing `node:buffer`
+type NodeBuffer = typeof globalThis extends { Buffer: infer T } ? T : never;
+type CompatibleBuffer = Buffer | InstanceType<NodeBuffer>
 
 interface ISignRequestInput {
   /** Identifier of the signing request */
@@ -12,7 +14,7 @@ interface ISignRequestInput {
   /** Key path for signing this request */
   derivationPath?: Keypath | string
   /** Transaction to be decoded by the offline signer */
-  signData: Buffer | Uint8Array
+  signData: CompatibleBuffer | Uint8Array
   /** Origin of this sign request, e.g. wallet name */
   origin?: string
   /** Specify type of transaction required for some blockchains */
