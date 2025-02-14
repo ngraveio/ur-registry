@@ -11,7 +11,7 @@
   },
   "references": [
     {
-      "path": "./ur-packages/base-types"
+      "path": "./ur-packages/blockchain-commons"
     },
     {
       "path": "./ur-packages/hex-string"

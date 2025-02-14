@@ -22,11 +22,11 @@
   },
   "author": "Irfan Bilaloglu<irfan.bilaloglu@ngrave.io>",
   "license": "MIT",
-  "homepage": "https://github.com/ngraveio/ur-registry/tree/main/ur-packages/base-types#readme",
+  "homepage": "https://github.com/ngraveio/ur-registry/tree/main/ur-packages/blockchain-commons#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ngraveio/ur-registry.git",
-    "directory": "ur-packages/base-types"
+    "directory": "ur-packages/blockchain-commons"
   },
   "keywords": [
     "bc-ur",

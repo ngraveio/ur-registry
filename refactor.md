@@ -34,8 +34,8 @@ https://github.com/ngraveio/bc-ur/blob/fix-types/README.md
 - Replace all instances of `"@ngraveio/bc-ur": "file:/PATH"` with your local path to Ngrave BC-UR repository in `package.json` files.
 - Run `yarn` to install dependencies.
 - Run `yarn lerna run build` to build the project. It's okay for now that a few of the packages are failing.
-- Go to `ur-packages/base-types` folder, this will be your base for now.
-- Go to `ur-packages/base-types` folder in your terminal as well, here you will be able to run:
+- Go to `ur-packages/blockchain-commons` folder, this will be your base for now.
+- Go to `ur-packages/blockchain-commons` folder in your terminal as well, here you will be able to run:
   - `yarn install`
   - `yarn build`
   - `yarn test`
@@ -104,8 +104,8 @@ We are going to migrate all these classes to the new Registry system:
 Read https://github.com/ngraveio/bc-ur/blob/fix-types/README.md#registry-items for more details.
 
 ### Step 1: Copy Files
-- Copy the file from Keystone to Ngrave UR-Registry `ur-packages/base-types` folder.
-- Check if it has any tests, if so, copy its test to `ur-packages/base-types/__tests__` folder.
+- Copy the file from Keystone to Ngrave UR-Registry `ur-packages/blockchain-commons` folder.
+- Check if it has any tests, if so, copy its test to `ur-packages/blockchain-commons/__tests__` folder.
 
 ### Step 2: Refactor Files
 Let's go over an example of `CryptoCoinInfo`.
@@ -326,9 +326,9 @@ For example, the `CryptoAccount` class contains the `CryptoOutput` class, so in 
 is called. We don't need this anymore.
 
 ### Step 3: Add to Registry
-Go to `./ur-packages/base-types/src/addToRegistry.ts` file and update that to include your new class.
+Go to `./ur-packages/blockchain-commons/src/addToRegistry.ts` file and update that to include your new class.
 
-Update `./ur-packages/base-types/src/index.ts` file to export your class.
+Update `./ur-packages/blockchain-commons/src/index.ts` file to export your class.
 
 ### Step 4: Test
 If the class already has tests, CBOR and UR data should be identical to the old class.
