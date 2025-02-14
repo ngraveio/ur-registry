@@ -102,6 +102,3 @@ export class SignResponse extends registryItemFactory({
     }
   }
 }
-
-
-UrRegistry.addItemOnce(SignResponse);

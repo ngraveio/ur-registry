@@ -10,12 +10,12 @@ import { OutputDescriptor } from './OutputDescriptor'
 import { AccountDescriptor } from './AccountDescriptor'
 
 // Add Classes to the global registry
-UrRegistry.addItem(Bytes)
-UrRegistry.addItem(CoinInfo)
-UrRegistry.addItem(PSBT)
-UrRegistry.addItem(Keypath)
-UrRegistry.addItem(HDKey)
-UrRegistry.addItem(Address)
-UrRegistry.addItem(ECKey)
-UrRegistry.addItem(OutputDescriptor)
-UrRegistry.addItem(AccountDescriptor)
+UrRegistry.addItemOnce(Bytes)
+UrRegistry.addItemOnce(CoinInfo)
+UrRegistry.addItemOnce(PSBT)
+UrRegistry.addItemOnce(Keypath)
+UrRegistry.addItemOnce(HDKey)
+UrRegistry.addItemOnce(Address)
+UrRegistry.addItemOnce(ECKey)
+UrRegistry.addItemOnce(OutputDescriptor)
+UrRegistry.addItemOnce(AccountDescriptor)

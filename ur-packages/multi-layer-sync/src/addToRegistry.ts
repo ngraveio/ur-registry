@@ -4,7 +4,7 @@ import { DetailedAccount } from './DetailedAccount'
 import { PortfolioCoin } from './PortfolioCoin'
 import { Portfolio } from './Portfolio'
 
-UrRegistry.addItem(PortfolioMetadata)
-UrRegistry.addItem(DetailedAccount)
-UrRegistry.addItem(PortfolioCoin)
-UrRegistry.addItem(Portfolio)
+UrRegistry.addItemOnce(PortfolioMetadata)
+UrRegistry.addItemOnce(DetailedAccount)
+UrRegistry.addItemOnce(PortfolioCoin)
+UrRegistry.addItemOnce(Portfolio)

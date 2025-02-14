@@ -1,4 +1,4 @@
-import { SignResponse, SignResponseInput } from '../src/SignResponse'
+import { SignResponse, SignResponseInput } from '../src/index'
 import { UUID } from '@ngraveio/bc-ur-registry-uuid'
 import { UR } from '@ngraveio/bc-ur'
 import { Buffer } from 'buffer/'
