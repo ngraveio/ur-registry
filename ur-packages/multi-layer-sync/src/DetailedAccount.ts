@@ -3,7 +3,7 @@ import { HDKey, OutputDescriptor } from '@ngraveio/bc-ur-registry'
 import { HexString } from '@ngraveio/bc-ur-registry-hex-string'
 
 type account_exp = HDKey | OutputDescriptor
-type tokenId = string | HexString
+type tokenId = string | HexString | Uint8Array
 interface IDetailAccountInput {
   account: account_exp
   tokenIds?: tokenId[] // Specify multiple tokens associated to one account
@@ -49,7 +49,10 @@ export class DetailedAccount extends registryItemFactory({
     token-ids = 2  
   `,
 }) {
-  data: IDetailAccountInput
+  data: {
+    account: account_exp
+    tokenIds?: (string | HexString)[]
+  }
 
   constructor(data: IDetailAccountInput) {
     // Token Ids are just hex string for erc20 token like 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
@@ -57,6 +60,7 @@ export class DetailedAccount extends registryItemFactory({
     // We will try to parse the string into bytes with removing 0x part,
     // if we cannot we will encode it as utf8 string
     super(data)
+    //@ts-ignore
     this.data = data
 
     let tokenIds = data.tokenIds
@@ -75,6 +79,8 @@ export class DetailedAccount extends registryItemFactory({
           return tokenId as string
         }
       })
+      //@ts-ignore
+      this.data.tokenIds = tokenIds
     }
   }
 
@@ -127,21 +133,22 @@ export class DetailedAccount extends registryItemFactory({
     return this.data.tokenIds.map((tokenId: HexString | string) => {
       if (tokenId instanceof HexString) {
         // Shall we really add 0x to start?
-        return '0x' + (tokenId as HexString).getData()
+        return '0x' + tokenId.getData()
       }
-      return tokenId as string
+      return tokenId
     })
   }
 
   static checkAccount(account: account_exp) {
     // If account is HDKey, check if it has origin and a valid path
     if (account instanceof HDKey) {
-      DetailedAccount.checkHdKey(account)
+      return DetailedAccount.checkHdKey(account)
     } else if (account instanceof OutputDescriptor) {
-      DetailedAccount.checkOutputDescriptor(account)
+      return DetailedAccount.checkOutputDescriptor(account)
+    } else {
+      throw new Error('Account must be instance of HDKey or OutputDescriptor')
     }
-
-    throw new Error('Account must be instance of HDKey or OutputDescriptor')
+    return true
   }
 
   static checkOutputDescriptor(account: OutputDescriptor) {
@@ -158,7 +165,7 @@ export class DetailedAccount extends registryItemFactory({
     }
 
     // Check HDKey properties
-    DetailedAccount.checkHdKey(key)
+    return DetailedAccount.checkHdKey(key)
   }
 
   static checkHdKey(hdKey: HDKey) {
@@ -176,5 +183,7 @@ export class DetailedAccount extends registryItemFactory({
     if (!origin.isOnlySimple()) {
       throw new Error('Detailed account path can only contain index components')
     }
+
+    return true;
   }
 }
