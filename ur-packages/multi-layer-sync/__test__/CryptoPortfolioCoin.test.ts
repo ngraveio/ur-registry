@@ -1,370 +1,312 @@
-import { CryptoHDKey, CryptoOutput, CryptoKeypath, PathComponent, ScriptExpressions } from '@keystonehq/bc-ur-registry';
-
-import { CryptoDetailedAccount, CryptoPortfolioCoin } from '../src';
-import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity';
+import { HDKey, Keypath, OutputDescriptor, PathComponent } from '@ngraveio/bc-ur-registry'
+import { DetailedAccount, PortfolioCoin } from '../src'
+import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
+import { Buffer } from 'buffer/'
 
 describe('Crypto Sync Coin with DetailedAccount', () => {
-
-  it('should generate / decode CryptoPortfolioCoin with only coinIdentity', () => {
+  it('should generate / decode PortfolioCoin with only coinIdentity', () => {
     // Create a coin identity
-    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60)
 
-    // Create a CryptoPortfolioCoin
-    const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentity, []);
+    // Create a PortfolioCoin
+    const portfolioCoin = new PortfolioCoin({
+      coinId: coinIdentity,
+      accounts: [],
+    })
 
-    // Expect coinIdentity to be equal to the one in CryptoPortfolioCoin
-    expect(cryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
+    // Expect coinIdentity to be equal to the one in PortfolioCoin
+    expect(portfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
 
     // Expect other fields to be undefined
-    expect(cryptoPortfolioCoin.getMasterFingerprint()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getAccounts()).toEqual([])
-    expect(cryptoPortfolioCoin.getCryptoAccount()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoMultiAccounts()).toBeUndefined(); 
-    expect(cryptoPortfolioCoin.getDetailedAccounts()).toEqual([]);
+    expect(portfolioCoin.getMasterFingerprint()).toBeUndefined()
+    expect(portfolioCoin.getAccounts()).toEqual([])
+    expect(portfolioCoin.getDetailedAccounts()).toEqual([])
 
-    const cbor = cryptoPortfolioCoin.toCBOR().toString('hex'); // d9057ba201d90579a3010802183c03f70280
-    const ur = cryptoPortfolioCoin.toUREncoder(1000).nextPart(); // ur:crypto-portfolio-coin/taahkgoeadtaahkkotadayaocsfnaxylaolawfrponfm
+    const hex = portfolioCoin.toHex()
+    const ur = portfolioCoin.toUr()
 
-    // Now decode the CBOR
-    const decodedCryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(cbor, 'hex'));
+    // Now decode the hex
+    const decodedPortfolioCoin = PortfolioCoin.fromHex(hex) as PortfolioCoin
 
-    // expect decodedCryptoPortfolioCoin to be equal to CryptoPortfolioCoin
+    // expect decodedPortfolioCoin to be equal to PortfolioCoin
     // Start with coinIdentity
-    expect(decodedCryptoPortfolioCoin.getCoinId().toURL()).toEqual(cryptoPortfolioCoin.getCoinId().toURL());
+    expect(decodedPortfolioCoin.getCoinId().toURL()).toEqual(portfolioCoin.getCoinId().toURL())
 
     // Expect other fields to be same undefined
-    expect(decodedCryptoPortfolioCoin.getMasterFingerprint()).toEqual(cryptoPortfolioCoin.getMasterFingerprint());
-    //expect(decodedCryptoPortfolioCoin.getAccounts()).toEqual(cryptoPortfolioCoin.getAccounts());
-    expect(decodedCryptoPortfolioCoin.getCryptoAccount()).toEqual(cryptoPortfolioCoin.getCryptoAccount());
-    expect(decodedCryptoPortfolioCoin.getCryptoMultiAccounts()).toEqual(cryptoPortfolioCoin.getCryptoMultiAccounts());
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()).toEqual(cryptoPortfolioCoin.getDetailedAccounts());
-  });
+    expect(decodedPortfolioCoin.getMasterFingerprint()).toEqual(portfolioCoin.getMasterFingerprint())
+    expect(decodedPortfolioCoin.getAccounts()).toEqual(portfolioCoin.getAccounts())
+    expect(decodedPortfolioCoin.getDetailedAccounts()).toEqual(portfolioCoin.getDetailedAccounts())
+  })
 
-
-  it('should generate / decode CryptoPortfolioCoin with 1 detailed account with HDKEY', () => {
+  it('should generate / decode PortfolioCoin with 1 detailed account with HDKEY', () => {
     // Create a coin identity
-    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60)
 
     // Create a HDKey
-    const originKeypath = new CryptoKeypath(
-      [
-        new PathComponent({ index: 60, hardened: true }),
-        new PathComponent({ index: 0, hardened: true }),
-        new PathComponent({ index: 0, hardened: true }),
-        new PathComponent({ index: 0, hardened: false }),
-        new PathComponent({ index: 1, hardened: false }),      
-      ],
-      Buffer.from('d34db33f', 'hex'),
-    );
-    const cryptoHDKey = new CryptoHDKey({
+    const originKeypath = new Keypath({
+      path: "m/60'/0'/0'/0/1",
+      sourceFingerprint: 3545084735,
+    })
+    const cryptoHDKey = new HDKey({
       isMaster: false,
-      key: Buffer.from(
-        '02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0',
-        'hex',
-      ),
+      keyData: Buffer.from('02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0', 'hex'),
       origin: originKeypath,
-      parentFingerprint: Buffer.from('78412e3a', 'hex'),
-    });
+      parentFingerprint: 2017537594,
+    })
 
     // Create a detailed account
-    const detailedAccount = new CryptoDetailedAccount(cryptoHDKey);
+    const detailedAccount = new DetailedAccount({
+      account: cryptoHDKey,
+    })
 
-    // Create a CryptoPortfolioCoin
-    const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentity, [detailedAccount]);
+    // Create a PortfolioCoin
+    const portfolioCoin = new PortfolioCoin({
+      coinId: coinIdentity,
+      accounts: [detailedAccount],
+    })
 
     // Check values
-    expect(cryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
+    expect(portfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
+    expect(portfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
 
-    expect(cryptoPortfolioCoin.getMasterFingerprint()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoAccount()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoMultiAccounts()).toBeUndefined(); 
+    expect(portfolioCoin.getMasterFingerprint()).toBeUndefined()
 
-    const cbor = cryptoPortfolioCoin.toCBOR().toString('hex'); // a201d90579a3010802183c03f70281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a
-    const ur = cryptoPortfolioCoin.toUREncoder(1000).nextPart(); // ur:crypto-portfolio-coin/oeadtaahkkotadayaocsfnaxylaolytaahknoyadtaaddlotaxhdclaotdqdinaeesjzmolfzsbbidlpiyhddlcximhltirfsptlvsmohscsamsgzoaxadwtamtaaddyoeadlecsfnykaeykaeykaewkadwkaocytegtqdfhaycyksfpdmftfxrekesp
+    const hex = portfolioCoin.toHex() // a201d9a1b9a2010802183c0281d9a1baa101d99d6fa401f403582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d99d70a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a
+    const ur = portfolioCoin.toUr()
 
-    // console.log(cbor, ur);
+    // Now decode the hex
+    const decodedPortfolioCoin = PortfolioCoin.fromHex(hex) as PortfolioCoin
 
-    // Now decode the CBOR
-    const decodedCryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(cbor, 'hex'));
-
-    // expect decodedCryptoPortfolioCoin to be equal to CryptoPortfolioCoin
+    // expect decodedPortfolioCoin to be equal to PortfolioCoin
     // Start with coinIdentity
-    expect(decodedCryptoPortfolioCoin.getCoinId().toURL()).toEqual(cryptoPortfolioCoin.getCoinId().toURL());
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
+    expect(decodedPortfolioCoin.getCoinId().toURL()).toEqual(portfolioCoin.getCoinId().toURL())
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
 
     // Expect other fields to be same undefined
-    expect(decodedCryptoPortfolioCoin.getMasterFingerprint()).toEqual(cryptoPortfolioCoin.getMasterFingerprint());
-    expect(decodedCryptoPortfolioCoin.getCryptoAccount()).toEqual(cryptoPortfolioCoin.getCryptoAccount());
-    expect(decodedCryptoPortfolioCoin.getCryptoMultiAccounts()).toEqual(cryptoPortfolioCoin.getCryptoMultiAccounts());
-  });
+    expect(decodedPortfolioCoin.getMasterFingerprint()).toEqual(portfolioCoin.getMasterFingerprint())
+  })
 
-  it('should generate / decode CryptoPortfolioCoin with 1 detailed account with CryptoOutput with HDKey', () => {
+  it('should generate / decode PortfolioCoin with 1 detailed account with OutputDescriptor with HDKey', () => {
     // Create a coin identity
-    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60)
 
     // Create a HDKey
-    const originKeypath = new CryptoKeypath(
-      [
-        new PathComponent({ index: 60, hardened: true }),
-        new PathComponent({ index: 0, hardened: true }),
-        new PathComponent({ index: 0, hardened: true }),
-        new PathComponent({ index: 0, hardened: false }),
-        new PathComponent({ index: 1, hardened: false }),      
-      ],
-      Buffer.from('d34db33f', 'hex'),
-    );
-    const cryptoHDKey = new CryptoHDKey({
+    const originKeypath = new Keypath({
+      path: "m/60'/0'/0'/0/1",
+      sourceFingerprint: 3545084735,
+    })
+    const cryptoHDKey = new HDKey({
       isMaster: false,
-      key: Buffer.from(
-        '02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0',
-        'hex',
-      ),
+      keyData: Buffer.from('02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0', 'hex'),
       origin: originKeypath,
-      parentFingerprint: Buffer.from('78412e3a', 'hex'),
-    });
+      parentFingerprint: 2017537594,
+    })
 
-    const cryptoOutput = new CryptoOutput([ScriptExpressions.PUBLIC_KEY_HASH], cryptoHDKey);
-    const detailedAccount = new CryptoDetailedAccount(cryptoOutput);
+    const cryptoOutput = new OutputDescriptor({
+      source: 'pkh(@0)',
+      keys: [cryptoHDKey],
+    })
+    const detailedAccount = new DetailedAccount({
+      account: cryptoOutput,
+    })
 
     // Create sync coin
-    const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentity, [detailedAccount]);
+    const portfolioCoin = new PortfolioCoin({
+      coinId: coinIdentity,
+      accounts: [detailedAccount],
+    })
 
     // Test values
-    expect(cryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoOutput()?.getHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
+    expect(portfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
+    //@ts-ignore
+    expect(portfolioCoin.getDetailedAccounts()[0].getOutputDescriptor().data.keys[0].getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
 
     // Expect other fields to be same undefined
-    expect(cryptoPortfolioCoin.getMasterFingerprint()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoAccount()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoMultiAccounts()).toBeUndefined(); 
+    expect(portfolioCoin.getMasterFingerprint()).toBeUndefined()
 
-    // Encode to CBOR
-    const cbor = cryptoPortfolioCoin.toCBOR().toString('hex'); // a201d90579a3010802183c03f70281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a
-    const ur = cryptoPortfolioCoin.toUREncoder(1000).nextPart(); // ur:crypto-portfolio-coin/oeadtaahkkotadayaocsfnaxylaolytaahknoyadtaaddlotaxhdclaotdqdinaeesjzmolfzsbbidlpiyhddlcximhltirfsptlvsmohscsamsgzoaxadwtamtaaddyoeadlecsfnykaeykaeykaewkadwkaocytegtqdfhaycyksfpdmftfxrekesp
+    // Encode to hex
+    const hex = portfolioCoin.toHex()
+    const ur = portfolioCoin.toUr()
 
-    // console.log(cbor, ur);
-
-    // Now decode the CBOR
-    const decodedCryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(cbor, 'hex'));
+    // Now decode the hex
+    const decodedPortfolioCoin = PortfolioCoin.fromHex(hex) as PortfolioCoin
 
     // Test values
-    expect(decodedCryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoOutput()?.getHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
+    expect(decodedPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
+    //@ts-ignore
+    expect(portfolioCoin.getDetailedAccounts()[0].getOutputDescriptor().data.keys[0].getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
 
     // Expect other fields to be same undefined
-    expect(decodedCryptoPortfolioCoin.getMasterFingerprint()).toEqual(cryptoPortfolioCoin.getMasterFingerprint());
-    expect(decodedCryptoPortfolioCoin.getCryptoAccount()).toEqual(cryptoPortfolioCoin.getCryptoAccount());
-    expect(decodedCryptoPortfolioCoin.getCryptoMultiAccounts()).toEqual(cryptoPortfolioCoin.getCryptoMultiAccounts());    
+    expect(decodedPortfolioCoin.getMasterFingerprint()).toEqual(portfolioCoin.getMasterFingerprint())
+  })
 
-  });  
-
-  it('should generate CryptoPortfolioCoin with 2 detailed account', () => {
+  it('should generate PortfolioCoin with 2 detailed account', () => {
     // Create a coin identity
-    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60)
 
-    const cryptoHDKey = new CryptoHDKey({
+    const cryptoHDKey = new HDKey({
       isMaster: false,
-      key: Buffer.from(
-        '02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0',
-        'hex',
-      ),
-      origin: new CryptoKeypath(
-        [
-          new PathComponent({ index: 60, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: false }),
-          new PathComponent({ index: 0, hardened: false }),      
-        ]
-      ),
-      parentFingerprint: Buffer.from('78412e3a', 'hex'),
-    });
+      keyData: Buffer.from('02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0', 'hex'),
+      origin: new Keypath({
+        path: "m/60'/0'/0'/0/0",
+      }),
+      parentFingerprint: 2017537594,
+    })
 
-    const cryptoHDKey2 = new CryptoHDKey({
+    const cryptoHDKey2 = new HDKey({
       isMaster: false,
-      key: Buffer.from(
-        '02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0',
-        'hex',
-      ),
-      origin: new CryptoKeypath(
-        [
-          new PathComponent({ index: 60, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: false }),
-          new PathComponent({ index: 1, hardened: false }),      
-        ]
-      ),
-      parentFingerprint: Buffer.from('78412e3a', 'hex'),
-    });    
+      keyData: Buffer.from('02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0', 'hex'),
+      origin: new Keypath({
+        path: "m/60'/0'/0'/0/1",
+      }),
+      parentFingerprint: 2017537594,
+    })
 
     // Create a detailed account
-    const detailedAccount = new CryptoDetailedAccount(cryptoHDKey);
-    const detailedAccount2 = new CryptoDetailedAccount(cryptoHDKey2);
+    const detailedAccount = new DetailedAccount({
+      account: cryptoHDKey,
+    })
+    const detailedAccount2 = new DetailedAccount({
+      account: cryptoHDKey2,
+    })
 
-    // Create a CryptoPortfolioCoin
-    const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentity, [detailedAccount, detailedAccount2]);
+    // Create a PortfolioCoin
+    const portfolioCoin = new PortfolioCoin({
+      coinId: coinIdentity,
+      accounts: [detailedAccount, detailedAccount2],
+    })
 
     // Check values
-    expect(cryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.length).toEqual(2);
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[1].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey2.getOrigin().getPath());
+    expect(portfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
+    expect(portfolioCoin.getDetailedAccounts()?.length).toEqual(2)
+    expect(portfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
+    expect(portfolioCoin.getDetailedAccounts()?.[1].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey2.getOrigin()?.toString())
 
-    expect(cryptoPortfolioCoin.getMasterFingerprint()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoAccount()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoMultiAccounts()).toBeUndefined(); 
+    expect(portfolioCoin.getMasterFingerprint()).toBeUndefined()
 
-    const cbor = cryptoPortfolioCoin.toCBOR().toString('hex'); // a201d90579a3010802183c03f70281d9057aa101d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a2018a183cf500f500f500f401f4021ad34db33f081a78412e3a
-    const ur = cryptoPortfolioCoin.toUREncoder(1000).nextPart(); // ur:crypto-portfolio-coin/oeadtaahkkotadayaocsfnaxylaolytaahknoyadtaaddlotaxhdclaotdqdinaeesjzmolfzsbbidlpiyhddlcximhltirfsptlvsmohscsamsgzoaxadwtamtaaddyoeadlecsfnykaeykaeykaewkadwkaocytegtqdfhaycyksfpdmftfxrekesp
+    const hex = portfolioCoin.toHex()
+    const ur = portfolioCoin.toUr()
 
-    // console.log(cbor, ur);
+    // Now decode the hex
+    const decodedPortfolioCoin = PortfolioCoin.fromHex(hex) as PortfolioCoin
 
-    // Now decode the CBOR
-    const decodedCryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(cbor, 'hex'));
-
-    // expect decodedCryptoPortfolioCoin to be equal to CryptoPortfolioCoin
+    // expect decodedPortfolioCoin to be equal to PortfolioCoin
     // Start with coinIdentity
-    expect(decodedCryptoPortfolioCoin.getCoinId().toURL()).toEqual(cryptoPortfolioCoin.getCoinId().toURL());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.length).toEqual(2);
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[1].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey2.getOrigin().getPath());
+    expect(decodedPortfolioCoin.getCoinId().toURL()).toEqual(portfolioCoin.getCoinId().toURL())
+    expect(portfolioCoin.getDetailedAccounts()?.length).toEqual(2)
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[1].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey2.getOrigin()?.toString())
 
     // Expect other fields to be same undefined
-    expect(decodedCryptoPortfolioCoin.getMasterFingerprint()).toEqual(cryptoPortfolioCoin.getMasterFingerprint());
-    //expect(decodedCryptoPortfolioCoin.getAccounts().toString()).toEqual(cryptoPortfolioCoin.getAccounts().toString());
-    expect(decodedCryptoPortfolioCoin.getCryptoAccount()).toEqual(cryptoPortfolioCoin.getCryptoAccount());
-    expect(decodedCryptoPortfolioCoin.getCryptoMultiAccounts()).toEqual(cryptoPortfolioCoin.getCryptoMultiAccounts());
-  }); 
+    expect(decodedPortfolioCoin.getMasterFingerprint()).toEqual(portfolioCoin.getMasterFingerprint())
+  })
 
-
-  it('should generate CryptoPortfolioCoin with 2 detailed account with tokens', () => {
+  it('should generate PortfolioCoin with 2 detailed account with tokens', () => {
     // Create a coin identity
-    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 60)
 
-    const cryptoHDKey = new CryptoHDKey({
+    const cryptoHDKey = new HDKey({
       isMaster: false,
-      key: Buffer.from(
-        '02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0',
-        'hex',
-      ),
-      origin: new CryptoKeypath(
-        [
-          new PathComponent({ index: 60, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: false }),
-          new PathComponent({ index: 0, hardened: false }),      
-        ]
-      ),
-      parentFingerprint: Buffer.from('78412e3a', 'hex'),
-    });
+      keyData: Buffer.from('02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0', 'hex'),
+      origin: new Keypath({
+        path: "m/60'/0'/0'/0/0",
+      }),
+      parentFingerprint: 2017537594,
+    })
 
-    const tokenIds = ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0xb8c77482e45f1f44de1745f52c74426c631bdd52'];
+    const tokenIds = ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0xb8c77482e45f1f44de1745f52c74426c631bdd52']
 
-
-    const cryptoHDKey2 = CryptoHDKey.fromCBOR(Buffer.from("a203582102eae4b876a8696134b868f88cc2f51f715f2dbedb7446b8e6edf3d4541c4eb67b06d90130a10188182cf51901f5f500f500f5", 'hex'))
+    const cryptoHDKey2 = HDKey.fromHex('A203582102EAE4B876A8696134B868F88CC2F51F715F2DBEDB7446B8E6EDF3D4541C4EB67B06D99D70A10188182CF51901F5F500F500F5') as HDKey;
 
     const tokenIds2 = ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']
 
     // Create a detailed account
-    const detailedAccount = new CryptoDetailedAccount(cryptoHDKey, tokenIds);
-    const detailedAccount2 = new CryptoDetailedAccount(cryptoHDKey2, tokenIds2);
+    const detailedAccount = new DetailedAccount({
+      account: cryptoHDKey,
+      tokenIds,
+    })
+    const detailedAccount2 = new DetailedAccount({
+      account: cryptoHDKey2,
+      tokenIds: tokenIds2,
+    })
 
-    // Create a CryptoPortfolioCoin
-    const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentity, [detailedAccount, detailedAccount2]);
+    // Create a PortfolioCoin
+    const portfolioCoin = new PortfolioCoin({
+      coinId: coinIdentity,
+      accounts: [detailedAccount, detailedAccount2],
+    })
 
     // Test if values are correct
-    expect(cryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.length).toEqual(2);
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[1].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey2.getOrigin().getPath());
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[0].getTokenIds()).toEqual(tokenIds);
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[1].getTokenIds()).toEqual(tokenIds2);
+    expect(portfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
+    expect(portfolioCoin.getDetailedAccounts()?.length).toEqual(2)
+    expect(portfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
+    expect(portfolioCoin.getDetailedAccounts()?.[1].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey2.getOrigin()?.toString())
+    expect(portfolioCoin.getDetailedAccounts()?.[0].getTokenIds()).toEqual(tokenIds)
+    expect(portfolioCoin.getDetailedAccounts()?.[1].getTokenIds()).toEqual(tokenIds2)
 
     // Undefined fields
-    expect(cryptoPortfolioCoin.getMasterFingerprint()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoAccount()).toBeUndefined();
-    expect(cryptoPortfolioCoin.getCryptoMultiAccounts()).toBeUndefined();
+    expect(portfolioCoin.getMasterFingerprint()).toBeUndefined()
 
+    const hex = portfolioCoin.toHex()
+    const ur = portfolioCoin.toUr()
 
-    const cbor = cryptoPortfolioCoin.toCBOR().toString('hex'); // a201d90579a3010802183c03f70282d9057aa201d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a1018a183cf500f500f500f400f4081a78412e3a0282d9010754dac17f958d2ee523a2206206994597c13d831ec7d9010754b8c77482e45f1f44de1745f52c74426c631bdd52d9057aa201d9012fa203582102eae4b876a8696134b868f88cc2f51f715f2dbedb7446b8e6edf3d4541c4eb67b06d90130a10188182cf51901f5f500f500f50281782c45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a77795444743176
-    const ur = cryptoPortfolioCoin.toUREncoder(1000).nextPart(); // ur:crypto-portfolio-coin/oeadtaahkkotadayaocsfnaxylaolftaahknoeadtaaddlotaxhdclaotdqdinaeesjzmolfzsbbidlpiyhddlcximhltirfsptlvsmohscsamsgzoaxadwtamtaaddyoyadlecsfnykaeykaeykaewkaewkaycyksfpdmftaolftaadatghtnselbmdlgdmvwcnoecxidamnlfemssefslscksttaadatghrostjylfvehectfyuechfeykdwjyfwjziacwutgmtaahknoeadtaaddloeaxhdclaowdverokopdinhseeroisyalksaykctjshedprnuyjyfgrovawewftyghceglrpkgamtaaddyoyadlocsdwykcfadykykaeykaeykaolyksdwfegdimfghgi
+    // Decode from hex
+    const decodedPortfolioCoin = PortfolioCoin.fromHex(hex) as PortfolioCoin
+    expect(decodedPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
 
-    //expect(cbor).toBe('a201d90579a3010802183c03f70282d9057aa201d9012fa303582102d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f006d90130a1018a183cf500f500f500f400f4081a78412e3a0282d9010754dac17f958d2ee523a2206206994597c13d831ec7d9010754b8c77482e45f1f44de1745f52c74426c631bdd52d9057aa201d9012fa203582102eae4b876a8696134b868f88cc2f51f715f2dbedb7446b8e6edf3d4541c4eb67b06d90130a10188182cf51901f5f500f500f50281782c45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a77795444743176')
-    //console.log(cbor, ur);
-
-    // Decode from CBOR
-    const decodedCryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(cbor, 'hex'));
-    expect(decodedCryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
-
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.length).toEqual(2);
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey.getOrigin().getPath());
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[1].getCryptoHDKey()?.getOrigin().getPath()).toEqual(cryptoHDKey2.getOrigin().getPath());
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[0].getTokenIds()).toEqual(tokenIds);
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[1].getTokenIds()).toEqual(tokenIds2);
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.length).toEqual(2)
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey.getOrigin()?.toString())
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[1].getHdKey()?.getOrigin()?.toString()).toEqual(cryptoHDKey2.getOrigin()?.toString())
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[0].getTokenIds()).toEqual(tokenIds)
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[1].getTokenIds()).toEqual(tokenIds2)
 
     // Undefined fields
-    expect(decodedCryptoPortfolioCoin.getMasterFingerprint()).toBeUndefined();
-    expect(decodedCryptoPortfolioCoin.getCryptoAccount()).toBeUndefined();
-    expect(decodedCryptoPortfolioCoin.getCryptoMultiAccounts()).toBeUndefined();    
+    expect(decodedPortfolioCoin.getMasterFingerprint()).toBeUndefined()
+  })
 
-  });    
-
-    // Test with same coin identity and same derivation path on hdkey
-  //it('should generate CryptoPortfolioCoin with different coin BIP44 path on coin identity and hdkey', () => {
-  it('should allow diffent BIP44 coin ID on coin identity and HDKey Path Coin Id', () => {
+  it('should allow different BIP44 coin ID on coin identity and HDKey Path Coin Id', () => {
     // Create a bitcoin coin identity
-    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 0);
+    const coinIdentity = new CoinIdentity(EllipticCurve.secp256k1, 0)
 
     // Create an etherum path
-    const cryptoHDKey = new CryptoHDKey({
+    const cryptoHDKey = new HDKey({
       isMaster: false,
-      key: Buffer.from(
-        '02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0',
-        'hex',
-      ),
-      origin: new CryptoKeypath(
-        [
-          new PathComponent({ index: 60, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: true }),
-          new PathComponent({ index: 0, hardened: false }),
-          new PathComponent({ index: 0, hardened: false }),      
-        ]
-      ),
-      parentFingerprint: Buffer.from('78412e3a', 'hex'),
-    });
+      keyData: Buffer.from('02d2b36900396c9282fa14628566582f206a5dd0bcc8d5e892611806cafb0301f0', 'hex'),
+      origin: new Keypath({
+        path: "m/60'/0'/0'/0/0",
+      }),
+      parentFingerprint: 2017537594,
+    })
 
     // Create a detailed account
-    const detailedAccount = new CryptoDetailedAccount(cryptoHDKey);
+    const detailedAccount = new DetailedAccount({
+      account: cryptoHDKey,
+    })
 
-    // Create a CryptoPortfolioCoin
-    const cryptoPortfolioCoin = new CryptoPortfolioCoin(coinIdentity, [detailedAccount]);
+    // Create a PortfolioCoin
+    const portfolioCoin = new PortfolioCoin({
+      coinId: coinIdentity,
+      accounts: [detailedAccount],
+    })
 
     // Test values
     // Coin ID type is bitcoin
-    expect(cryptoPortfolioCoin.getCoinId().getType()).toEqual(0);
+    expect(portfolioCoin.getCoinId().getType()).toEqual(0)
     // But derivation path is for Ethereum, this is perfectly valid, I can generate a bitcoin address from any public key
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.length).toEqual(1);
-    expect(cryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getComponents()[0].getIndex()).toEqual(60);
+    expect(portfolioCoin.getDetailedAccounts()?.length).toEqual(1)
+    expect(portfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.getComponents()[0].getIndex()).toEqual(60)
 
-    //  Test encoding and decoding
-    const cbor = cryptoPortfolioCoin.toCBOR().toString('hex');
-    const ur = cryptoPortfolioCoin.toUREncoder(1000).nextPart();
+    // Test encoding and decoding
+    const hex = portfolioCoin.toHex()
+    const ur = portfolioCoin.toUr()
 
-    // Decode from CBOR
-    const decodedCryptoPortfolioCoin = CryptoPortfolioCoin.fromCBOR(Buffer.from(cbor, 'hex'));
+    // Decode from hex
+    const decodedPortfolioCoin = PortfolioCoin.fromHex(hex) as PortfolioCoin
 
-    expect(decodedCryptoPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL());
-    expect(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getComponents()[0].getIndex()).toEqual(60);
+    expect(decodedPortfolioCoin.getCoinId().toURL()).toEqual(coinIdentity.toURL())
+    expect(decodedPortfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.getComponents()[0].getIndex()).toEqual(60)
 
     // Coin BIP44 id and origin path BIP44 id can be different
-    expect(decodedCryptoPortfolioCoin.getCoinId().getType()).not.toEqual(decodedCryptoPortfolioCoin.getDetailedAccounts()?.[0].getCryptoHDKey()?.getOrigin().getComponents()[0].getIndex());
-      
-  });
-
-  // TODO: Test error cases
-  
-});
+    expect(decodedPortfolioCoin.getCoinId().getType()).not.toEqual(decodedPortfolioCoin.getDetailedAccounts()?.[0].getHdKey()?.getOrigin()?.getComponents()[0].getIndex())
+  })
+})
