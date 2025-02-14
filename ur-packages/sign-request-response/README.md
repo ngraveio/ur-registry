@@ -16,11 +16,11 @@ This repository is an extension of [bc-ur-registry](https://github.com/KeystoneH
 To install, run:
 
 ```bash
-yarn add @ngraveio/bc-ur-sign-request-response
+yarn add @ngraveio/ur-sign
 ```
 
 ```bash
-npm install --save @ngraveio/bc-ur-sign-request-response
+npm install --save @ngraveio/ur-sign
 ```
 
 ## Examples:

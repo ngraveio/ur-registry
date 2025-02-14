@@ -1,5 +1,5 @@
 {
-  "name": "@ngraveio/bc-ur-sign-request-response",
+  "name": "@ngraveio/ur-sign",
   "version": "1.0.0-beta.0",
   "description": "Provides BC-UR types for signature request and response from cold wallets to hot wallets.",
   "main": "dist/index.js",
