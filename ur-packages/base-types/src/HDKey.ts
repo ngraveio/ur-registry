@@ -2,7 +2,6 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 import { Keypath } from './Keypath'
 import { CoinInfo } from './CoinInfo'
 import { base58 } from '@scure/base'
-import { Buffer } from 'buffer/'
 
 interface HDKeyArgs {
   isMaster?: boolean
