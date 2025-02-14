@@ -9,11 +9,11 @@ Definition document: https://github.com/ngraveio/Research/blob/main/papers/nbcr-
 To install, run:
 
 ```bash
-yarn add @ngraveio/bc-ur-registry-crypto-coin-identity
+yarn add @ngraveio/ur-coin-identity
 ```
 
 ```bash
-npm install --save @ngraveio/bc-ur-registry-crypto-coin-identity
+npm install --save @ngraveio/ur-coin-identity
 ```
 
 ## CDDL

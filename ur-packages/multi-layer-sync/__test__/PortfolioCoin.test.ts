@@ -1,6 +1,6 @@
 import { HDKey, Keypath, OutputDescriptor } from '@ngraveio/ur-blockchain-commons'
 import { DetailedAccount, PortfolioCoin } from '../src'
-import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
+import { CoinIdentity, EllipticCurve } from '@ngraveio/ur-coin-identity'
 
 describe('Crypto Sync Coin with DetailedAccount', () => {
   it('should generate / decode PortfolioCoin with only coinIdentity', () => {

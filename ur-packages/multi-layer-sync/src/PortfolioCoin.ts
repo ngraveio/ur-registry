@@ -1,6 +1,6 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { DetailedAccount } from './DetailedAccount'
-import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
+import { CoinIdentity, EllipticCurve } from '@ngraveio/ur-coin-identity'
 import { HDKey } from '@ngraveio/ur-blockchain-commons'
 
 /** CDDL

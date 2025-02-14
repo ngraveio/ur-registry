@@ -1,6 +1,6 @@
 import { HDKey, Keypath, OutputDescriptor } from '@ngraveio/ur-blockchain-commons'
 import { DetailedAccount, PortfolioCoin, Portfolio, PortfolioMetadata } from '../src'
-import { CoinIdentity, EllipticCurve } from '@ngraveio/bc-ur-registry-crypto-coin-identity'
+import { CoinIdentity, EllipticCurve } from '@ngraveio/ur-coin-identity'
 import { Buffer } from 'node:buffer'
 
 describe('Crypto Portfolio', () => {
