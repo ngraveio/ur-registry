@@ -2,6 +2,7 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 import { Keypath } from './Keypath'
 import { CoinInfo } from './CoinInfo'
 import { base58 } from '@scure/base'
+import { Buffer } from 'buffer/'
 
 interface HDKeyArgs {
   isMaster?: boolean
@@ -293,7 +294,7 @@ export class HDKey extends registryItemFactory({
 
   static parseXpub(xpub: string) {
     // decode xpub from base58 to hex
-    const xpubHex = Buffer.from(base58.decode(xpub)) as Buffer
+    const xpubHex = Buffer.from(base58.decode(xpub))
 
     // https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
     // zpub6rBVCActEAEGdH5TJVz3H3H1kBYxmB2AiKEnfFJSFeiKU4vBepoxwCqDBqrgkvmeiUUfvGSUrii7J5anRWgyk8kN63xpXWhpcF2Lgi4gpkE
@@ -307,7 +308,7 @@ export class HDKey extends registryItemFactory({
     // First 4 bytes are version bytes
     const versionBytes = xpubHex.slice(0, 4)
     // Next byte is depth (1 byte)
-    const depth = xpubHex.slice(4, 5).readInt8()
+    const depth = xpubHex.slice(4, 5).readInt8(0)
     // Next 4 bytes are fingerprint
     const parentFingerprint = xpubHex.slice(5, 9)
     // Next 4 bytes are child number
