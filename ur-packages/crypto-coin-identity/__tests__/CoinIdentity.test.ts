@@ -13,8 +13,8 @@ describe('CoinIdentity', () => {
     const coinIdentity = new CoinIdentity(curve, type)
 
     const RegistryType = coinIdentity.type
-    expect(RegistryType.tag).toBe(1401)
-    expect(RegistryType.URType).toBe('crypto-coin-identity')
+    expect(RegistryType.tag).toBe(41401)
+    expect(RegistryType.URType).toBe('coin-identity')
   })
   it('Should encode/decode with required values', () => {
     const curve = EllipticCurve.secp256k1
