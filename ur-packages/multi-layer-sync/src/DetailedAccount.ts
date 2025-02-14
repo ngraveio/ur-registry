@@ -1,6 +1,6 @@
 import { registryItemFactory } from '@ngraveio/bc-ur'
 import { HDKey, OutputDescriptor } from '@ngraveio/ur-blockchain-commons'
-import { HexString } from '@ngraveio/bc-ur-registry-hex-string'
+import { HexString } from '@ngraveio/ur-hex-string'
 
 type account_exp = HDKey | OutputDescriptor
 type tokenId = string | HexString | Uint8Array

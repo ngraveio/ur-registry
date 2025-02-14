@@ -43,7 +43,7 @@
     "@ngraveio/bc-ur": "2.0.0-beta.7",
     "@ngraveio/ur-blockchain-commons": "1.0.0-beta.0",
     "@ngraveio/ur-coin-identity": "1.0.0-beta.0",
-    "@ngraveio/bc-ur-registry-hex-string": "1.0.0-beta.0"
+    "@ngraveio/ur-hex-string": "1.0.0-beta.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",

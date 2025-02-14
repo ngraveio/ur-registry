@@ -1,6 +1,6 @@
 import { HDKey, Keypath, PathComponent, OutputDescriptor } from '@ngraveio/ur-blockchain-commons'
 import { DetailedAccount } from '../src'
-import { HexString } from '@ngraveio/bc-ur-registry-hex-string'
+import { HexString } from '@ngraveio/ur-hex-string'
 
 describe('Crypto Detailed Account', () => {
   it('should generate CryptoDetailedAccount with hdkey', () => {
