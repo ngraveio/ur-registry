@@ -20,13 +20,15 @@
   },
   "author": "Irfan Bilaloglu<irfan.bilaloglu@ngrave.io>",
   "license": "MIT",
-  "homepage": "https://github.com/ngraveio/ur-registry",
+  "homepage": "https://github.com/ngraveio/ur-registry/tree/main/ur-packages/hex-string#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ngraveio/ur-registry.git",
     "directory": "ur-packages/hex-string"
   },
   "keywords": [
+    "ngrave",
+    "uniform resources",    
     "bc-ur",
     "Blockchain Commons",
     "cbor",

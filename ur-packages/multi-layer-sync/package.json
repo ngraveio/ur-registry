@@ -19,13 +19,15 @@
   },
   "author": "Irfan Bilaloglu, Pieter Uyttersprot<irfan.bilaloglu@ngrave.io, pieter.uyttersprot@ngrave.io>",
   "license": "MIT",
-  "homepage": "https://github.com/ngraveio/ur-registry",
+  "homepage": "https://github.com/ngraveio/ur-registry/tree/main/ur-packages/multi-layer-sync#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ngraveio/ur-registry.git",
     "directory": "ur-packages/multi-layer-sync"
   },
   "keywords": [
+    "ngrave",
+    "uniform resources",    
     "bc-ur",
     "Blockchain Commons",
     "cbor",
@@ -33,7 +35,11 @@
     "coin",
     "sync",
     "wallet",
-    "watch-only"
+    "watch-only",
+    "portfolio",
+    "portfolio coin",
+    "metadata",
+    "detailed account"
   ],
   "bugs": {
     "url": "https://github.com/ngraveio/ur-registry/issues"

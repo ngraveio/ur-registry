@@ -29,12 +29,23 @@
     "directory": "ur-packages/blockchain-commons"
   },
   "keywords": [
+    "ngrave",
+    "uniform resources",    
     "bc-ur",
     "Blockchain Commons",
     "cbor",
     "ngrave",
     "ur",
-    "hdkey"
+    "bytes",
+    "coininfo",
+    "Coin Info",
+    "psbt",
+    "keypath",
+    "HDkey",
+    "ECKey",
+    "Address",
+    "Output Descriptor",
+    "Account Descriptor"
   ],
   "bugs": {
     "url": "https://github.com/ngraveio/ur-registry/issues"
