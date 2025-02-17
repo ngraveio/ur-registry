@@ -1,6 +1,6 @@
 {
   "name": "@ngraveio/ur-sync",
-  "version": "1.0.0-beta.0",
+  "version": "2.0.0-beta.0",
   "description": "Provides BC-UR types for syncing multiple coins and accounts from cold wallets to watch only wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -41,9 +41,9 @@
   "dependencies": {
     "buffer": "^6.0.3",
     "@ngraveio/bc-ur": "2.0.0-beta.7",
-    "@ngraveio/ur-blockchain-commons": "1.0.0-beta.0",
-    "@ngraveio/ur-coin-identity": "1.0.0-beta.0",
-    "@ngraveio/ur-hex-string": "1.0.0-beta.0"
+    "@ngraveio/ur-blockchain-commons": "2.0.0-beta.0",
+    "@ngraveio/ur-coin-identity": "2.0.0-beta.0",
+    "@ngraveio/ur-hex-string": "2.0.0-beta.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
