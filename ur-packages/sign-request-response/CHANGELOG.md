@@ -9,9 +9,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - sync main branch pipeline trigger ([571cf94](https://github.com/ngraveio/ur-registry/commit/571cf94522a07f92ee7ee94bcd81f3cae9741b1c))
 
-## [0.2.1](https://github.com/ngraveio/ur-registry/compare/@ngraveio/bc-ur-sign-request-response@0.2.0...@ngraveio/bc-ur-sign-request-response@0.2.1) (2023-06-06)
+## [0.2.1](https://github.com/ngraveio/ur-registry/compare/@ngraveio/ur-sign@0.2.0...@ngraveio/ur-sign@0.2.1) (2023-06-06)
 
-**Note:** Version bump only for package @ngraveio/bc-ur-sign-request-response
+**Note:** Version bump only for package @ngraveio/ur-sign
 
 # 0.2.0 (2023-06-06)
 

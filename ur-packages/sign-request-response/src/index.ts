@@ -1,12 +1,4 @@
-import { patchTags } from "@keystonehq/bc-ur-registry";
-import { ExtendedRegistryTypes } from "./RegistryType";
-export * from "@keystonehq/bc-ur-registry";
+import './addToRegistry'
 
-patchTags(
-  Object.values(ExtendedRegistryTypes)
-    .filter(rt => !!rt.getTag())
-    .map(rt => rt.getTag()) as number[]
-);
-
-export { CryptoSignRequest } from "./CryptoSignRequest";
-export { CryptoTxSignature } from "./CryptoTxSignature";
+export * from './SignRequest'
+export * from './SignResponse'
