@@ -1,15 +1,17 @@
 # Signing Protocol
 
-This is the implementation of the [Signing Protocol](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-crypto-sign.md) that is coin agnostic and can be used for any coin.
+This is the implementation of the [Signing Protocol](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-sign.md) that is coin agnostic and can be used for any coin.
 
 This package adds support for the following ur types:
 
 | Type                  | [[CBOR Tag]](https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml) | Owner  | Description                                                                                               | Definition                                                                                            |
 | --------------------- | ------------------------------------------------------------------------ | ------ | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `crypto-sign-request` | 1411                                                                     | Ngrave | Blockchain-agnostic signature request type where type of the coin is identified by `coin-identity` | [[NBCR-2023-003]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-crypto-sign.md) |
-| `crypto-signature`    | 1412                                                                     | Ngrave | Blockchain-agnostic signature response type                                                               | [[NBCR-2023-003]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-crypto-sign.md) |
+| `sign-request` | 41411                                                                     | Ngrave | Blockchain-agnostic signature request type where type of the coin is identified by `coin-identity` | [[NBCR-2023-003]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-sign.md) |
+| `sign-response`    | 41412                                                                     | Ngrave | Blockchain-agnostic signature response type                                                               | [[NBCR-2023-003]](https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-003-sign.md) |
 
-This repository is an extension of [bc-ur-registry](https://github.com/KeystoneHQ/ur-registry)
+## Why Use `sign-request` and `sign-response`
+
+The `sign-request` and `sign-response` UR types provide a standardized, blockchain-agnostic way to handle signature requests and responses. By using these UR types, developers can create a uniform protocol for signing transactions across different blockchains, ensuring compatibility and ease of integration. This standardization helps in reducing the complexity of handling multiple blockchain-specific signing protocols and enhances security by providing a consistent method for transaction verification and signing.
 
 ## Installing
 
@@ -23,304 +25,269 @@ yarn add @ngraveio/ur-sign
 npm install --save @ngraveio/ur-sign
 ```
 
+```typescript
+import { SignRequest, SignResponse } from "@ngraveio/ur-sign";
+```
+
+## CDDL
+**Sign Request:**
+```cddl
+  sign-request = {
+      ?request-id: uuid,                        ; Identifier of the signing request
+      coin-id: #6.41401(coin-identity),         ; Provides information on the elliptic curve and the blockchain/coin
+      ?derivation-path: #6.40304(keypath),      ; Key path for signing this request
+      sign-data: bytes,                         ; Transaction to be decoded by the offline signer 
+      ?origin: text,                            ; Origin of this sign request, e.g. wallet name
+      ?tx-type: int .default 1                  ; Specify type of transaction required for some blockchains
+      ?address: string / bytes                  ; Specify sender address if not already specified in the sign-data and derivation-path
+  }
+
+  request-id = 1
+  coin-id = 2
+  derivation-path = 3
+  sign-data = 4
+  origin = 5
+  tx-type = 6
+  address=7
+```
+**Sign Response:**
+```cddl
+  sign-response = {
+    ?request-id: uuid,     ; Identifier of the signing request 
+    signature: bytes,      ; Signature result
+    ?origin: text,         ; The device info providing this signature
+  }
+
+  ; request-id must be present in case of response to a sign-request where 
+  ; the request-id is specified
+
+  request-id = 1
+  signature = 2
+  origin = 3
+```
+
 ## Examples:
 
-## CryptoSignRequest
+### Bitcoin
 
-### [CryptoSignRequest] Create a signing request for a transaction. The signing request is created by the watch-only wallet that includes the transaction to sign and the signer account to be sent via QR code to the offline signer.
+#### Sign Request
 
-#### MultiversX (eGLD)
+```typescript
+import { SignRequest } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
+import { CoinIdentity } from "@ngraveio/ur-coin-identity";
+import { Keypath } from "@ngraveio/ur-blockchain-commons";
 
-A MultiversX transaction is uniquely identified through the URI format bc-coin://ed25519/508
+const requestId = new UUID(Buffer.from('3b5414375e3a450b8fe1251cbc2b3fb5', 'hex'));
+const coinId = new CoinIdentity(8, 0); // Bitcoin
+const derivationPath = new Keypath({ path: "m/44'/0'/0'/0/0" });
+const signData = Buffer.from('0100000001abcdef', 'hex');
+const origin = "NGRAVE ZERO";
+const txType = 1;
+const address = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
 
-```js
-// get the native transaction
-const nativeTx =
-  'f849808609184e72a00082271094000000000000000000000000000000000000000080a47f7465737432000000000000000000000000000000000000000000000000000000600057808080'
-
-// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a MultiversX sign request.
-const egldSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.Ed25519, 508),
-  derivationPath: "m/44'/508'/0'/0'/0'",
-  signData: Buffer.from(nativeTx, 'hex'),
-})
-
-// Encode
-const cbor = egldSignRequest.toCBOR().toString('hex')
-console.log(cbor)
-
-// Decode
-const decodedEgldSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signRequest = new SignRequest({ requestId, coinId, derivationPath, signData, origin, txType, address });
+const ur = signRequest.toUr();
+console.log(ur.toString());
 ```
 
-#### Solana (SOL)
+#### Sign Response
 
-A Solana transaction is uniquely identified through the URI format bc-coin://ed25519/501, information shared in coin-identity UR type.
+```typescript
+import { SignResponse } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
 
-```js
-// get the native transaction
-const nativeTx =
-  '01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100020420771c01ee4ef0cd64de8aca6761ec53d81f2af4d82a6f901875b3eb6656aca1f71cd55949eaf3eb16b17a2760e5bc2141f45583263996a513788ce66ba3ed1c0000000000000000000000000000000000000000000000000000000000000000054a535a992921064d24e87160da387c7c35b5ddbc92bb81e41fa8404105448d4ab54ac2b31a0eacb2d4d88715857164550b21b55a69e7f326a5392230b41c9e02020200010c02000000002d3101000000000301000b48656c6c6f20576f726c64'
+const requestId = new UUID(Buffer.from('3b5414375e3a450b8fe1251cbc2b3fb5', 'hex'));
+const signature = Buffer.from('70736274ff01009a020000000258e87a21b56daf0c23be8e7070456c336f7cbaa5c8757924f545887bb2abdd750000000000ffffffff838d0427d0ec650a68aa46bb0b098aea4422c071b2ca78352a077959d07cea1d0100000000ffffffff0270aaf00800000000160014d85c2b71d0060b09c9886aeb815e50991dda124d00e1f5050000000016001400aea9a2e5f0f876a588df5546e8742d1d87008f000000000000000000', 'hex');
+const origin = "NGRAVE ZERO";
 
-// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Solana sign request.
-const solSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.Ed25519, 501),
-  derivationPath: "44'/501'/0'/0'",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new SolSignRequestMeta({
-    type: SolSignType.signTypeTransaction,
-    address: Buffer.from('3BjPTqppzsSFtrEzv4iJ28SW97ubkRHrQVwmzoBqT8ZN'), // base58
-  }),
-})
-
-//// Encode
-const cbor = solSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d82550e382f18c7b5b1d8a9eda5d8a2305279e02d90579a20106021901f503d90130a10188182cf51901f5f500f500f50459010601000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100020420771c01ee4ef0cd64de8aca6761ec53d81f2af4d82a6f901875b3eb6656aca1f71cd55949eaf3eb16b17a2760e5bc2141f45583263996a513788ce66ba3ed1c0000000000000000000000000000000000000000000000000000000000000000054a535a992921064d24e87160da387c7c35b5ddbc92bb81e41fa8404105448d4ab54ac2b31a0eacb2d4d88715857164550b21b55a69e7f326a5392230b41c9e02020200010c02000000002d3101000000000301000b48656c6c6f20576f726c6407a26474797065016761646472657373582c33426a50547170707a7353467472457a7634694a32385357393775626b5248725156776d7a6f427154385a4e
-
-// Decode
-const decodedSolSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signResponse = new SignResponse({ requestId, signature, origin });
+const ur = signResponse.toUr();
+console.log(ur.toString());
 ```
 
-#### Stellar (XRP)
+### Ethereum
 
-A Stellar transaction is identified by bc-coin://ed25519/148. This information is shared in coin-identity UR type.
+#### Sign Request
 
-```js
-// get the native transaction
-const nativeTx = 'thisIsAMockTransaction'
+```typescript
+import { SignRequest } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
+import { CoinIdentity } from "@ngraveio/ur-coin-identity";
+import { Keypath } from "@ngraveio/ur-blockchain-commons";
 
-// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Stellar sign request.
-const xrpSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.Ed25519, 148),
-  derivationPath: "m/44'/148'/0'",
-  signData: Buffer.from(nativeTx, 'hex'),
-})
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const coinId = new CoinIdentity(8, 60); // Ethereum
+const derivationPath = new Keypath({ path: "m/44'/60'/0'/0/0" });
+const signData = Buffer.from('f86c808504a817c80082520894', 'hex');
+const origin = "NGRAVE ZERO";
+const txType = 1;
+const address = '0x742d35Cc6634C0532925a3b844Bc454e4438f44e';
 
-// Encode
-const cbor = xrpSignRequest.toCBOR().toString('hex')
-console.log(cbor)
-
-// Decode
-const decodedXrpSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signRequest = new SignRequest({ requestId, coinId, derivationPath, signData, origin, txType, address });
+const ur = signRequest.toUr();
+console.log(ur.toString());
 ```
 
-#### Tezos (XTZ)
+#### Sign Response
 
-A Tezos transaction is uniquely identified through the URI format bc-coin://ed25519/1729, bc-coin://secp256k1/1729 or bc-coin://P256/1729 depending on the elliptic curves selected to sign the transaction.This information is shared in coin-identity UR type.
+```typescript
+import { SignResponse } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
 
-```js
-// get the native Ed25519 tz1 transaction
-const nativeTx =
-  '4478f49a92c565e944b6021ea10d78e4d357217f07d7b04120ee8089a5df75566c004c740575091c360d45d820711afef7be6f30b972904ec0a9a312f90a84020a000036a21afaa10f9470af5db383080017a46a459edd00'
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const signature = Buffer.from('d4f0a7bcd95bba1fbb1051885054730e3f47064288575aacc102fbbf6a9a14daa066991e360d3e3406c20c00a40973eff37c7d641e5b351ec4a99bfe86f335f713', 'hex');
+const origin = "NGRAVE ZERO";
 
-// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Tezos sign request.
-const tezSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.Ed25519, 1729),
-  derivationPath: "m/44'/1729'/0'/0'/0'",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new TezosSignRequestMeta({
-    type: TezosDataType.dataTypeOperation,
-  }),
-})
-
-// Encode
-const cbor = tezSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d82550abb87ab7b0e9924009d4c775d7158cdf02d90579a20106021906c103d90130a1018a182cf51906c1f500f500f500f50458584478f49a92c565e944b6021ea10d78e4d357217f07d7b04120ee8089a5df75566c004c740575091c360d45d820711afef7be6f30b972904ec0a9a312f90a84020a000036a21afaa10f9470af5db383080017a46a459edd0007a2647479706501676b65795479706501
-
-// Decode
-const decodedTezSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signResponse = new SignResponse({ requestId, signature, origin });
+const ur = signResponse.toUr();
+console.log(ur.toString());
 ```
 
-#### Ethereum (ETH)
+### Solana
 
-An Ethereum transaction is uniquely identified through the URI format bc-coin://secp256k1/60, information shared in coin-identity UR type.
+#### Sign Request
 
-##### Normal transaction
+```typescript
+import { SignRequest } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
+import { CoinIdentity } from "@ngraveio/ur-coin-identity";
+import { Keypath } from "@ngraveio/ur-blockchain-commons";
 
-```js
-// get the native ethereum transaction legacy rpl encoded
-const nativeTx =
-  'e906850963bf08ed8252589442cda393bbe6d079501b98cc9ccf1906901b10bf80856e61626572808080'
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const coinId = new CoinIdentity(6, 501); // Solana
+const derivationPath = new Keypath({ path: "m/44'/501'/0'/0'", sourceFingerprint: 934670036 });
+const signData = Buffer.from('01000103c8d842a2f17fd7aab608ce2ea535a6e958dffa20caf669b347b911c4171965530f957620b228bae2b94c82ddd4c093983a67365555b737ec7ddc1117e61c72e0000000000000000000000000000000000000000000000000000000000000000010295cc2f1f39f3604718496ea00676d6a72ec66ad09d926e3ece34f565f18d201020200010c0200000000e1f50500000000', 'hex');
+const origin = "NGRAVE LIQUID";
+const txType = 1;
+const address = '9FPebKDGZAdcpT7SpfB1UowuqobV8Zww9TwPDSyzXJMr';
 
-// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Ethereum sign request.
-
-const ethSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
-  derivationPath: "m/44'/60'/0'/0/0",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new EthSignRequestMeta({
-    dataType: EthDataType.transaction, // legacy rpl encoded
-  }),
-});
-
-// Encode
-const cbor = ethSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d82550ee61d8625149f73eabaaa0ed7c7ab93102d90579a2010802183c03d90130a1018a182cf5183cf500f500f400f404582ae906850963bf08ed8252589442cda393bbe6d079501b98cc9ccf1906901b10bf80856e6162657280808007a168646174615479706501
-
-// Decode
-const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signRequest = new SignRequest({ requestId, coinId, derivationPath, signData, origin, txType, address });
+const ur = signRequest.toUr();
+console.log(ur.toString());
 ```
 
-##### ERC20 transaction
+#### Sign Response
 
-```js
-/**
- * This transaction is from the following ERC20 transfer request rpl:
- * from: "0xeB012c6d43542D105b6De63f4E8F8eff1f2a916e"
- * to: "0x42cda393bbe6d079501B98cc9cCF1906901b10Bf"
- * value: 0
- * contractAddress: "0x27054b13b1b798b345b591a4d22e6562d47ea75a"
- * token: "AirSwap (AST) 
- * tokenValue: 0.0001
- */
+```typescript
+import { SignResponse } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
 
-const nativeTx = 'f869068505d90661eb82a31d9427054b13b1b798b345b591a4d22e6562d47ea75a80b844a9059cbb00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf0000000000000000000000000000000000000000000000000000000000000001808080';
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const signature = Buffer.from('d4f0a7bcd95bba1fbb1051885054730e3f47064288575aacc102fbbf6a9a14daa066991e360d3e3406c20c00a40973eff37c7d641e5b351ec4a99bfe86f335f7', 'hex');
+const origin = "NGRAVE ZERO";
 
-
-// Create the CryptoSignRequest object. The CoinIdentity identifies this signRequest as a Ethereum sign request.
-const ethSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
-  derivationPath: "m/44'/60'/0'/0/1",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new EthSignRequestMeta({
-    dataType: EthDataType.transaction, // rlp encoded transaction
-  }),
-});
-
-
-// Encode
-const cbor = ethSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d8255066faa8ff51d07b7ad09322dda934da2202d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f404586bf869068505d90661eb82a31d9427054b13b1b798b345b591a4d22e6562d47ea75a80b844a9059cbb00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000000000000000000000000000000000000000000000180808007a168646174615479706501
-
-// Decode
-const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signResponse = new SignResponse({ requestId, signature, origin });
+const ur = signResponse.toUr();
+console.log(ur.toString());
 ```
 
-##### ERC20 transaction Polygon
+### Tezos
 
-```js
-/**
- * This transaction is from the following ERC20 transfer request rlp:
- * from: "0x371398af172609f57f0F13Be4c1AAf48AcCEB59d"
- * to: "0x9E9B5d5151B0F6BEEf3D90eeb36b12365c09bBb4"
- * value: 0
- * contractAddress: "0x6f8a06447Ff6FcF75d803135a7de15CE88C1d4ec"
- * token: "SHIB" 
- * tokenValue: 10
- */
-const nativeTx = '02F87081890E8507D4E0A5E485220C87BE3883017AD0946F8A06447FF6FCF75D803135A7DE15CE88C1D4EC80B844A9059CBB0000000000000000000000009E9B5D5151B0F6BEEF3D90EEB36B12365C09BBB40000000000000000000000000000000000000000000000008AC7230489E80000C0';
+#### Sign Request
 
-const maticSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60, [137]),
-  derivationPath: "m/44'/60'/0'/0/0",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new PolygonMeta({
-    dataType: EthDataType.typedTransaction, // rlp encoded typed transaction
-  }),
-});
+```typescript
+import { SignRequest } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
+import { CoinIdentity } from "@ngraveio/ur-coin-identity";
+import { Keypath } from "@ngraveio/ur-blockchain-commons";
 
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const coinId = new CoinIdentity(6, 1729); // Tezos
+const derivationPath = new Keypath({ path: "m/44'/1729'/0'/0'/0'", sourceFingerprint: 934670036 });
+const signData = Buffer.from('f849808609184e72a00082271094000000000000000000000000000000000000000080a47f7465737432000000000000000000000000000000000000000000000000000000600057808080', 'hex');
+const origin = "NGRAVE LIQUID";
+const address = 'tz1gLTu4Yxj8tPAcriQVUdxv6BY9QyvzU1az';
 
-// Encode
-const cbor = maticSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d82550280a618ea46c025c748236ad393e28d302d90579a3010802183c0381188903d90130a1018a182cf5183cf500f500f400f404587302f87081890e8507d4e0a5e485220c87be3883017ad0946f8a06447ff6fcf75d803135a7de15ce88c1d4ec80b844a9059cbb0000000000000000000000009e9b5d5151b0f6beef3d90eeb36b12365c09bbb40000000000000000000000000000000000000000000000008ac7230489e80000c007a168646174615479706504
-
-// Decode
-const decodedMaticSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signRequest = new SignRequest({ requestId, coinId, derivationPath, signData, origin, address });
+const ur = signRequest.toUr();
+console.log(ur.toString());
 ```
 
-##### ERC721 transaction
+#### Sign Response
 
-```js
-/**
- * This transaction is from the following erc721 NFT transfer request rpl:
- * from: "0xeB012c6d43542D105b6De63f4E8F8eff1f2a916e"
- * to: "0x42cda393bbe6d079501B98cc9cCF1906901b10Bf"
- * value: 0
- * contractAddress: "0xc9154424B823b10579895cCBE442d41b9Abd96Ed"
- * tokenId: 30215980622330187411918288900688501299580125367569939549692495857307848015874
- */
-const nativeTx = 'f88a068506275583f48301281c94c9154424b823b10579895ccbe442d41b9abd96ed80b86442842e0e000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000002808080';
+```typescript
+import { SignResponse } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
 
-const ethSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
-  derivationPath: "m/44'/60'/0'/0/1",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new EthSignRequestMeta({
-    dataType: EthDataType.transaction, // rlp encoded transaction
-  }),
-});
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const signature = Buffer.from('9fb423ee0b1ad3d3ad359c22d1e79048789c232813663fd5d8a1223458082ea844f5e87bf77db3b997aa4c847e23047c042003e3b204cea9ae0e1bf6fdcaaf09', 'hex');
+const origin = "NGRAVE ZERO";
 
-
-// Encode
-const cbor = ethSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d82550dcbc47e80f4b0a666fdda1de90cdb33b02d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f404588cf88a068506275583f48301281c94c9154424b823b10579895ccbe442d41b9abd96ed80b86442842e0e000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf00000000000000000000000280808007a168646174615479706501
-
-// Decode
-const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signResponse = new SignResponse({ requestId, signature, origin });
+const ur = signResponse.toUr();
+console.log(ur.toString());
 ```
 
-##### ERC721 transaction Polygon
+### MultiversX
 
-```js
-/**
- * This transaction is from the following erc721 NFT transfer request rpl:
- * from: "0x371398af172609f57f0F13Be4c1AAf48AcCEB59d"
- * to: "0x9E9B5d5151B0F6BEEf3D90eeb36b12365c09bBb4"
- * value: 0
- * contractAddress: "0xb6432d111bc2a022048b9aea7c11b2d627184bdd"
- * tokenId: 107839786668602559178668060348078522694548577690162289924414441239912
- * 
- * link: https://polygonscan.com/nft/0xb6432d111bc2a022048b9aea7c11b2d627184bdd/107839786668602559178668060348078522694548577690162289924414441239912
- * 
- */
-const nativeTx = '02f89081890e8506fc23ac008515a6cd9ad88304a35c94b6432d111bc2a022048b9aea7c11b2d627184bdd80b86423b872dd000000000000000000000000371398af172609f57f0f13be4c1aaf48acceb59d0000000000000000000000009e9b5d5151b0f6beef3d90eeb36b12365c09bbb4000000040000000000000000000000000000000000000000000000000003b568c0';
+#### Sign Request
 
-const ethSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
-  derivationPath: "m/44'/60'/0'/0/0",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new EthSignRequestMeta({
-    dataType: EthDataType.typedTransaction, // rlp encoded transaction
-  }),
-});
+```typescript
+import { SignRequest } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
+import { CoinIdentity } from "@ngraveio/ur-coin-identity";
+import { Keypath } from "@ngraveio/ur-blockchain-commons";
 
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const coinId = new CoinIdentity(6, 508); // MultiversX
+const derivationPath = new Keypath({ path: "m/44'/508'/0'/0'/1'", sourceFingerprint: 934670036 });
+const signData = Buffer.from('f849808609184e72a00082271094000000000000000000000000000000000000000080a47f7465737432000000000000000000000000000000000000000000000000000000600057808080', 'hex');
+const origin = "NGRAVE LIQUID";
 
-// Encode
-const cbor = ethSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d825503d4c4d199637f1614500335078ed200a02d90579a2010802183c03d90130a1018a182cf5183cf500f500f400f404589302f89081890e8506fc23ac008515a6cd9ad88304a35c94b6432d111bc2a022048b9aea7c11b2d627184bdd80b86423b872dd000000000000000000000000371398af172609f57f0f13be4c1aaf48acceb59d0000000000000000000000009e9b5d5151b0f6beef3d90eeb36b12365c09bbb4000000040000000000000000000000000000000000000000000000000003b568c007a168646174615479706504
-
-// Decode
-const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signRequest = new SignRequest({ requestId, coinId, derivationPath, signData, origin });
+const ur = signRequest.toUr();
+console.log(ur.toString());
 ```
 
-##### ERC1155 transaction
+#### Sign Response
 
-```js
-/**
- * This transaction is from the following erc1155 NFT transfer request rpl:
- * from: "0xeB012c6d43542D105b6De63f4E8F8eff1f2a916e"
- * to: "0x42cda393bbe6d079501B98cc9cCF1906901b10Bf"
- * value: 0
- * contractAddress: "0xB66a603f4cFe17e3D27B87a8BfCaD319856518B8"
- * tokenId: 30215980622330187411918288900688501299580125367569939549692495857307848015879
- * nftValue: 1
- */
-const nativeTx = 'f8e906850666b5ee5582ba8c94b66a603f4cfe17e3d27b87a8bfcad319856518b880b8c4f242432a000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000007000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000808080';
+```typescript
+import { SignResponse } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
 
-const ethSignRequest = new CryptoSignRequest({
-  coinId: new CoinIdentity(EllipticCurve.secp256k1, 60),
-  derivationPath: "m/44'/60'/0'/0/1",
-  signData: Buffer.from(nativeTx, 'hex'),
-  metadata: new EthSignRequestMeta({
-    dataType: EthDataType.transaction, // rlp encoded transaction
-  }),
-});
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const signature = Buffer.from('9fb423ee0b1ad3d3ad359c22d1e79048789c232813663fd5d8a1223458082ea844f5e87bf77db3b997aa4c847e23047c042003e3b204cea9ae0e1bf6fdcaaf09', 'hex');
+const origin = "NGRAVE ZERO";
 
-
-// Encode
-const cbor = ethSignRequest.toCBOR().toString('hex')
-console.log(cbor) // a501d82550d9e96428277d76b12e2562ca76b301a302d90579a2010802183c03d90130a1018a182cf5183cf500f500f401f40458ebf8e906850666b5ee5582ba8c94b66a603f4cfe17e3d27b87a8bfcad319856518b880b8c4f242432a000000000000000000000000eb012c6d43542d105b6de63f4e8f8eff1f2a916e00000000000000000000000042cda393bbe6d079501b98cc9ccf1906901b10bf42cda393bbe6d079501b98cc9ccf1906901b10bf000000000000000000000007000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000080808007a168646174615479706501
-
-// Decode
-const decodedEthSignRequest = CryptoSignRequest.fromCBOR(Buffer.from(cbor, 'hex'))
+const signResponse = new SignResponse({ requestId, signature, origin });
+const ur = signResponse.toUr();
+console.log(ur.toString());
 ```
+
+### Stellar
+
+#### Sign Request
+
+```typescript
+import { SignRequest } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
+import { CoinIdentity } from "@ngraveio/ur-coin-identity";
+import { Keypath } from "@ngraveio/ur-blockchain-commons";
+
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const coinId = new CoinIdentity(6, 148); // Stellar
+const derivationPath = new Keypath({ path: "m/44'/148'/0'/0'/2'", sourceFingerprint: 934670036 });
+const signData = Buffer.from('00000002000000002df26f5fc2916d823126414b0cde52203a4f54222e1f3c82f2c82bf7c4e2d76d000000640011b3dc0000000100000001000000000000006400000000646e9655000000010000000c48656c6c6f20576f726c642100000001000000000000000100000000321911377e1664d677a85ab30acd1262522f989f0f31da613219e8396278cdb90000000000000002540be4000000000000000000', 'hex');
+const origin = "NGRAVE LIQUID";
+
+const signRequest = new SignRequest({ requestId, coinId, derivationPath, signData, origin });
+const ur = signRequest.toUr();
+console.log(ur.toString());
+```
+
+#### Sign Response
+
+```typescript
+import { SignResponse } from "@ngraveio/ur-sign";
+import { UUID } from "@ngraveio/ur-uuid";
+
+const requestId = new UUID(Buffer.from('9b1deb4d3b7d4bad9bdd2b0d7b3dcb6d', 'hex'));
+const signature = Buffer.from('9fb423ee0b1ad3d3ad359c22d1e79048789c232813663fd5d8a1223458082ea844f5e87bf77db3b997aa4c847e23047c042003e3b204cea9ae0e1bf6fdcaaf09', 'hex');
+const origin = "NGRAVE ZERO";
+
+const signResponse = new SignResponse({ requestId, signature, origin });
+const ur = signResponse.toUr();
+console.log(ur.toString());
+```
+

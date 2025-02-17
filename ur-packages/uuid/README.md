@@ -1,7 +1,5 @@
 # UUID CBOR type
 
-This repository is the UUID extension of [bc-ur-registry](https://github.com/KeystoneHQ/ur-registry)
-
 ## Installing
 
 To install, run:

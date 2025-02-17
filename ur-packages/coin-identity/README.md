@@ -1,6 +1,4 @@
-# BC-UR-Registry-sync
-
-This repository is the Crypto Coin Identity extension of [bc-ur-registry](https://github.com/KeystoneHQ/ur-registry)
+# Coin Identity
 
 Definition document: https://github.com/ngraveio/Research/blob/main/papers/nbcr-2023-001-coin-identity.md
 
@@ -53,7 +51,7 @@ subtype = 3
 
 ## Usages Examples
 
-### [CryptoCoinIdentity] Construct a crypto coin identity
+### [CoinIdentity] Construct a crypto coin identity
 
 Add additional information to a specific hdkey. It contains the following information:
 
@@ -61,22 +59,21 @@ Add additional information to a specific hdkey. It contains the following inform
 2. BIP44 coin type as defined in [[SLIP44]](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
 3. Subtype to define additional information to identify the coin (e.g. the chain ID for an EVM chain).
 
-The URI format is as follows: bc-coin://{subtype2.subtype1.subtype0}.{curve}/type
+The URI format is as follows: `bc-coin://{subtype2.subtype1.subtype0}.{curve}/type`
 
-Below the coinIdentity of Polygon (MATIC) as an example: "bc-coin://137.secp256k1/60"
+Below the coinIdentity of Polygon (MATIC) as an example: "`bc-coin://137.secp256k1/60`"
 ```js
-import {CryptoCoinIdentity, EllipticCurve } from from '@ngraveio/ur-blockchain-commons';
+import {CoinIdentity, EllipticCurve } from from '@ngraveio/ur-coin-identity';
 
 const curve = EllipticCurve.secp256k1 // 8
 const type = 60
 const chainId = '137'
 const subTypes = [chainId]
 
-const coinIdentity = new CryptoCoinIdentity(curve, type, subTypes)
+const coinIdentity = new CoinIdentity(curve, type, subTypes)
 
-console.log(coinIdentity.toCBOR().toString('hex'));
-// "a3010802183c038163313337"
-const ur = coinIdentity.toUREncoder().nextPart();
-console.log(ur);
+const cbor = coinIdentity.toHex(); // "a3010802183c038163313337"
+const ur = coinIdentity.toUr();
+console.log(ur.toString());
 // :ur:crypto-coin-identity/otadayaocsfnaxlyiaeheoemaojsbajy"
 ```

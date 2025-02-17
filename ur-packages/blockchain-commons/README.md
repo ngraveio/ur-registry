@@ -30,6 +30,23 @@ yarn add @ngraveio/ur-blockchain-commons
 npm install --save @ngraveio/ur-blockchain-commons
 ```
 
+**Exported types:**
+
+```typescript
+import {
+  Bytes,
+  CoinInfo, Network,
+  PSBT,
+  Keypath, PathComponent,
+  HDKey,
+  ECKey,
+  Address,
+  AddressScriptType,
+  OutputDescriptor,
+  AccountDescriptor,
+} from '@ngraveio/ur-blockchain-commons'
+```
+
 
 ## UR-TYPES
 
