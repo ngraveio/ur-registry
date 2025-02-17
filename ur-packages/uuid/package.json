@@ -1,7 +1,7 @@
 {
-  "name": "@ngraveio/ur-hex-string",
+  "name": "@ngraveio/ur-uuid",
   "version": "1.0.0-beta.0",
-  "description": "Provides BC UR type for hex string.",
+  "description": "Provides BC UR type for uuid.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -24,19 +24,20 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ngraveio/ur-registry.git",
-    "directory": "ur-packages/hex-string"
+    "directory": "ur-packages/uuid"
   },
   "keywords": [
     "bc-ur",
     "Blockchain Commons",
     "cbor",
-    "hexstring"
+    "uuid"
   ],
   "bugs": {
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "@ngraveio/bc-ur": "2.0.0-beta.7"
+    "@ngraveio/bc-ur": "2.0.0-beta.7",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",

@@ -1,7 +1,7 @@
 {
-  "name": "@ngraveio/ur-hex-string",
+  "name": "@ngraveio/ur-coin-identity",
   "version": "1.0.0-beta.0",
-  "description": "Provides BC UR type for hex string.",
+  "description": "Provides BC UR type that uniquely identifies a crypto coin.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -11,7 +11,7 @@
   "files": [
     "dist"
   ],
-  "sideEffects": ["dist/addToRegistry.js"],
+  "sideEffects": ["dist/addToRegistry.js"],  
   "scripts": {
     "clean": "rm -rf ./dist",
     "watch": "tsc --build --watch",
@@ -24,18 +24,21 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ngraveio/ur-registry.git",
-    "directory": "ur-packages/hex-string"
+    "directory": "ur-packages/coin-identity"
   },
   "keywords": [
     "bc-ur",
     "Blockchain Commons",
     "cbor",
-    "hexstring"
+    "crypto",
+    "coin",
+    "identity"
   ],
   "bugs": {
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
+    "uuid": "^9.0.0",
     "@ngraveio/bc-ur": "2.0.0-beta.7"
   },
   "devDependencies": {

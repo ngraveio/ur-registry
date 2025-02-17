@@ -1,5 +1,5 @@
 import { HexString } from "../src";
-import { Ur, defaultEncoders, UrFountainDecoder, UrFountainEncoder } from '@ngraveio/bc-ur'
+import { UR, defaultEncoders, UrFountainDecoder, UrFountainEncoder } from '@ngraveio/bc-ur'
 
 const cbor = defaultEncoders.cbor;
 
@@ -55,7 +55,7 @@ describe("hex-string", () => {
   });
 
   it("should decode hex-string from ur", () => {
-      const hexString = Ur.fromString(expectedUR).decode() as HexString;
+      const hexString = UR.fromString(expectedUR).decode() as HexString;
 
       expect(hexString.type.URType).toBe("hex-string");
       expect(hexString.toHex()).toBe(hex);

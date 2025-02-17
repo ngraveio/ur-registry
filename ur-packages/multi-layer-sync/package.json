@@ -1,6 +1,6 @@
 {
-  "name": "@ngraveio/bc-ur-multi-layer-sync",
-  "version": "0.3.2-beta.0",
+  "name": "@ngraveio/ur-sync",
+  "version": "1.0.0-beta.0",
   "description": "Provides BC-UR types for syncing multiple coins and accounts from cold wallets to watch only wallets.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,8 @@
   "homepage": "https://github.com/ngraveio/ur-registry",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ngraveio/ur-registry.git"
+    "url": "git+https://github.com/ngraveio/ur-registry.git",
+    "directory": "ur-packages/multi-layer-sync"
   },
   "keywords": [
     "bc-ur",
@@ -38,10 +39,11 @@
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "@keystonehq/bc-ur-registry": "0.5.4",
-    "@ngraveio/bc-ur-registry-crypto-coin-identity": "0.3.2-beta.0",
-    "@ngraveio/bc-ur-registry-crypto-portfolio-metadata": "0.1.2-beta.0",
-    "@ngraveio/bc-ur-registry-hex-string": "0.3.2-beta.0"
+    "buffer": "^6.0.3",
+    "@ngraveio/bc-ur": "2.0.0-beta.7",
+    "@ngraveio/ur-blockchain-commons": "1.0.0-beta.0",
+    "@ngraveio/ur-coin-identity": "1.0.0-beta.0",
+    "@ngraveio/ur-hex-string": "1.0.0-beta.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",

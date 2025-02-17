@@ -1,5 +1,5 @@
 import { UrRegistry } from '@ngraveio/bc-ur'
-import { HexString } from './HexString'
+import { UUID } from './UUID'
 
 // Add hexstring to the global registry
-UrRegistry.addItemOnce(HexString);
+UrRegistry.addItemOnce(UUID);

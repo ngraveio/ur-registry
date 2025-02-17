@@ -13,7 +13,9 @@
 
 This is a monorepo repository using [yarn workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/), [Commitzen](http://commitizen.github.io/cz-cli/) and [Conventional Commits](https://conventionalcommits.org) to maintain and manage bc ur packages.
 
-This repository is an implementation of [the BC-UR Registry specification](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md) and an extension to [Keystone UR Registry](https://github.com/KeystoneHQ/ur-registry)
+This repository is an implementation of [the BC-UR Registry specification](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md) and an extension to [BC-UR Registry](https://github.com/ngraveio/bc-ur)
+
+Reference and thanks to [Keystone UR Registry](https://github.com/KeystoneHQ/ur-registry)
 
 ## 🌐 Links
 
@@ -38,18 +40,20 @@ Install all dependecies with:
 to build
 
 ```bash
-  yarn lerna run build
+  yarn build
 ```
 
 ## 🗂 Monorepo structure
 
 | Package                                                              | Description                                                                                                                      |
 | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| [`ur-packages/**`](./ur-packages)                                    | Implementations of Blockchain Commons UR packages                                                                                |
-| [`@ngraveio/crypto-coin-identity`](./ur-packages/crypto-coin-identity) | Implementation of `coin-identity` type that can represent a coin                                                                 |
-| [`@ngraveio/multi-layer-sync`](./ur-packages/multi-layer-sync)         | Implementations of following types: **crypto-detailed-account**, **crypto-portfolio-coin**, **crypto-portfolio-metadata**, **crypto-portfolio** |
-| [`@ngraveio/hex-string`](./ur-packages/hex-string)                     | Implementation of `hex-string` type that encodes and decodes hex string                                                          |
-
+| [`ur-packages/**`](./ur-packages)                                    | Implementations of **U**niform **R**esources (UR) packages                                                                                |
+| [`@ngraveio/ur-blockchain-commons`](./ur-packages/blockchain-commons)| Types defined by [BlockChain Commons](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md)                                                                      |
+| [`@ngraveio/ur-coin-identity`](./ur-packages/coin-identity)          | Implementation of `coin-identity` type that can uniquely represent a coin                                                                 |
+| [`@ngraveio/ur-sync`](./ur-packages/multi-layer-sync)                | Implementations of following types: **detailed-account**, **portfolio-coin**, **portfolio-metadata**, **portfolio** |
+| [`@ngraveio/ur-hex-string`](./ur-packages/hex-string)                | Implementation of `hex-string` type that encodes and decodes hex string                                                          |
+| [`@ngraveio/ur-sign`](./ur-packages/sign-request-response)           | Implementation of sign request and response protocols for various blockchains                                                   |
+| [`@ngraveio/ur-uuid`](./ur-packages/uuid)                            | Implementation of `uuid` type for universally unique identifiers                                                                 |
 ## 🚨 Code standard
 
 - [JavaScript Standard Style](https://standardjs.com/) - Javascript styleguide
