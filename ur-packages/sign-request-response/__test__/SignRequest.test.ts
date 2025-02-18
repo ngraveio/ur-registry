@@ -133,7 +133,6 @@ describe('SignRequest', () => {
       }
       const signRequest = new SignRequest(input)
       const result = signRequest.verifyInput(input)
-      console.log(result)
       expect(result.valid).toBe(true)
       expect(result.reasons).toBeUndefined()
     })
