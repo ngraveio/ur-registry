@@ -56,7 +56,7 @@ describe('HDKey', () => {
     // Encode same example using deserialization method
     const xpubDecoded = HDKey.fromXpub(
       'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi',
-      "m/44'/1'/1'/0/1"
+      { xpubPath: "m/44'/1'/1'/0/1" }
     )
 
     const xpubUr = xpubDecoded.toUr()
@@ -120,7 +120,7 @@ describe('HDKey', () => {
     // Encode same example using deserialization method
     const xpubDecoded = HDKey.fromXpub(
       'tpubDHW3GtnVrTatx38EcygoSf9UhUd9Dx1rht7FAL8unrMo8r2NWhJuYNqDFS7cZFVbDaxJkV94MLZAr86XFPsAPYcoHWJ7sWYsrmHDw5sKQ2K',
-      "m/44'/1'/1'/0/1"
+      { xpubPath: "m/44'/1'/1'/0/1" }
     )
     // @ts-ignore
     xpubDecoded.data.useInfo = new CoinInfo(undefined, 1)
@@ -197,7 +197,7 @@ describe('HDKey', () => {
     //Encode same example using deserialization method
     const xpubDecoded = HDKey.fromXpub(
       'xpub6CRQif2S43vtEYf5cZdMhrFpuBFkgFkALM6qhJZz7ws2cfEf1f8Jiv8dXSkizobckHyfH1mFDFZn46AJoh8d4FpB6ydFFg49yPkJF69GsHq',
-      "m/44'/60'/0'"
+      { xpubPath: "m/44'/60'/0'" }
     )
     xpubDecoded.data.isMaster = false
     // @ts-ignore
