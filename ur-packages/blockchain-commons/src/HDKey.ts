@@ -2,6 +2,15 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 import { Keypath } from './Keypath'
 import { CoinInfo } from './CoinInfo'
 import { base58 } from '@scure/base'
+import { sha256 } from '@noble/hashes/sha256'
+
+// https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#serialization-format
+const BTCVersionBytes = {
+  MAINNET_XPUB: Buffer.from('0488B21E', 'hex'),
+  MAINNET_XPRIV: Buffer.from('0488ADE4', 'hex'),
+  TESTNET_XPUB: Buffer.from('043587CF', 'hex'),
+  TESTNET_XPRIV: Buffer.from('04358394', 'hex'),
+}
 
 interface HDKeyArgs {
   isMaster?: boolean
@@ -136,21 +145,66 @@ export class HDKey extends registryItemFactory({
       }
     }
   }
+
+  /**
+   * @returns {boolean} True if the key is a master key, otherwise false.
+   */
   public getIsMaster = () => this.data.isMaster || false
+
+  /**
+   * @returns {boolean} True if the key is a private key, otherwise false.
+   */
   public getIsPrivateKey = () => {
     // Master key is always private
-    if (this.getIsMaster()) return false
+    if (this.getIsMaster()) return true
     return (this.data as DeriveKeyProps).isPrivateKey || false
   }
+
+  /**
+   * @returns {Buffer} The key data.
+   */
   public getKeyData = () => this.data.keyData
+
+  /**
+   * @returns {Buffer | undefined} The chain code.
+   */
   public getChainCode = () => this.data.chainCode
+
+  /**
+   * @returns {CoinInfo | undefined} The coin information.
+   */
   public getUseInfo = () => (this.data as DeriveKeyProps).useInfo
+
+  /**
+   * @returns {Keypath | undefined} The origin keypath.
+   */
   public getOrigin = () => (this.data as DeriveKeyProps).origin
+
+  /**
+   * @returns {Keypath | undefined} The children keypath.
+   */
   public getChildren = () => (this.data as DeriveKeyProps).children
+
+  /**
+   * @returns {number | undefined} The parent fingerprint.
+   */
   public getParentFingerprint = () => (this.data as DeriveKeyProps).parentFingerprint
+
+  /**
+   * @returns {string | undefined} The name of the key.
+   */
   public getName = () => (this.data as DeriveKeyProps).name
+
+  /**
+   * @returns {string | undefined} The note associated with the key.
+   */
   public getNote = () => (this.data as DeriveKeyProps).note
 
+  /**
+   * Prepares the data for CBOR encoding.
+   * @returns {any} The data prepared for CBOR encoding.
+   * @throws {Error} If the input data is invalid.
+   */
   override preCBOR(): any {
     const { valid, reasons } = this.verifyInput(this.data)
     if (!valid) {
@@ -164,6 +218,12 @@ export class HDKey extends registryItemFactory({
     }
     return super.preCBOR()
   }
+
+  /**
+   * Verifies the input data.
+   * @param {HDKeyArgs} input - The input data to verify.
+   * @returns {{ valid: boolean; reasons?: Error[] }} The verification result.
+   */
   override verifyInput(input: HDKeyArgs): { valid: boolean; reasons?: Error[] } {
     const errors: Error[] = []
 
@@ -234,45 +294,81 @@ export class HDKey extends registryItemFactory({
     }
   }
 
-  static fromXpub(xpub: string, xpubPath?: string) {
-    const { versionBytes, depth, parentFingerprint, childNumber, chainCode, keyData, checksum, isMaster } = HDKey.parseXpub(xpub)
+  /**
+   * Creates an HDKey instance from an extended public key (xpub).
+   * @param {string} xpub - The extended public key.
+   * @param {{ xpubPath?: string; isPrivate?: boolean; sourceFingerprint?: number }} [params] - Optional parameters.
+   * @returns {HDKey} The HDKey instance.
+   * @throws {Error} If the xpub is invalid or inconsistent with the provided path.
+   */
+  static fromXpub(xpub: string, params?: { xpubPath?: string; isPrivate?: boolean; sourceFingerprint?: number }): HDKey {
+    const { version: version, depth, parentFingerprint, childNumber, chainCode, keyData, checksum } = HDKey.parseXpub(xpub)
 
+    const isMaster = depth === 0
     if (isMaster) {
       const masterKeyParams: MasterKeyProps = {
         isMaster: true,
         keyData: Buffer.from(keyData),
         chainCode: Buffer.from(chainCode),
       }
-
       // Lets Generate the master HD KEY
-      const masterHdKey = new HDKey(masterKeyParams)
-
-      return masterHdKey
+      return new HDKey(masterKeyParams)
     }
 
     // Otherwise its a derived key
-    const xpubHdKeyParams: DeriveKeyProps = {
-      // isMaster: false,
-      // isPrivateKey: false, // TODO: Check version bytes
-      keyData: Buffer.from(keyData),
-      chainCode: Buffer.from(chainCode),
-      // origin: new Keypath({
-      //   path: xpubPath,
-      //   sourceFingerprint: parentFingerprint.readUInt32BE(0),
-      //   depth: Number(depth[0]),
-      // }),
-      parentFingerprint: parentFingerprint.readUInt32BE(0),
-      // children: new Keypath({ path: '/0/*' })
-      //note: xpub,
+    let origin: Keypath | undefined
+    // Lets check consistency of the xpub
+    if (params?.xpubPath) {
+      const components = Keypath.pathToComponents(params.xpubPath)
+
+      // Now lets check if the xpubPath is consistent with the xpub
+      if (components.length !== depth) {
+        throw new Error(`Provided path is not consistent with the xpub depth. Provided path: ${params.xpubPath}, xpub depth: ${depth}`)
+      }
+
+      // Check if child number is consistent with the xpub path
+      const lastComponent = components[components.length - 1]
+      const lastComponentIndex = lastComponent.getIndex() || 0
+      const generatedChildNumber = lastComponent.isHardened() ? lastComponentIndex + 0x80000000 : lastComponentIndex
+      if (generatedChildNumber !== childNumber) {
+        throw new Error(`Provided path is not consistent with the xpub. Provided path child number: ${generatedChildNumber}, xpub child number: ${childNumber}`)
+      }
+
+      // Source fingerprint should be equal to the parent fingerprint of the xpub if depth is 1
+      if (depth === 1 && params?.sourceFingerprint !== undefined && params?.sourceFingerprint !== parentFingerprint) {
+        throw new Error(
+          `Provided source fingerprint is not consistent with the xpub. Provided source fingerprint: ${params.sourceFingerprint}, xpub parent fingerprint: ${parentFingerprint}`
+        )
+      }
+
+      origin = new Keypath({
+        path: components,
+        depth,
+        sourceFingerprint: params.sourceFingerprint || undefined,
+      })
     }
 
-    // If xpubPath is provided, add origin path
-    if (xpubPath) {
-      xpubHdKeyParams.origin = new Keypath({
-        path: xpubPath,
-        // sourceFingerprint: parentFingerprint.readUInt32BE(0),
-        // depth: depth,
-      })
+    let _isPrivate = false
+    if (params?.isPrivate !== undefined) {
+      _isPrivate = params.isPrivate
+    } else {
+      // Check by bitcoin version bytes
+      // TODO: to support all coins we need to keep track of all the version bytes
+      // TODO: get them from coininfo package
+      _isPrivate = version.equals(BTCVersionBytes.MAINNET_XPRIV) || version.equals(BTCVersionBytes.TESTNET_XPRIV)
+    }
+
+    const xpubHdKeyParams: DeriveKeyProps = {
+      // isMaster: false,
+      // set it to undefined if true ( default value)
+      isPrivateKey: _isPrivate ? true : undefined,
+      keyData: Buffer.from(keyData),
+      chainCode: Buffer.from(chainCode),
+      origin,
+      parentFingerprint: parentFingerprint,
+      // children: new Keypath({ path: '/0/*' })
+      //note: xpub,
+      //name: xpub
     }
 
     // Lets Generate the xpubs HD KEY
@@ -281,16 +377,99 @@ export class HDKey extends registryItemFactory({
     return xpubHdKey
   }
 
+  /**
+   * Converts the HDKey instance to an extended public key (xpub).
+   * @param {{ versionBytes?: Buffer }} [params] - Optional parameters.
+   * @returns {string} The extended public key.
+   * @throws {Error} If the chain code or origin is missing.
+   *
+   * https://github.com/bitcoinjs/bip32/blob/master/ts-src/bip32.ts#L238
+   */
+  toXpub(params?: { versionBytes?: Buffer }) {
+    // If version bytes are provided use that otherwise, If masterkey or private key use xpriv otherwise use xpub
+    const version = params?.versionBytes || (this.getIsMaster() || this.getIsPrivateKey() ? BTCVersionBytes.MAINNET_XPRIV : BTCVersionBytes.MAINNET_XPUB)
+
+    // Check if chain code is present otherwise we cannot generate xpub
+    if (this.getChainCode() == undefined) {
+      throw new Error('Cannot generate xpub without chain code')
+    }
+
+    // Get the key data
+    const keyData = this.getKeyData()
+    // Get the chain code
+    const chainCode = this.getChainCode()!
+
+    // If its masterkey most of the values will be default
+    if (this.getIsMaster()) {
+      return HDKey.encodeXpub({
+        version,
+        depth: 0,
+        parentFingerprint: Buffer.alloc(4).fill(0),
+        childNumber: 0,
+        chainCode,
+        keyData,
+      })
+    }
+
+    if (this.getOrigin() == undefined) {
+      throw new Error('Cannot generate xpub without origin because of depth and child number')
+    }
+
+    // Get the depth from the origin
+    const depth = this.getOrigin()?.getDepth() || this.getOrigin()?.getComponents().length || 0
+
+    // If depth is 1 then origin.sourceFingerprint must be same as parentFingerprint
+    const parentFingerprint = this.getParentFingerprint() || 0
+
+    // Childnumber is the last index of the origin path
+    const lastIndex = this.getOrigin()?.getComponents().slice(-1)[0]
+    // Now make sure last index is simple index and check if its hardened
+    if (!lastIndex || !lastIndex.isIndexComponent()) {
+      throw new Error('Invalid origin path, origin should exist and last index should be simple index')
+    }
+    const index = lastIndex.getIndex() || 0
+    const childNumber = lastIndex.isHardened() ? index + 0x80000000 : index
+
+    return HDKey.encodeXpub({
+      version: version,
+      depth,
+      parentFingerprint,
+      childNumber,
+      chainCode,
+      keyData,
+    })
+  }
+  /**
+   * Converts the HDKey instance to an extended public key (xpub).
+   * @param {{ versionBytes?: Buffer }} [params] - Optional parameters.
+   * @returns {string} The extended public key.
+   * @throws {Error} If the chain code or origin is missing.
+   */
+  public getBip32Key(params?: { versionBytes?: Buffer }): ReturnType<HDKey['toXpub']> {
+    return this.toXpub(params)
+  }
+
+  /**
+   * Extracts the parent fingerprint from an extended public key (xpub).
+   * @param {string} xpub - The extended public key.
+   * @returns {number} The parent fingerprint.
+   */
   static extractParentFingerprint(xpub: string): number {
     try {
       const { parentFingerprint } = HDKey.parseXpub(xpub)
-      return parentFingerprint.readUInt32BE(0)
+      return parentFingerprint
     } catch (e) {
       console.warn('Error extracting parent fingerprint from xpub', e)
     }
     return 0
   }
 
+  /**
+   * Parses an extended public key (xpub).
+   * @param {string} xpub - The extended public key.
+   * @returns {{ version: Buffer; depth: number; parentFingerprint: number; childNumber: number; chainCode: Buffer; keyData: Buffer; checksum: Buffer; isMaster: boolean }} The parsed xpub components.
+   * @throws {Error} If the checksum is invalid.
+   */
   static parseXpub(xpub: string) {
     // decode xpub from base58 to hex
     const xpubHex = Buffer.from(base58.decode(xpub))
@@ -305,13 +484,13 @@ export class HDKey extends registryItemFactory({
     // 33 bytes: the public key or private key data (serP(K) for public keys, 0x00 || ser256(k) for private keys)
     // 04b24746 03 75bb5468 80000000 529cb574542b8163f9f0a6bdc01180137350fdb50cf54186bffc067694d05d35 03fbd43643e702d2f9b7306345963ae77c49c5e2f6736d36b11db617918f8d28a4 c783598f
     // First 4 bytes are version bytes
-    const versionBytes = xpubHex.slice(0, 4)
+    const version = xpubHex.slice(0, 4)
     // Next byte is depth (1 byte)
     const depth = xpubHex.slice(4, 5).readInt8(0)
     // Next 4 bytes are fingerprint
-    const parentFingerprint = xpubHex.slice(5, 9)
+    const parentFingerprint = xpubHex.slice(5, 9).readUInt32BE(0)
     // Next 4 bytes are child number
-    const childNumber = xpubHex.slice(9, 13)
+    const childNumber = xpubHex.slice(9, 13).readUInt32BE(0)
     // Next 32 bytes are chain code
     const chainCode = xpubHex.slice(13, 45)
     // Next 33 bytes are public key
@@ -319,10 +498,14 @@ export class HDKey extends registryItemFactory({
     // Next 4 bytes are checksum (last 4 bytes)
     const checksum = xpubHex.slice(-4)
 
-    // TODO: Check checksum value
+    // Verify checksum
+    const calculatedChecksum = sha256(sha256(xpubHex.slice(0, -4))).subarray(0, 4)
+    if (!checksum.equals(calculatedChecksum)) {
+      throw new Error('Invalid checksum for xpub')
+    }
 
     // Check if this is a master key key or a derived key
-    const isMaster = depth === 0
+    // const isMaster = depth === 0
 
     // TODO: check version bytes to determine if its private or public key
     // But this will only work for bitcoin in this case
@@ -335,14 +518,70 @@ export class HDKey extends registryItemFactory({
     // bool isPublic = (version == MAINNET_XPUB || version == TESTNET_XPUB);
 
     return {
-      versionBytes,
+      version,
       depth,
       parentFingerprint,
       childNumber,
       chainCode,
       keyData,
       checksum,
-      isMaster,
     }
+  }
+
+  /**
+   * Encodes the components into an extended public key (xpub).
+   * @param {{ version: Buffer; depth: number; parentFingerprint: number; childNumber: number; chainCode: Buffer; keyData: Buffer }} params - The components to encode.
+   * @returns {string} The encoded extended public key.
+   */
+  static encodeXpub({
+    version,
+    depth,
+    parentFingerprint,
+    childNumber,
+    chainCode,
+    keyData,
+  }: {
+    version: Buffer // 4 bytes
+    depth: number | Buffer // 1 byte
+    parentFingerprint: number | Buffer // 4 bytes
+    childNumber: number | Buffer // 4 bytes
+    chainCode: Buffer // 32 bytes
+    keyData: Buffer // 33 bytes
+  }) {
+    // Get the fingerprint
+    let depthBytes = Buffer.alloc(1)
+    if (typeof depth === 'number') {
+      depthBytes.writeUint8(depth, 0)
+    } else {
+      depthBytes = depth.slice(0, 1)
+    }
+    // Get the child number
+    let childNumberBytes = Buffer.alloc(4)
+    if (typeof childNumber === 'number') {
+      childNumberBytes.writeUInt32BE(childNumber, 0)
+    } else {
+      childNumberBytes = childNumber.slice(0, 4)
+    }
+
+    let parentFingerprintBytes = Buffer.alloc(4)
+    if (typeof parentFingerprint === 'number') {
+      parentFingerprintBytes.writeUInt32BE(parentFingerprint, 0)
+    } else {
+      parentFingerprintBytes = parentFingerprint.slice(0, 4)
+    }
+
+    // Concat all the bytes
+    const xpubBytes = Buffer.concat([version, depthBytes, parentFingerprintBytes, childNumberBytes, chainCode, keyData])
+
+    // Calculate checksum
+    const checksum = sha256(sha256(xpubBytes)).subarray(0, 4)
+
+    // Add checksum to xpub
+    const xpubWithChecksum = Buffer.concat([xpubBytes, checksum])
+
+    // Encode xpub to base58
+    const xpub = base58.encode(xpubWithChecksum)
+
+    return xpub
   }
 }

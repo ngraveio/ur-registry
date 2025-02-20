@@ -56,7 +56,7 @@ describe('HDKey', () => {
     // Encode same example using deserialization method
     const xpubDecoded = HDKey.fromXpub(
       'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi',
-      "m/44'/1'/1'/0/1"
+      { xpubPath: "m/44'/1'/1'/0/1" }
     )
 
     const xpubUr = xpubDecoded.toUr()
@@ -120,7 +120,7 @@ describe('HDKey', () => {
     // Encode same example using deserialization method
     const xpubDecoded = HDKey.fromXpub(
       'tpubDHW3GtnVrTatx38EcygoSf9UhUd9Dx1rht7FAL8unrMo8r2NWhJuYNqDFS7cZFVbDaxJkV94MLZAr86XFPsAPYcoHWJ7sWYsrmHDw5sKQ2K',
-      "m/44'/1'/1'/0/1"
+      { xpubPath: "m/44'/1'/1'/0/1" }
     )
     // @ts-ignore
     xpubDecoded.data.useInfo = new CoinInfo(undefined, 1)
@@ -197,7 +197,7 @@ describe('HDKey', () => {
     //Encode same example using deserialization method
     const xpubDecoded = HDKey.fromXpub(
       'xpub6CRQif2S43vtEYf5cZdMhrFpuBFkgFkALM6qhJZz7ws2cfEf1f8Jiv8dXSkizobckHyfH1mFDFZn46AJoh8d4FpB6ydFFg49yPkJF69GsHq',
-      "m/44'/60'/0'"
+      { xpubPath: "m/44'/60'/0'" }
     )
     xpubDecoded.data.isMaster = false
     // @ts-ignore
@@ -657,4 +657,121 @@ describe('HDKey', () => {
       expect(HDKey.extractParentFingerprint("xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHL")).toBe(0)
     })
   })
+})
+
+describe('HDKey toXpub and fromXpub', () => {
+
+  it('should convert master key HDKey to xpub and back', () => {
+    const expectedXpub = "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi";
+    const hdkey = HDKey.fromXpub(expectedXpub)
+    const generatedXpub = hdkey.toXpub()
+
+    expect(generatedXpub).toBe(expectedXpub);
+  })
+
+  it('should convert master key HDKey to xpub and back', () => {
+    const keyData = Buffer.from('035a784662a4a20a65bf6aab9ae98a6c068a81c52e4b032c0fb5400c706cfccc56', 'hex')
+    const chainCode = Buffer.from('47fdacbd0f1097043b78c63c20c34ef4ed9a111d980047ad16282c7ae6236141', 'hex')
+    const hdkey = new HDKey({
+      isMaster: false,
+      isPrivateKey: false,
+      keyData,
+      chainCode,
+      origin: new Keypath({ path: "m/0'", depth: 1  }),
+      parentFingerprint: Buffer.from('3442193e', 'hex').readUInt32BE(), // 876747070
+    })
+    const xpub = hdkey.toXpub()
+    expect(xpub).toBe("xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw")
+    
+    const newHdkey = HDKey.fromXpub(xpub)
+    expect(newHdkey.getKeyData().toString('hex')).toBe(keyData.toString('hex'))
+    expect(newHdkey.getChainCode()?.toString('hex')).toBe(chainCode.toString('hex'))
+  })
+
+  it('should throw error for invalid xpub', () => {
+    expect(() => {
+      HDKey.fromXpub('invalid_xpub')
+    }).toThrow('Unknown letter: "l". Allowed: 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz')
+  })
+
+  it('should handle different version bytes in toXpub', () => {
+    const keyData = Buffer.from('00e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35', 'hex')
+    const chainCode = Buffer.from('873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508', 'hex')
+    const origin = new Keypath({ path: "m/44'/0'/0'" })
+    const hdkey = new HDKey({
+      isMaster: true,
+      keyData,
+      chainCode,
+      origin,
+    })
+    const xpub = hdkey.toXpub({ versionBytes: Buffer.from('043587CF', 'hex') })
+    expect(xpub.startsWith('tpub')).toBe(true)
+  })
+
+  it('should convert multiple HDKeys to xpub and back', () => {
+    const keyData1 = Buffer.from('00e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35', 'hex')
+    const chainCode1 = Buffer.from('873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508', 'hex')
+    const origin1 = new Keypath({ path: "m/44'/0'/0'" })
+    const hdkey1 = new HDKey({
+      isMaster: true,
+      keyData: keyData1,
+      chainCode: chainCode1,
+      origin: origin1,
+    })
+    const xpub1 = hdkey1.toXpub()
+    const newHdkey1 = HDKey.fromXpub(xpub1, { xpubPath: "m/44'/0'/0'" })
+    expect(newHdkey1.getKeyData().toString('hex')).toBe(keyData1.toString('hex'))
+    expect(newHdkey1.getChainCode()?.toString('hex')).toBe(chainCode1.toString('hex'))
+
+    const keyData2 = Buffer.from('026fe2355745bb2db3630bbc80ef5d58951c963c841f54170ba6e5c12be7fc12a6', 'hex')
+    const chainCode2 = Buffer.from('ced155c72456255881793514edc5bd9447e7f74abb88c6d6b6480fd016ee8c85', 'hex')
+    const origin2 = new Keypath({ path: "m/44'/1'/1'/0/1" })
+    const hdkey2 = new HDKey({
+      keyData: keyData2,
+      chainCode: chainCode2,
+      origin: origin2,
+      parentFingerprint: 3910671603,
+    })
+    const xpub2 = hdkey2.toXpub()
+    const newHdkey2 = HDKey.fromXpub(xpub2, { xpubPath: "m/44'/1'/1'/0/1" })
+    expect(newHdkey2.getKeyData().toString('hex')).toBe(keyData2.toString('hex'))
+    expect(newHdkey2.getChainCode()?.toString('hex')).toBe(chainCode2.toString('hex'))
+  })
+
+  it('should create HDKeys from xpubs and check internal types', () => {
+    const xpub1 = 'xpub6CVDAP5Ae2wxTNoDXtFqBiwyWU13ejtf16LJXbwMXMmW8i8HdDpWdaC75ss8c1oAmsFFvHXvmJi5MCU1nJZUkvJ3ZsHkCzHRwczDheGWrp3'
+    const hdkey1 = HDKey.fromXpub(xpub1)
+    expect(hdkey1.getKeyData()).toBeInstanceOf(Buffer)
+    expect(hdkey1.getChainCode()).toBeInstanceOf(Buffer)
+    expect(hdkey1.getOrigin()).toBeUndefined()
+    expect(hdkey1.getParentFingerprint()).toBe(1906394030)
+
+    const xpub2 = 'tpubDHW3GtnVrTatx38EcygoSf9UhUd9Dx1rht7FAL8unrMo8r2NWhJuYNqDFS7cZFVbDaxJkV94MLZAr86XFPsAPYcoHWJ7sWYsrmHDw5sKQ2K'
+    const hdkey2 = HDKey.fromXpub(xpub2, { xpubPath: "m/44'/1'/1'/0/1" })
+    expect(hdkey2.getKeyData()).toBeInstanceOf(Buffer)
+    expect(hdkey2.getChainCode()).toBeInstanceOf(Buffer)
+    expect(hdkey2.getOrigin()).toBeInstanceOf(Keypath)
+    expect(hdkey2.getParentFingerprint()).toBe(3910671603)
+  })
+
+  it('should throw error for inconsistent xpub path depth', () => {
+    const xpub = 'xpub6CVDAP5Ae2wxTNoDXtFqBiwyWU13ejtf16LJXbwMXMmW8i8HdDpWdaC75ss8c1oAmsFFvHXvmJi5MCU1nJZUkvJ3ZsHkCzHRwczDheGWrp3'
+    expect(() => {
+      HDKey.fromXpub(xpub, { xpubPath: "m/44'/0'" })
+    }).toThrow('Provided path is not consistent with the xpub depth. Provided path: m/44\'/0\', xpub depth: 3')
+  })
+
+  it('should throw error for inconsistent xpub path child number', () => {
+    const xpub = 'xpub6CVDAP5Ae2wxTNoDXtFqBiwyWU13ejtf16LJXbwMXMmW8i8HdDpWdaC75ss8c1oAmsFFvHXvmJi5MCU1nJZUkvJ3ZsHkCzHRwczDheGWrp3'
+    expect(() => {
+      HDKey.fromXpub(xpub, { xpubPath: "m/44'/0'/0" })
+    }).toThrow('Provided path is not consistent with the xpub. Provided path child number: 0, xpub child number: 2147483648')
+  })
+
+  // it.only('should throw error for inconsistent source fingerprint', () => {
+  //   const xpub = 'xpub6CVDAP5Ae2wxTNoDXtFqBiwyWU13ejtf16LJXbwMXMmW8i8HdDpWdaC75ss8c1oAmsFFvHXvmJi5MCU1nJZUkvJ3ZsHkCzHRwczDheGWrp3'
+  //   expect(() => {
+  //     HDKey.fromXpub(xpub, { xpubPath: "m/44'/0'/0'", sourceFingerprint: 12345678 })
+  //   }).toThrow('Provided source fingerprint is not consistent with the xpub. Provided source fingerprint: 12345678, xpub parent fingerprint: 1906394030')
+  // })
 })
