@@ -5,4 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 2.0.0-beta.1 (2025-02-17)
 
-**Note:** Version bump only for package @ngraveio/ur-blockchain-commons
+**Note:** Version bump only for package @ngraveio/ur-uuid

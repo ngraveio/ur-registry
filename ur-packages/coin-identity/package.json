@@ -1,6 +1,6 @@
 {
   "name": "@ngraveio/ur-coin-identity",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "Provides BC UR type that uniquely identifies a crypto coin.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,9 @@
   "files": [
     "dist"
   ],
-  "sideEffects": ["dist/addToRegistry.js"],  
+  "sideEffects": [
+    "dist/addToRegistry.js"
+  ],
   "scripts": {
     "clean": "rm -rf ./dist",
     "watch": "tsc --build --watch",
@@ -40,8 +42,8 @@
     "url": "https://github.com/ngraveio/ur-registry/issues"
   },
   "dependencies": {
-    "uuid": "^9.0.0",
-    "@ngraveio/bc-ur": "2.0.0-beta.9"
+    "@ngraveio/bc-ur": "2.0.0-beta.9",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
