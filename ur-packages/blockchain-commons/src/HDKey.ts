@@ -301,8 +301,16 @@ export class HDKey extends registryItemFactory({
    * @returns {HDKey} The HDKey instance.
    * @throws {Error} If the xpub is invalid or inconsistent with the provided path.
    */
-  static fromXpub(xpub: string, params?: { xpubPath?: string; isPrivate?: boolean; sourceFingerprint?: number }): HDKey {
-    const { version: version, depth, parentFingerprint, childNumber, chainCode, keyData, checksum } = HDKey.parseXpub(xpub)
+  static fromXpub(xpub: string, params?: { xpubPath?: string; isPrivate?: boolean; sourceFingerprint?: number; ignoreChecksum?: boolean }): HDKey {
+    const { version: version, depth, parentFingerprint, childNumber, chainCode, keyData, checksum, xpubHex } = HDKey.parseXpub(xpub)
+
+    // Verify checksum
+    if (!params?.ignoreChecksum) {
+      const calculatedChecksum = Buffer.from(sha256(sha256(xpubHex.slice(0, -4))).subarray(0, 4))
+      if (!checksum.equals(calculatedChecksum)) {
+        throw new Error(`Invalid checksum for xpub, given: ${checksum.toString('hex')}, calculated: ${calculatedChecksum.toString('hex')}`)
+      }
+    }
 
     const isMaster = depth === 0
     if (isMaster) {
@@ -498,12 +506,6 @@ export class HDKey extends registryItemFactory({
     // Next 4 bytes are checksum (last 4 bytes)
     const checksum = xpubHex.slice(-4)
 
-    // Verify checksum
-    const calculatedChecksum = Buffer.from(sha256(sha256(xpubHex.slice(0, -4))).subarray(0, 4))
-    if (!checksum.equals(calculatedChecksum)) {
-      throw new Error('Invalid checksum for xpub')
-    }
-
     // Check if this is a master key key or a derived key
     // const isMaster = depth === 0
 
@@ -525,6 +527,7 @@ export class HDKey extends registryItemFactory({
       chainCode,
       keyData,
       checksum,
+      xpubHex,
     }
   }
 
