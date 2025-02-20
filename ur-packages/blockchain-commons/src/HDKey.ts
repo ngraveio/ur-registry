@@ -499,7 +499,7 @@ export class HDKey extends registryItemFactory({
     const checksum = xpubHex.slice(-4)
 
     // Verify checksum
-    const calculatedChecksum = sha256(sha256(xpubHex.slice(0, -4))).subarray(0, 4)
+    const calculatedChecksum = Buffer.from(sha256(sha256(xpubHex.slice(0, -4))).subarray(0, 4))
     if (!checksum.equals(calculatedChecksum)) {
       throw new Error('Invalid checksum for xpub')
     }
