@@ -3,6 +3,14 @@ import { Keypath } from '../src/index'
 import { UR } from '@ngraveio/bc-ur'
 
 describe('HDKey', () => {
+
+  it('should create an instance of HDKey from UR', () => {
+    const hdkey = HDKey.fromUr("ur:hdkey/oladwkaxhdclaotdqdinaeesjzmolfzsbbidlpiyhddlcximhltirfsptlvsmohscsamsgzoaxadwtaahdcxiaksataxbtgotictnybnqdoslsmdbztsmtryatjoialnolweuramsfdtolhtbadtamtantjooeadlncsdwykaeykaeykaocytegtqdfhattantjooyadlraewklawkaycyksfpdmftredsrkpf");
+
+    expect(hdkey instanceof HDKey).toBe(true);  
+  });
+
+
   /**
    * @brief Test the encoding of the test vector 1 of BCR-2020-007-hdkey paper
    * Source: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md
