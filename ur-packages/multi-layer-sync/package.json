@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "buffer": "^6.0.3",
-    "@ngraveio/bc-ur": "2.0.0-beta.7",
+    "@ngraveio/bc-ur": "2.0.0-beta.9",
     "@ngraveio/ur-blockchain-commons": "2.0.0-beta.0",
     "@ngraveio/ur-coin-identity": "2.0.0-beta.0",
     "@ngraveio/ur-hex-string": "2.0.0-beta.0"
