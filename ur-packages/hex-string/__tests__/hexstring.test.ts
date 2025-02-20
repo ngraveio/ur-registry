@@ -1,104 +1,107 @@
 import { HexString } from "../src";
-import { URRegistryDecoder } from "@keystonehq/bc-ur-registry";
+import { UR, defaultEncoders, UrFountainDecoder, UrFountainEncoder } from '@ngraveio/bc-ur'
+
+const cbor = defaultEncoders.cbor;
 
 describe("hex-string", () => {
-    const hex = "babecafe8badf00d";
-    const buff = Buffer.from(hex, "hex");
+  const hex = "babecafe8badf00d";
+  const buff = Buffer.from(hex, "hex");
 
-    const expectedCBOR = "D9010748BABECAFE8BADF00D".toLowerCase(); // Should we?
-    const expectedUR = "ur:hex-string/taadatfdrdrnsgzelupmwtbtbtdsvlse";
+  const expectedCBOR = "48babecafe8badf00d";
+  const expectedUR = "ur:hex-string/fdrdrnsgzelupmwtbtjpryzsss";
 
-    it("should generate hex-string from buffer", () => {
+  it("should generate hex-string from buffer", () => {
 
-        // Create hex-string from buffer
-        const hexString = new HexString(buff);
+      // Create hex-string from buffer
+      const hexString = new HexString(buff);
 
-        // Convert it to cbor then hex
-        const cborHex = hexString.toCBOR().toString("hex");
-        /**
-         * CBOR should contain
-         * 263(h'babecafe8badf00d')
-         *
-         * ```
-         * D9 0107                # tag(263)
-         *    48                  # bytes(8)
-         *     BABECAFE8BADF00D # "\xBA\xBE\xCA\xFE+\xAD\xF0\r"
-         * ```  
-         */
+      // Convert it to cbor then hex
+      const cborHex = hexString.toUr().getPayloadHex();
+      // TODO: tag needs to be removed
+      /**
+       * CBOR should contain
+       * h'babecafe8badf00d'
+       *
+       * ```
+       *    48                  # bytes(8)
+       *     BABECAFE8BADF00D # "\xBA\xBE\xCA\xFE+\xAD\xF0\r"
+       * ```  
+       */
 
-        expect(cborHex).toBe(expectedCBOR);
+      expect(cborHex).toBe(expectedCBOR);
 
-        const ur = hexString.toUREncoder(1000).nextPart();
+      const ur = hexString.toUr().toString();
+      expect(ur).toBe(expectedUR);
+  });
 
-        expect(ur).toBe(expectedUR);
-    });
+  it("should generate hex-string from hex string", () => {
 
-    it("should generate hex-string from hex string", () => {
+      // Create hex-string from buffer
+      const hexString = new HexString(hex);
 
-        // Create hex-string from buffer
-        const hexString = new HexString(hex);
+      const cborHex = hexString.toUr().getPayloadHex();
+      expect(cborHex).toBe(expectedCBOR);
 
-        const cborHex = hexString.toCBOR().toString("hex");
-        expect(cborHex).toBe(expectedCBOR);
+      const ur = hexString.toUr().toString();
+      expect(ur).toBe(expectedUR);
+  });
 
-        const ur = hexString.toUREncoder(1000).nextPart();
-        expect(ur).toBe(expectedUR);
-    });
+  it("should decode hex-string from cbor", () => {
+    const cborData = Buffer.from(expectedCBOR, "hex");
+    const hexString = cbor.decode(cborData, {enforceType: HexString}) as HexString;
+    
+    expect(hexString.toHex()).toBe(hex);
+      
+  });
 
-    it("should decode hex-string from cbor", () => {
-        const hexString = HexString.fromCBOR(Buffer.from(expectedCBOR, "hex"));
-        expect(hexString.toHex()).toBe(hex);
-        
-    });
+  it("should decode hex-string from ur", () => {
+      const hexString = UR.fromString(expectedUR).decode() as HexString;
 
-    it("should decode hex-string from ur", () => {
-        const decoded = URRegistryDecoder.decode(expectedUR);
-
-        const hexString = HexString.fromCBOR(decoded.cbor);
-
-        expect(hexString.getRegistryType().getType()).toBe("hex-string");
-        expect(hexString.toHex()).toBe(hex);
-        expect(hexString.toCBOR().toString("hex")).toBe(expectedCBOR);
-    });    
+      expect(hexString.type.URType).toBe("hex-string");
+      expect(hexString.toHex()).toBe(hex);
+  });    
 
 
-    it("should encode and decode same buffer after QR flow", () => {
-        // Create hex-string from buffer
-        const hexString = new HexString(buff);
+  it("should encode and decode same buffer after QR flow", () => {
+      // Create hex-string from buffer
+      const hexString = new HexString(buff);
 
-        // Convert it to cbor then hex
-        const cborHex = hexString.toCBOR().toString("hex");
+      // Convert it to cbor then hex
+      const cborHexUr = hexString.toUr();
+      const cborHex = cborHexUr.getPayloadHex();
 
-        expect(cborHex).toBe(expectedCBOR);
+      expect(cborHex).toBe(expectedCBOR);
+      expect(cborHexUr.toString()).toBe(expectedUR);
 
-        const ur = hexString.toUREncoder(1000).nextPart();
+      // Encode for QR
+      const encoder = new UrFountainEncoder(hexString);
+      const fragments = encoder.getAllPartsUr(0.5);
 
-        expect(ur).toBe(expectedUR);
+      // Decode QR
+      const decoder = new UrFountainDecoder(fragments);
+      // Get decoded payload;
+      const decodedHexString = decoder.getDecodedData();
 
-        // Decode QR
-        const urDecoder = new URRegistryDecoder();
-        urDecoder.receivePart(ur);
-        const decodeHex = HexString.fromCBOR(urDecoder.resultUR().cbor);
+      expect(decodedHexString.toHex()).toEqual(hex);
+  })
 
-        expect(decodeHex.toHex()).toEqual(hex);
-    })
+  it("should remove starting 0x on string", () => {
+      const hexString = new HexString("0x" + hex);
+      expect(hexString.toHex()).toBe(hex);
+  });
 
-    it("should remove starting 0x on string", () => {
-        const hexString = new HexString("0x" + hex);
-        expect(hexString.toHex()).toBe(hex);
-    });
+  // Errors
+  it("should throw error if not hex string", () => {
+      expect(() => {
+          new HexString("not hex");
+      }).toThrowError();
+  });
 
-    // // Errors
-    // it("should throw error if not hex string", () => {
-    //     expect(() => {
-    //         new HexString("not hex");
-    //     }).toThrowError("Invalid hex string");
-    // });
-
-    // it("should throw error if string doesnt have even characters", () => {
-    //     expect(() => {
-    //         new HexString(hex + "0");
-    //     }).toThrowError("Invalid hex string");
-    // });
+  it("should throw error if not a string", () => {
+      expect(() => {
+        // @ts-ignore
+          new HexString(123);
+      }).toThrowError();
+  });
 
 });

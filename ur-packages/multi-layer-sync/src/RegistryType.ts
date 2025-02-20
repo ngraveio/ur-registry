@@ -1,7 +1,0 @@
-import { RegistryType } from "@keystonehq/bc-ur-registry";
-
-export const ExtendedRegistryTypes = {
-  CRYPTO_DETAILED_ACCOUNT: new RegistryType("crypto-detailed-account", 1402),
-  CRYPTO_SYNC_COIN: new RegistryType("crypto-portfolio-coin", 1403),
-  CRYPTO_PORTFOLIO: new RegistryType("crypto-portfolio", 1405),
-};
