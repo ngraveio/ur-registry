@@ -4,6 +4,14 @@ import { CoinInfo } from './CoinInfo'
 import { base58 } from '@scure/base'
 import { sha256 } from '@noble/hashes/sha256'
 
+// https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#serialization-format
+const BTCVersionBytes = {
+  MAINNET_XPUB: Buffer.from('0488B21E', 'hex'),
+  MAINNET_XPRIV: Buffer.from('0488ADE4', 'hex'),
+  TESTNET_XPUB: Buffer.from('043587CF', 'hex'),
+  TESTNET_XPRIV: Buffer.from('04358394', 'hex'),
+}
+
 interface HDKeyArgs {
   isMaster?: boolean
   keyData: Buffer
@@ -148,7 +156,7 @@ export class HDKey extends registryItemFactory({
    */
   public getIsPrivateKey = () => {
     // Master key is always private
-    if (this.getIsMaster()) return false
+    if (this.getIsMaster()) return true
     return (this.data as DeriveKeyProps).isPrivateKey || false
   }
 
@@ -294,8 +302,9 @@ export class HDKey extends registryItemFactory({
    * @throws {Error} If the xpub is invalid or inconsistent with the provided path.
    */
   static fromXpub(xpub: string, params?: { xpubPath?: string; isPrivate?: boolean; sourceFingerprint?: number }): HDKey {
-    const { version: version, depth, parentFingerprint, childNumber, chainCode, keyData, checksum, isMaster } = HDKey.parseXpub(xpub)
+    const { version: version, depth, parentFingerprint, childNumber, chainCode, keyData, checksum } = HDKey.parseXpub(xpub)
 
+    const isMaster = depth === 0
     if (isMaster) {
       const masterKeyParams: MasterKeyProps = {
         isMaster: true,
@@ -373,14 +382,16 @@ export class HDKey extends registryItemFactory({
    * @param {{ versionBytes?: Buffer }} [params] - Optional parameters.
    * @returns {string} The extended public key.
    * @throws {Error} If the chain code or origin is missing.
+   *
+   * https://github.com/bitcoinjs/bip32/blob/master/ts-src/bip32.ts#L238
    */
   toXpub(params?: { versionBytes?: Buffer }) {
     // If version bytes are provided use that otherwise, If masterkey or private key use xpriv otherwise use xpub
     const version = params?.versionBytes || (this.getIsMaster() || this.getIsPrivateKey() ? BTCVersionBytes.MAINNET_XPRIV : BTCVersionBytes.MAINNET_XPUB)
 
     // Check if chain code is present otherwise we cannot generate xpub
-    if (this.getChainCode() == undefined || this.getOrigin() == undefined) {
-      throw new Error('Cannot generate xpub without chain code or origin')
+    if (this.getChainCode() == undefined) {
+      throw new Error('Cannot generate xpub without chain code')
     }
 
     // Get the key data
@@ -398,6 +409,10 @@ export class HDKey extends registryItemFactory({
         chainCode,
         keyData,
       })
+    }
+
+    if (this.getOrigin() == undefined) {
+      throw new Error('Cannot generate xpub without origin because of depth and child number')
     }
 
     // Get the depth from the origin
@@ -418,7 +433,7 @@ export class HDKey extends registryItemFactory({
     return HDKey.encodeXpub({
       version: version,
       depth,
-      parentFingerprint: Buffer.alloc(4).fill(parentFingerprint),
+      parentFingerprint,
       childNumber,
       chainCode,
       keyData,
@@ -490,7 +505,7 @@ export class HDKey extends registryItemFactory({
     }
 
     // Check if this is a master key key or a derived key
-    const isMaster = depth === 0
+    // const isMaster = depth === 0
 
     // TODO: check version bytes to determine if its private or public key
     // But this will only work for bitcoin in this case
@@ -510,13 +525,12 @@ export class HDKey extends registryItemFactory({
       chainCode,
       keyData,
       checksum,
-      isMaster,
     }
   }
 
   /**
    * Encodes the components into an extended public key (xpub).
-   * @param {{ version: Buffer; depth: number; parentFingerprint: Buffer; childNumber: number; chainCode: Buffer; keyData: Buffer }} params - The components to encode.
+   * @param {{ version: Buffer; depth: number; parentFingerprint: number; childNumber: number; chainCode: Buffer; keyData: Buffer }} params - The components to encode.
    * @returns {string} The encoded extended public key.
    */
   static encodeXpub({
@@ -527,22 +541,37 @@ export class HDKey extends registryItemFactory({
     chainCode,
     keyData,
   }: {
-    version: Buffer
-    depth: number
-    parentFingerprint: Buffer
-    childNumber: number // 4 bytes
+    version: Buffer // 4 bytes
+    depth: number | Buffer // 1 byte
+    parentFingerprint: number | Buffer // 4 bytes
+    childNumber: number | Buffer // 4 bytes
     chainCode: Buffer // 32 bytes
     keyData: Buffer // 33 bytes
   }) {
     // Get the fingerprint
-    const depthBytes = Buffer.alloc(4)
-    depthBytes.writeUInt32BE(depth, 0)
+    let depthBytes = Buffer.alloc(1)
+    if (typeof depth === 'number') {
+      depthBytes.writeUint8(depth, 0)
+    } else {
+      depthBytes = depth.slice(0, 1)
+    }
     // Get the child number
-    const childNumberBytes = Buffer.alloc(4)
-    childNumberBytes.writeUInt32BE(childNumber, 0)
+    let childNumberBytes = Buffer.alloc(4)
+    if (typeof childNumber === 'number') {
+      childNumberBytes.writeUInt32BE(childNumber, 0)
+    } else {
+      childNumberBytes = childNumber.slice(0, 4)
+    }
+
+    let parentFingerprintBytes = Buffer.alloc(4)
+    if (typeof parentFingerprint === 'number') {
+      parentFingerprintBytes.writeUInt32BE(parentFingerprint, 0)
+    } else {
+      parentFingerprintBytes = parentFingerprint.slice(0, 4)
+    }
 
     // Concat all the bytes
-    const xpubBytes = Buffer.concat([version, depthBytes, parentFingerprint, childNumberBytes, chainCode, keyData])
+    const xpubBytes = Buffer.concat([version, depthBytes, parentFingerprintBytes, childNumberBytes, chainCode, keyData])
 
     // Calculate checksum
     const checksum = sha256(sha256(xpubBytes)).subarray(0, 4)
@@ -555,12 +584,4 @@ export class HDKey extends registryItemFactory({
 
     return xpub
   }
-}
-
-// https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#serialization-format
-const BTCVersionBytes = {
-  MAINNET_XPUB: Buffer.from('0x0488B21E', 'hex'),
-  MAINNET_XPRIV: Buffer.from('0x0488ADE4', 'hex'),
-  TESTNET_XPUB: Buffer.from('0x043587CF', 'hex'),
-  TESTNET_XPRIV: Buffer.from('0x04358394', 'hex'),
 }
