@@ -1,6 +1,6 @@
 {
   "name": "@ngraveio/ur-hex-string",
-  "version": "2.0.1-beta.1",
+  "version": "2.0.1-beta.2",
   "description": "Provides BC UR type for hex string.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
