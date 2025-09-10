@@ -2,7 +2,7 @@ import { registryItemFactory } from '@ngraveio/bc-ur'
 import { languages } from './LanguageCodes'
 import { Buffer } from 'buffer/'
 // Define Node.js Buffer type without importing `node:buffer`
-type NodeBuffer = typeof globalThis extends { Buffer: infer T } ? T : never;
+type NodeBuffer = typeof globalThis extends { Buffer: infer T } ? T : never
 type CompatibleBuffer = Buffer | InstanceType<NodeBuffer>
 
 /** CDDL
@@ -80,14 +80,15 @@ export class PortfolioMetadata extends registryItemFactory({
 
       this.data.syncId = padRemovedSyncId
     }
+
+    // Fallback to 'en' if language code is invalid
+    if (metadata.language && !languages[metadata.language]) {
+      this.data.language = 'en'
+    }
   }
 
   override verifyInput(input: ICryptoPortfolioMetadata): { valid: boolean; reasons?: Error[] } {
     const errors: Error[] = []
-
-    if (input.language && !languages[input.language]) {
-      errors.push(new Error('Invalid language code'))
-    }
 
     if (input.syncId && input.syncId.length > 16) {
       errors.push(new Error('Sync id buffer size must be maximum 16'))
