@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,4 +76,4 @@ jobs:
             yarn lerna publish from-package --yes --no-private --loglevel silly
           fi
         env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
