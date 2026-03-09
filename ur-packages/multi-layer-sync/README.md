@@ -76,6 +76,8 @@ import { DetailedAccount, PortfolioCoin, PortfolioMetadata, Portfolio } from '@n
 
 The `DetailedAccount` class represents an account with detailed information, including the HDKey and optional token IDs.
 
+Token IDs for EVM-based chains (ERC20) are encoded using [CBOR tag 263 (hexadecimal string)](https://github.com/toravir/CBOR-Tag-Specs/blob/master/hexString.md), while token IDs for other chains (ERC1155, SPL, ESDT) are encoded as plain text strings (`tstr`).
+
 ```mermaid
 flowchart TB
     subgraph DetailedAccount
@@ -88,30 +90,34 @@ flowchart TB
 **CDDL Definition:**
 ```CDDL
 account_exp = #6.40303(hdkey) / #6.40308(output-descriptor)
+hexstring = #6.263(bytes)
 
-; Accounts are specified using either '#6.40303(hdkey)' or 
+; Accounts are specified using either '#6.40303(hdkey)' or
 ; '#6.40308(output-descriptor)'.
 ; By default, '#6.40303(hdkey)' should be used to share public keys and
 ; extended public keys.
-; '#6.308(output-descriptor)' should be used to share an output descriptor, 
+; '#6.40308(output-descriptor)' should be used to share an output descriptor,
 ; e.g. for the different Bitcoin address formats (P2PKH, P2SH-P2WPKH, P2WPKH, P2TR).
+; '#6.263(hexstring)' is used to encode token IDs that are hexadecimal strings
+; as bytes while preserving their hex semantics.
 
 ; Optional 'token-ids' to indicate the synchronization of a list of tokens with
 ; the associated accounts
 ; 'token-id' is defined differently depending on the blockchain:
-; - ERC20 tokens on EVM chains are identified by their contract addresses 
-; (e.g. `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`)
-; - ERC1155 tokens are identifed with their contract addresses followed by their 
-; ID with ':' as separator (e.g. `0xfaafdc07907ff5120a76b34b731b278c38d6043c:
+; - ERC20 tokens on EVM chains are identified by their contract addresses,
+; encoded as '#6.263(hexstring)' (e.g. `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`)
+; - ERC1155 tokens are identified with their contract addresses followed by their
+; ID with ':' as separator, encoded as tstr since the token ID portion is decimal
+; (e.g. `0xfaafdc07907ff5120a76b34b731b278c38d6043c:
 ; 508851954656174721695133294256171964208`)
-; - ESDT tokens on MultiversX are by their name followed by their ID with `-` as 
-; separator (e.g. `USDC-c76f1f`)
-; - SPL tokens on Solana are identified by their contract addresses
-; (e.g. `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`)
+; - ESDT tokens on MultiversX are by their name followed by their ID with `-` as
+; separator, encoded as tstr (e.g. `USDC-c76f1f`)
+; - SPL tokens on Solana are identified by their contract addresses,
+; encoded as tstr (e.g. `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`)
 
-detailed-account = { 
+detailed-account = {
   account: account_exp,
-  ? token-ids: [+ string / bytes] ; Specify multiple tokens associated to one account
+  ? token-ids: [+ tstr / hexstring] ; Specify multiple tokens associated to one account
 }
 
 account = 1
