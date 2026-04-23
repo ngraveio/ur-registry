@@ -17,8 +17,7 @@ const HexStringBase: RegistryItemClass = registryItemFactory({
   tag: 263,
   URType: 'hex-string',
   CDDL: `
-    hexadecimal-tag = #6.263(hex-bytes)
-    hex-bytes = bytes
+    hex-string = #6.263(bstr)
   `,
 })
 

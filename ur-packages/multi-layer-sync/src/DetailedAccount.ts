@@ -19,7 +19,7 @@ export class DetailedAccount extends registryItemFactory({
   allowKeysNotInMap: false,
   CDDL: `
     account_exp = #6.40303(hdkey) / #6.40308(output-descriptor)
-    hexstring = #6.263(bytes)
+    hex-string = #6.263(bstr)
 
     ; Accounts are specified using either '#6.40303(hdkey)' or
     ; '#6.40308(output-descriptor)'.
@@ -28,30 +28,29 @@ export class DetailedAccount extends registryItemFactory({
     ; '#6.40308(output-descriptor)' should be used to share an output descriptor,
     ; e.g. for the different Bitcoin address formats (P2PKH, P2SH-P2WPKH, P2WPKH, P2TR).
     ;
-    ; '#6.263(hexstring)' is used to encode token IDs that are hexadecimal strings
-    ; as bytes while preserving their hex semantics.
+    ; 'hex-string' (IANA tag 263) wraps bytes meant to be read as a hexadecimal
+    ; string — the tag preserves hex semantics for display and comparison.
 
     ; Optional 'token-ids' to indicate the synchronization of a list of tokens with
-    ; the associated accounts
-    ; 'token-id' is defined differently depending on the blockchain:
+    ; the associated accounts.
+    ; 'token-id' encoding follows the Unique Asset Identifier (UAI) convention —
+    ; see NBCR-2024-001. A token-id is either a scalar identifier or a compound
+    ; "parent.subtype[.subtype...]" form. Current encodings per blockchain:
     ; - ERC20 tokens on EVM chains are identified by their contract addresses,
-    ; encoded as '#6.263(hexstring)' (e.g. "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
-    ; - ERC1155 tokens are identified with their contract addresses followed by their
-    ; ID with ':' as separator, encoded as tstr since the token ID portion is decimal
-    ; (e.g. "0xfaafdc07907ff5120a76b34b731b278c38d6043c:
-    ; 508851954656174721695133294256171964208")
-    ; - ESDT tokens on MultiversX are by their name followed by their ID with "-" as
-    ; separator, encoded as tstr (e.g. "USDC-c76f1f")
-    ; - SPL tokens on Solana are identified by their contract addresses,
-    ; encoded as tstr (e.g. "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
+    ;   encoded as 'hex-string' (e.g. "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48").
+    ; - ERC721 / ERC1155 tokens are identified by contract address plus token id,
+    ;   encoded as tstr using the UAI "contract.tokenId" form (e.g.
+    ;   "0xfaafdc07907ff5120a76b34b731b278c38d6043c.508851954656174721695133294256171964208").
+    ; - SPL / Token-2022 on Solana are identified by their mint address,
+    ;   encoded as tstr (e.g. "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v").
 
     detailed-account = {
       account: account_exp,
-      ? token-ids: [+ tstr / hexstring] ; Specify multiple tokens associated to one account
+      ? token-ids: [+ tstr / hex-string] ; Specify multiple tokens associated to one account
     }
 
     account = 1
-    token-ids = 2  
+    token-ids = 2
   `,
 }) {
   data: {
@@ -60,23 +59,19 @@ export class DetailedAccount extends registryItemFactory({
   }
 
   constructor(data: IDetailAccountInput) {
-    // Token Ids are just hex string for erc20 token like 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
-    // For ESDT and SPL types its going to be encoded as string
-    // We will try to parse the string into bytes with removing 0x part,
-    // if we cannot we will encode it as utf8 string
+    // Promote hex-shaped inputs to HexString so they serialise as #6.263(bstr);
+    // other strings stay tstr.
     super(data)
     //@ts-ignore
     this.data = data
 
     let tokenIds = data.tokenIds
 
-    // If token ids are provided, convert them to hex strings
     if (tokenIds !== undefined && Array.isArray(data.tokenIds)) {
-      // Try to parse them into hex strings
+      // Try each id as hex; already-HexString passes through, non-hex input
+      // throws and falls back to tstr.
       tokenIds = tokenIds.map(tokenId => {
-        // If its already hexstring, return it
-        if (tokenId instanceof HexString) return tokenId as HexString
-        // If its buffer or a string try to parse as HexString
+        if (tokenId instanceof HexString) return tokenId
         try {
           return new HexString(tokenId)
         } catch (error) {
@@ -131,13 +126,12 @@ export class DetailedAccount extends registryItemFactory({
   public getOutputDescriptor = () => {
     return this.data.account instanceof OutputDescriptor ? this.data.account : undefined
   }
+  /** Hex-encoded token ids are rendered with a `0x` prefix for round-trip parity. */
   public getTokenIds = () => {
     if (!this.data.tokenIds) return undefined
 
-    // Always return string representation of the token ids
     return this.data.tokenIds.map((tokenId: HexString | string) => {
       if (tokenId instanceof HexString) {
-        // Shall we really add 0x to start?
         return '0x' + tokenId.getData()
       }
       return tokenId

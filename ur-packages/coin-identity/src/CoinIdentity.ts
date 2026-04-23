@@ -69,8 +69,8 @@ const CoinIdentityBase: RegistryItemClass = registryItemFactory({
     elliptic_curve = P256 / P384 / P521 / X25519 / X448 / Ed25519 / Ed448 / secp256k1
   
     ; Subtypes specific to some coins (e.g. ChainId for EVM chains)
-    hex_string = #6.263(bstr) ; byte string is a hexadecimal string no need for decoding
-    sub_type_exp = uint32 / str / hex_string
+    hex-string = #6.263(bstr) ; IANA tag 263 — bytes read as a hexadecimal string, no decoding
+    sub_type_exp = uint32 / str / hex-string
   
     coin-identity = {
         curve: elliptic_curve,
@@ -102,9 +102,9 @@ const CoinIdentityBase: RegistryItemClass = registryItemFactory({
  *
  * elliptic_curve = P256 / P384 / P521 / X25519 / X448 / Ed25519 / Ed448 / secp256k1
  *
- * ; Subtypes specific to some coins (e.g. ChainId for EVM chains)  
- * hex_string = #6.263(bstr) ; byte string is a hexadecimal string no need for decoding  
- * sub_type_exp = uint32 / str / hex_string  
+ * ; Subtypes specific to some coins (e.g. ChainId for EVM chains)
+ * hex-string = #6.263(bstr) ; IANA tag 263 — bytes read as a hexadecimal string, no decoding
+ * sub_type_exp = uint32 / str / hex-string
  *
  * coin-identity = {
  *     curve: elliptic_curve,  
