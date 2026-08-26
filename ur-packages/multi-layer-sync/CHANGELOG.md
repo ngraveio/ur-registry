@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-beta.0](https://github.com/ngraveio/ur-registry/compare/@ngraveio/ur-sync@2.0.1-beta.3...@ngraveio/ur-sync@2.1.0-beta.0) (2026-08-26)
+
+### Features
+
+- **DetailedAccount:** addhexstring to token-id definition ([dfccbcb](https://github.com/ngraveio/ur-registry/commit/dfccbcb64a8b427e54dc6240fa4a9cf60c32fd52))
+
 ## 2.0.1-beta.3 (2025-09-10)
 
 **Note:** Version bump only for package @ngraveio/ur-sync
